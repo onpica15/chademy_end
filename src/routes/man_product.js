@@ -127,15 +127,16 @@ router.post('/edit/:sid', upload.none(), async (req, res) => {
   });
 });
 
-router.post('/add', upload.none(), async (req, res) => {
+
+
+
+router.post('/add', upload.single('photo'), async (req, res) => {
   const data = {
     ...req.body
   };
   data.last_edit_time = moment(new Date()).format(
     "YYYY-MM-DD");
-
-  // res.json(data);
-
+ 
 
   const sql = "INSERT INTO `w_product_mainlist` set ?";
   const [{
