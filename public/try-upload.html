@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="fontawesome/css/all.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col-lg-6">
+                <!-- 用ajax上傳 -->
+                <form name="form1" onsubmit="return false;">
+                    <div class="form-group">
+                        <label for="avatar">上傳圖檔</label>
+                        <input type="file" class="form-control" id="avatar" name="avatar">
+                    </div>
+                </form>
+
+                <br>
+                <img id="myimg" src="" alt="" width="600px">
+            </div>
+        </div>
+
+
+    </div>
+
+    <script src="lib/jquery-3.5.1.min.js"></script>
+    <script src="bootstrap/js/bootstrap.bundle.js"></script>
+    <script>
+
+        document.querySelector('#avatar').addEventListener('change', uploadFile);
+
+        function uploadFile(event) {
+
+            const fd = new FormData(document.form1);  //FormData是沒有外觀的表單，document.form1是有外觀的表單，fetch需要透過沒有有外觀的表單發送
+
+            fetch('/try-upload', {
+                method: 'POST',
+                body: fd
+            })
+                .then(r => r.json())
+                .then(o => {
+                    console.log(o);
+                    if (o.success) {
+                        document.querySelector('#myimg').src = o.path; //把資料拿回來
+                    } else {
+                        alert(o.msg);
+                    }
+                })
+        }
+    </script>
+</body>
+
+</html>
