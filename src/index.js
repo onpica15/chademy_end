@@ -30,6 +30,8 @@ app.get("/", (req, res) => {
 app.use("/product", require(__dirname + "/routes/product"));
 app.use("/man_product", require(__dirname + "/routes/man_product"));
 
+app.use(express.static(__dirname + "/../public"));
+
 // 伺服器
 app.listen(3000, () => {
   console.log("伺服器已啟動");

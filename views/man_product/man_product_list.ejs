@@ -89,14 +89,17 @@
         object-fit: cover
     }
 </style>
-<%- include('../parts/navbar') %>
+<div class="contianer">
+    <%- include('../parts/navbar') %>
+</div>
+
 
 
 
 <div class="container">
 
     <div class="row justify-content-center">
-
+        <div class="col-12"></div>
         <table class="table">
             <thead class="thead-dark">
                 <tr>
@@ -124,11 +127,12 @@
             <tbody>
                 <% for(let i of rows){ %>
                 <tr>
-                    <td><i class="fas fa-trash" data-sid="<%= i.sid %>"></i></td>
+                    <td><i class="fas fa-trash my-trash-i" data-sid="<%= i.sid %>"></i></td>
                     <td>
                         <a href="/man_product/edit/<%= i.sid %>">
-                            edit
+                            <i class="fas fa-edit my-edit-i"></i>
                         </a>
+
                     </td>
                     <td><%= i.sid %></td>
                     <td>
@@ -154,8 +158,8 @@
                 <% } %>
             </tbody>
         </table>
-
     </div>
+</div>
 
 </div>
 
