@@ -1,0 +1,284 @@
+<%- include('../parts/html-head') %>
+
+<style>
+    body {
+        background-color: #EFF0F0;
+    }
+
+    h3 {
+        margin: auto;
+        margin-top: 40px;
+        margin-bottom: 20px;
+    }
+
+    form {
+        margin: auto;
+        margin-bottom: 100px;
+    }
+
+    .form-group {
+        margin: 20px;
+    }
+
+    .form-group input {
+        width: 400px;
+        border: none;
+        height: 45px;
+        margin-top: 10px;
+        height: 45px;
+
+    }
+
+    .form-group textarea {
+        width: 400px;
+        border: none;
+        margin-top: 10px;
+    }
+
+    .form-group select {
+        width: 400px;
+        border: none;
+        margin-top: 10px;
+        height: 45px;
+    }
+
+    .form-group button {
+        width: 400px;
+        height: 45px;
+        margin-bottom: 25px;
+        margin-top: 10px;
+    }
+
+    .redstars {
+        color: red;
+    }
+
+    #infobar {
+        margin: auto
+    }
+</style>
+
+<%- include('../parts/navbar') %>
+
+
+
+
+
+
+<div class="container">
+    <div class="row">
+        <h3>編輯產品</h3>
+    </div>
+
+    <div class="row">
+        <div id="infobar" class="alert alert-success" role="alert" style="display: none ; width:875px">
+            A simple success alert—check it out!
+        </div>
+    </div>
+
+    <div class="row">
+
+        <form class="d-flex justify-content-center" name="form1" onsubmit="checkForm(); return false;" novalidate>
+
+            <div class="col">
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>產品編號
+                        <input type="text" class="form-control" name="product_no" value="<%=row.product_no%>">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>產品名稱
+                        <input type="text" class="form-control" name="product_name" value="<%= row.product_name%>">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>產品描述
+                        <textarea class="form-control" name="description" rows="10"
+                            style="resize:none"><%= row.description%></textarea>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>產品價格
+                        <input type="text" class="form-control" name="price" value="<%= row.price%>">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>產品類別
+
+                        <select class="form-control" name="category">
+
+                            <% for(let i of cates){ %>
+                            <option value="<%=i.name%>" <%=i.name == row.category ? 'selected' : ''%>><%= i.name %>
+                            </option>
+                            <% } %>
+
+                        </select>
+
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>顏色
+                        <select class="form-control" name="color">
+                            <% for(let i of colors){ %>
+                            <option value="<%= i.name %>" <%= i.name == row.color ? 'selected' : ''%>><%= i.name %>
+                            </option>
+                            <% } %>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>椅身材質
+                        <select class="form-control" name="chair_body">
+                            <% for(let i of chair_body){ %>
+                            <option value="<%= i.name %>" <%= i.name == row.chair_body ? 'selected' : ''%>><%= i.name %>
+                            </option>
+                            <% } %>
+
+                        </select>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>椅墊材質
+                        <select class="form-control" name="chair_seat">
+                            <% for(let i of chair_seat){ %>
+                            <option value="<%= i.name %>" <%= i.name == row.chair_seat ? 'selected' : ''%>><%= i.name %>
+                            </option>
+                            <% } %>
+
+                        </select>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>品牌
+                        <select class="form-control" name="designer">
+                            <% for(let i of designer){ %>
+                            <option value="<%= i.name %>" <%= i.name == row.designer ? 'selected' : ''%>><%= i.name %>
+                            </option>
+                            <% } %>
+
+                        </select>
+                    </label>
+                </div>
+
+
+            </div>
+
+            <div class="col">
+
+                <div class="form-group">
+                    <div>產品圖</div>
+
+                    <button type="button" class="btn btn-warning" onclick="file_input.click()">上傳照片</button>
+
+                    <input type="hidden" id="photo" name="photo" class="form-control">
+                    <div>
+                        <img src="../uploads/<%= row.photo %>" alt="" id="myimg" width="400px">
+                    </div>
+
+                </div>
+
+
+
+
+                <div class="form-group">
+                    <label>Hashtag
+                        <textarea class="form-control" name="hashtag" rows="5"
+                            style="resize:none"><%= row.hashtag%></textarea>
+                    </label>
+                </div>
+
+
+
+
+
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>上架日期
+                        <input type="date" class="form-control" name="on_shelf_time" value="<%= row.on_shelf_time%>">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>下架日期
+                        <input type="date" class="form-control" name="off_shelf_time" value="<%= row.off_shelf_time%>">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>最後修改時間
+                        <input type="text" class="form-control" name="last_edit_time" value="<%= row.last_edit_time%>"
+                            disabled>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="上架" class="btn btn-warning">
+                </div>
+
+
+            </div>
+
+        </form>
+
+        <input type="file" id="file_input" name="myfile" style="display: none">
+    </div>
+
+</div>
+
+<%- include('../parts/scripts') %>
+<script>
+    const email_pattern = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+    const mobile_pattern = /^09\d{2}-?\d{3}-?\d{3}$/;
+    const $name = document.querySelector('#name');
+    const $email = document.querySelector('#email');
+    const $mobile = document.querySelector('#mobile');
+    const r_fields = [$name, $email, $mobile];
+    const infobar = $('#infobar');
+    const submitBtn = document.querySelector('button[type=submit]');
+
+    function checkForm() {
+  
+   
+            const fd = new FormData(document.form1);
+
+            fetch('', {
+                method: 'POST',
+                body: fd
+            })
+                .then(r => r.json())
+                .then(obj => {
+                    console.log(obj);
+                    if (obj.success) {
+                        infobar.html('修改成功');
+                        infobar.removeClass('alert-danger').addClass('alert-success');
+                        // setTimeout(() => {
+                        //     location.href = 'data-list.php';
+                        // }, 3000)
+                    } else if (obj.changedRows == 0) {
+                        infobar.html('資料沒有修改');
+                        infobar.removeClass('alert-success').addClass('alert-danger');
+                    } else {
+                        infobar.html(obj.error || '修改失敗');
+                        infobar.removeClass('alert-success').addClass('alert-danger');
+
+                        submitBtn.style.display = 'block';
+                    }
+                    infobar.slideDown();
+                    setTimeout(() => {
+                        infobar.slideUp();
+                    }, 3000)
+                });
+
+        } 
+    
+</script>
+<%- include('../parts/html-foot') %>
