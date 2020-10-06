@@ -3,6 +3,7 @@ const express = require("express"); //express
 const db = require(__dirname + "/db_connect2"); // 引用模組，模組裡安裝mysql2
 const moment = require('moment-timezone');
 const upload = require(__dirname + "/upload-img-module");
+const multer = require("multer");
 
 
 
@@ -20,6 +21,7 @@ app.use(
 
 // 解析json格式middleware
 app.use(express.json());
+
 
 // 使用樣版引擎
 app.set("view engine", "ejs");

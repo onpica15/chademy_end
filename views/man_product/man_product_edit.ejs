@@ -181,7 +181,9 @@
 
                     <input type="hidden" id="photo" name="photo" class="form-control">
                     <div>
-                        <img src="../uploads/<%= row.photo %>" alt="" id="myimg" width="400px">
+                   
+                        <img src="/img/<%= row.photo%>" alt="" id="myimg" width="400px">
+                      
                     </div>
 
                 </div>
@@ -244,6 +246,34 @@
     const r_fields = [$name, $email, $mobile];
     const infobar = $('#infobar');
     const submitBtn = document.querySelector('button[type=submit]');
+
+
+    document.querySelector('#file_input').addEventListener('change', uploadFile);
+
+    function uploadFile(event) {
+        console.log(file_input.files[0].name);
+        const fd = new FormData();
+        fd.append('myfile', file_input.files[0]);
+
+        // const fd = new FormData(document.form1);
+
+        fetch('/man_product/try-upload', {
+            method: 'POST',
+            body: fd
+        })
+            .then(r => r.json())
+            .then(o => {
+                console.log(o);
+                if (o.success) {
+                    document.querySelector('#myimg').src = '/img/' + o.newFileName;
+                    document.querySelector('#photo').value = o.newFileName;
+                } else {
+                    alert(o.msg);
+                }
+            })
+    }
+
+
 
     function checkForm() {
   
