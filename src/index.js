@@ -51,6 +51,7 @@ app.use("/man_product", require(__dirname + "/routes/man_product"));
 
 
 // 引入課程路由
+app.use("/a_experience_mainlist", require(__dirname + "/routes/a_experience_mainlist"));
 
 
 

@@ -1,0 +1,286 @@
+<%- include('../parts/html-head') %>
+
+<style>
+    body {
+        background-color: #EFF0F0;
+    }
+
+    h3 {
+        margin: auto;
+        margin-top: 40px;
+        margin-bottom: 20px;
+    }
+
+    form {
+        margin: auto;
+        margin-bottom: 100px;
+    }
+
+    .form-group {
+        margin: 20px;
+    }
+
+    .form-group input {
+        width: 400px;
+        border: none;
+        height: 45px;
+        margin-top: 10px;
+        height: 45px;
+
+    }
+
+    .form-group textarea {
+        width: 400px;
+        border: none;
+        margin-top: 10px;
+    }
+
+    .form-group select {
+        width: 400px;
+        border: none;
+        margin-top: 10px;
+        height: 45px;
+    }
+
+    .form-group button {
+        width: 400px;
+        height: 45px;
+        margin-bottom: 25px;
+        margin-top: 10px;
+    }
+
+    .red-stars {
+        color: red;
+    }
+
+    #infobar {
+        margin: auto
+    }
+</style>
+
+
+<%- include('../parts/navbar') %>
+
+
+<div class="container">
+    <div class="row">
+        <h3>編輯體驗資料</h3>
+    </div>
+
+    <div class="row">
+        <div id="infobar" class="alert alert-success" role="alert" style="display: none; width:875px">
+            A simple success alert—check it out!
+        </div>
+    </div>
+
+    <div class="row">
+        <form class="d-flex justify-content-center" name="form1" onsubmit="checkForm(); return false;" novalidate>
+
+            <div class="col">
+
+                <div class="form-group">
+                    <label for="activitie_name"><span class="red-stars">**</span>1. 活動名稱</label>
+                    <input type="text" class="form-control" id="activitie_name" name="activitie_name" value="<%= activitie_name %>">
+                    <small class="form-text error-msg">必填</small>
+                </div>
+
+        
+                <div class="form-group">
+                    <label for="activitie_id"><span class="red-stars">**</span>2. 活動代碼</label>
+                    <input type="text" class="form-control" id="activitie_id" name="activitie_id" value="<%= activitie_id %>">
+                    <small class="form-text error-msg">必填</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="address"><span class="red-stars">**</span>3. 地址</label>
+                    <input type="text" class="form-control" id="address" name="address" value="<%= address %>">
+                    <small class="form-text error-msg">必填</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="teacher"><span class="red-stars">**</span>4. 師資</label>
+                    <input type="text" class="form-control" id="teacher" name="teacher" value="<%= teacher %>">
+                    <small class="form-text error-msg">必填</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="start_date"><span class="red-stars">**</span>5. 體驗開始日期</label>
+                    <input type="date" class="form-control" id="start_date" name="start_date" value="<%= start_date %>">
+                    <small class="form-text error-msg">必填</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="end_date"><span class="red-stars">**</span>6. 體驗結束日期</label>
+                    <input type="date" class="form-control" id="end_date" name="end_date" value="<%= end_date %>">
+                    <small class="form-text error-msg">必填</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="origina_price"><span class="red-stars">**</span>7. 原價</label>
+                    <input type="text" class="form-control" id="origina_price" name="origina_price" value="<%= origina_price %>">
+                    <small class="form-text error-msg">免費請填 "0" </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="sale_price"><span class="red-stars">**</span>8. 特價</label>
+                    <input type="text" class="form-control" id="sale_price" name="sale_price" value="<%= sale_price %>">
+                    <small class="form-text error-msg">免費請填 "0" </small>
+                </div>
+
+            </div>
+
+            <div class="col">
+                <div class="form-group" style="display: none">
+                    <label for="registered_people"><span class="red-stars">**</span>已報名人數</label>
+                    <input type="text" class="form-control" id="registered_people" name="registered_people" value="<%= registered_people %>">
+                    <small class="form-text error-msg">必填</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="low_people"><span class="red-stars">**</span>9. 最低開班人數</label>
+                    <input type="text" class="form-control" id="low_people" name="low_people" value="<%= low_people %>">
+                    <small class="form-text error-msg">沒有限制人數請填 "0" </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="total_people"><span class="red-stars">**</span>10. 截止人數</label>
+                    <input type="text" class="form-control" id="total_people" name="total_people" value="<%= total_people %>">
+                    <small class="form-text error-msg">沒有限制人數請填 "0" </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="category_sid"><span class="red-stars">**</span>11. 活動種類</label>
+                    <select class="form-control" id="category_sid" name="category_sid" > 
+                         <% for(let i of cates){ %>
+                            <option value="<%=i.name%>" <%=i.name == category_sid ? 'selected' : ''%>><%= i.name %>
+                            </option>
+                            <% } %>
+</select>
+                    <small class="form-text error-msg">必選</small>
+                </div>
+
+
+     
+
+
+            
+                <div class="form-group" style="display: none">
+                    <label for="following">追蹤</label>
+                    <input type="text" class="form-control" id="following" name="following" value="<%= following %>">
+                </div>
+                <div class="form-group" style="display: none">
+                    <label for="visible">上架</label>
+                    <input type="text" class="form-control" id="visible" name="visible" value="<%= visible %>">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="images"><span class="red-stars">**</span>12. 體驗圖</label><br>
+
+                    <button type="button" class="btn btn-warning" onclick="file_input.click()">上傳照片</button>
+
+                    <input type="hidden" id="images" name="images" class="form-control">
+                    <div>
+                        <img src="/img/<%= images %>" alt="" id="myimg" width="400px">
+                    </div>
+
+                </div>
+
+
+
+                 
+                <div class="form-group">
+                    <label for="introduction"><span class="red-stars">**</span>13. 介紹</label>
+                    <textarea class="form-control" id="introduction" name="introduction" cols="30" rows="3"style="resize:none"><%= introduction %></textarea>
+                    <small class="form-text error-msg">例如:活動簡介、活動流程等</small>
+                </div>
+
+             
+
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-warning">上架</button>
+                </div>
+
+
+        </form>
+        <input type="file" id="file_input" style="display: none">
+
+    </div>
+
+
+</div>
+
+
+<%- include('../parts/scripts') %>
+<script>
+    const email_pattern = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+    const mobile_pattern = /^09\d{2}-?\d{3}-?\d{3}$/;
+    const $name = document.querySelector('#activitie_name');
+    const $email = document.querySelector('#email');
+    const $mobile = document.querySelector('#mobile');
+    const r_fields = [$name, $email, $mobile];
+    const infobar = $('#infobar');
+    const submitBtn = document.querySelector('button[type=submit]');
+
+    document.querySelector('#file_input').addEventListener('change', uploadFile);
+
+    function uploadFile(event) {
+        console.log(file_input.files[0].name);
+        const fd = new FormData();
+        fd.append('myfile', file_input.files[0]);
+     
+        // const fd = new FormData(document.form1);
+
+        fetch('/a_experience_mainlist/try-upload', {
+            method: 'POST',
+            body: fd
+        })
+            .then(r => r.json())
+            .then(o => {
+                console.log(o);
+                if (o.success) {
+                    document.querySelector('#myimg').src = '/img/'+o.newFileName;
+                    document.querySelector('#images').value = o.newFileName;
+                } else {
+                    alert(o.msg);
+                }
+            })
+    }
+
+
+
+    function checkForm() {
+
+        const fd = new FormData(document.form1);
+
+        fetch('', {
+            method: 'POST',
+            body: fd
+        })
+            .then(r => r.json())
+            .then(obj => {
+                console.log(obj);
+                if (obj.success) {
+                    infobar.html('編輯成功');
+                    infobar.removeClass('alert-danger').addClass('alert-success');
+                    // setTimeout(() => {
+                    //     location.href = 'data-list.php';
+                    // }, 3000)
+                } else {
+                    infobar.html(obj.error || '編輯失敗');
+                    infobar.removeClass('alert-success').addClass('alert-danger');
+
+                    submitBtn.style.display = 'block';
+                }
+                infobar.slideDown();
+                setTimeout(() => {
+                    infobar.slideUp();
+                }, 3000)
+            });
+
+    };
+
+</script>
+
+<%- include('../parts/html-foot') %>
