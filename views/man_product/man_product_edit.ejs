@@ -179,7 +179,7 @@
 
                     <button type="button" class="btn btn-warning" onclick="file_input.click()">上傳照片</button>
 
-                    <input type="hidden" id="photo" name="photo" class="form-control">
+                    <input type="hidden" id="photo" name="photo" class="form-control" value="<%= row.photo%>">
                     <div>
                    
                         <img src="/img/<%= row.photo%>" alt="" id="myimg" width="400px">
