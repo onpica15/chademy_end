@@ -7,6 +7,7 @@
 
     body {
         background-color: #EFF0F0;
+        display: grid;
     }
 
     h3 {
@@ -14,6 +15,7 @@
         margin-top: 40px;
         margin-bottom: 20px;
     }
+
 
     table.table tr th {
         background-color: #5F6B6B !Important;
@@ -89,79 +91,89 @@
         object-fit: cover
     }
 </style>
-<div class="contianer">
-    <%- include('../parts/navbar') %>
-</div>
 
 
 
 
-<div class="container">
-
+<div class="container ">
+    
     <div class="row justify-content-center">
-        <div class="col-12"></div>
-        <table class="table">
-            <thead class="thead-dark">
-                <tr>
-
-                    <th scope="col">刪除</th>
-                    <th scope="col">編輯</th>
-
-                    <th scope="col">#</th>
-                    <th scope="col">產品圖</th>
-                    <th scope="col">產品編號</th>
-                    <th scope="col">產品名稱</th>
-                    <th scope="col">產品描述</th>
-                    <th scope="col">產品類別</th>
-                    <th scope="col">顏色</th>
-                    <th scope="col">椅身材質</th>
-                    <th scope="col">椅墊材質</th>
-                    <th scope="col">設計師</th>
-                    <th scope="col">產品價格</th>
-                    <th scope="col">Hashtag</th>
-                    <th scope="col">上架日期</th>
-                    <th scope="col">下架日期</th>
-                    <th scope="col">最後修改時間</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% for(let i of rows){ %>
-                <tr>
-                    <td><i class="fas fa-trash my-trash-i" data-sid="<%= i.sid %>"></i></td>
-                    <td>
-                        <a href="/man_product/edit/<%= i.sid %>">
-                            <i class="fas fa-edit my-edit-i"></i>
-                        </a>
-
-                    </td>
-                    <td><%= i.sid %></td>
-                    <td>
-                        <div class="wrap">
-                            <img src="/img/<%=i.photo %>" alt="" width="150px">
-                        </div>
-                    </td>
-                    <td><%= i.product_no %></td>
-                    <td><%= i.product_name %></td>
-                    <td><%= i.description %></td>
-                    <td><%= i.category %></td>
-                    <td><%= i.color %></td>
-                    <td><%= i.chair_body %></td>
-                    <td><%= i.chair_seat %></td>
-                    <td><%= i.designer %></td>
-                    <td><%= i.price %></td>
-                    <td><%= i.hashtag %></td>
-                    <td><%= i.on_shelf_time %></td>
-                    <td><%= i.off_shelf_time %></td>
-                    <td><%= i.last_edit_time %></td>
-
-                </tr>
-                <% } %>
-            </tbody>
-        </table>
+        <h2>產品列表</h2>
     </div>
-</div>
+
+    <div class="row justify-content-center ">
+
+        <div class="col">
+            <%- include('../parts/navbar') %>
+        </div>
+
+        <div class="col">
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+
+                        <th scope="col">刪除</th>
+                        <th scope="col">編輯</th>
+
+                        <th scope="col">#</th>
+                        <th scope="col">產品圖</th>
+                        <th scope="col">產品編號</th>
+                        <th scope="col">產品名稱</th>
+                        <th scope="col">產品描述</th>
+                        <th scope="col">產品類別</th>
+                        <th scope="col">顏色</th>
+                        <th scope="col">椅身材質</th>
+                        <th scope="col">椅墊材質</th>
+                        <th scope="col">設計師</th>
+                        <th scope="col">產品價格</th>
+                        <th scope="col">Hashtag</th>
+                        <th scope="col">上架日期</th>
+                        <th scope="col">下架日期</th>
+                        <th scope="col">最後修改時間</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for(let i of rows){ %>
+                    <tr>
+                        <td><i class="fas fa-trash my-trash-i" data-sid="<%= i.sid %>"></i></td>
+                        <td>
+                            <a href="/man_product/edit/<%= i.sid %>">
+                                <i class="fas fa-edit my-edit-i"></i>
+                            </a>
+
+                        </td>
+                        <td><%= i.sid %></td>
+                        <td>
+                            <div class="wrap">
+                                <img src="/img/<%=i.photo %>" alt="" width="150px">
+                            </div>
+                        </td>
+                        <td><%= i.product_no %></td>
+                        <td><%= i.product_name %></td>
+                        <td><%= i.description %></td>
+                        <td><%= i.category %></td>
+                        <td><%= i.color %></td>
+                        <td><%= i.chair_body %></td>
+                        <td><%= i.chair_seat %></td>
+                        <td><%= i.designer %></td>
+                        <td><%= i.price %></td>
+                        <td><%= i.hashtag %></td>
+                        <td><%= i.on_shelf_time %></td>
+                        <td><%= i.off_shelf_time %></td>
+                        <td><%= i.last_edit_time %></td>
+
+                    </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
 
 </div>
+
+
+
 
 
 <%- include('../parts/scripts') %>
