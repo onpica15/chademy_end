@@ -1,3 +1,7 @@
+
+// ---------------------------以下引入模組-------------------------------
+
+
 const express = require("express");
 const router = express.Router();
 const db = require(__dirname + "/../db_connect2");
@@ -5,6 +9,9 @@ const moment = require("moment-timezone");
 const multer = require("multer");
 const upload = require(__dirname + "/../upload-img-module");
 const fs = require("fs");
+
+
+// ----------------------以下為重構之function----------------------------
 
 
 // get data頁碼
@@ -115,8 +122,8 @@ async function getEditList(req) {
 
 
 
+// -----------------畫面3個：列表頁面、編輯頁面、新增頁面--------------------
 
-// 畫面3個：列表頁面、編輯頁面、新增頁面
 
 // 列表頁面
 router.get("/list", async (req, res) => {
@@ -164,8 +171,10 @@ router.get("/add", async (req, res) => {
 
 
 
-// RESTful API
+// ------------------------- 以下為 RESTful API------------------------------
 
+
+// 編輯表單 PI
 router.post('/edit/:sid', upload.none(), async (req, res) => {
   const data = {
     ...req.body
@@ -187,6 +196,8 @@ router.post('/edit/:sid', upload.none(), async (req, res) => {
   });
 });
 
+
+// 單張圖片上傳 API
 router.post("/try-upload", upload.single('myfile'), (req, res) => {
   console.log('req.file' + req.file);
 
@@ -227,6 +238,7 @@ router.post("/try-upload", upload.single('myfile'), (req, res) => {
 });
 
 
+// 新增表單 API
 router.post('/add', upload.none(), async (req, res) => {
   const data = {
     ...req.body
@@ -252,12 +264,16 @@ router.post('/add', upload.none(), async (req, res) => {
 });
 
 
-
+// 資料刪除 API
 router.delete("/del/:sid", async (req, res) => {
   const sql = "DELETE FROM `w_product_mainlist` WHERE sid=?";
   const [results] = await db.query(sql, [req.params.sid]);
   res.json(results);
 });
+
+
+// -------------------------------- 以下匯出模組------------------------------
+
 
 // 記得加這句呀～module匯出index才能用呀～
 module.exports = router;
