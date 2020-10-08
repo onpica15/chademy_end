@@ -1,33 +1,82 @@
+
+// ---------------------------以下引入模組-------------------------------
+
+
 const express = require("express");
 const router = express.Router();
 const db = require(__dirname + "/../db_connect2");
 const moment = require("moment-timezone");
+const multer = require("multer");
 const upload = require(__dirname + "/../upload-img-module");
+const fs = require("fs");
 
 
+// ----------------------以下為重構之function----------------------------
 
-// 畫面
 
-router.get("/list", async (req, res) => {
+// get data頁碼
+async function getListData(req) {
   const output = {
+    page: 0,
+    perPage: 10,
+    totalRows: 0,
+    totalPages: 0,
     rows: [],
+    pages: []
   };
-  let sql = `SELECT * FROM w_product_mainlist ORDER BY sid  LIMIT 10`;
-  const [results] = await db.query(sql);
-  output.rows = results;
-  results.forEach((el) => {
-    el.last_edit_time = moment(el.last_edit_time).format("YYYY-MM-DD");
-    el.on_shelf_time = moment(el.on_shelf_time).format("YYYY-MM-DD");
-    el.off_shelf_time = moment(el.off_shelf_time).format("YYYY-MM-DD");
-  });
-  res.render("man_product/man_product_list", output);
-});
 
+  const [
+    [{
+      totalRows
+    }]
+  ] = await db.query("SELECT COUNT(1) totalRows FROM w_product_mainlist");
+  if (totalRows > 0) {
+    let page = parseInt(req.query.page) || 1;
+    output.totalRows = totalRows;
+    output.totalPages = Math.ceil(totalRows / output.perPage);
 
+    if (page < 1) {
+      output.page = 1;
+    } else if (page > output.totalPages) {
+      output.page = output.totalPages;
+    } else {
+      output.page = page;
+    }
 
+    (function (page, totalPages, prevNum) {
+      let beginPage, endPage;
+      if (totalPages <= prevNum * 2 + 1) {
+        beginPage = 1;
+        endPage = totalPages;
+      } else if (page - 1 < prevNum) {
+        beginPage = 1;
+        endPage = prevNum * 2 + 1;
+      } else if (totalPages - page < prevNum) {
+        beginPage = totalPages - (prevNum * 2 + 1);
+        endPage = totalPages;
+      } else {
+        beginPage = page - prevNum;
+        endPage = page + prevNum;
+      }
+      output.beginPage = beginPage;
+      output.endPage = endPage;
+    })(page, output.totalPages, 3);
 
-router.get("/edit/:sid", async (req, res) => {
+    let sql = `SELECT * FROM w_product_mainlist LIMIT ${(output.page-1)*output.perPage}, ${output.perPage}`;
 
+    const [results] = await db.query(sql);
+    results.forEach(el => {
+      el.last_edit_time = moment(el.last_edit_time).format("YYYY-MM-DD");
+      el.on_shelf_time = moment(el.on_shelf_time).format("YYYY-MM-DD");
+      el.off_shelf_time = moment(el.off_shelf_time).format("YYYY-MM-DD");
+    });
+    output.rows = results;
+  }
+
+  return output;
+};
+
+async function getEditList(req) {
   const output = {
     cates: [],
     colors: [],
@@ -67,15 +116,34 @@ router.get("/edit/:sid", async (req, res) => {
   results[0].off_shelf_time = moment(results[0].off_shelf_time).format(
     "YYYY-MM-DD"
   );
+  return output;
+}
 
-  // res.send(results[0]);
+
+
+
+// -----------------畫面3個：列表頁面、編輯頁面、新增頁面--------------------
+
+
+// 列表頁面
+router.get("/list", async (req, res) => {
+  const output = await getListData(req);
+  res.render("man_product/man_product_list", output);
+});
+
+
+// 編輯頁面
+router.get("/edit/:sid", async (req, res) => {
+  const output = await getEditList(req);
   res.render("man_product/man_product_edit", output);
 });
 
 
 
-
+// 新增頁面
 router.get("/add", async (req, res) => {
+
+
   const output = {
     cates: [],
     colors: [],
@@ -96,16 +164,17 @@ router.get("/add", async (req, res) => {
   [output.chair_seat] = await db.query(sql_chair_seat);
   [output.designer] = await db.query(sql_chair_designer);
 
-  // output.cates = results;
-  // res.json(output.cates);
+ 
   res.render("man_product/man_product_add", output);
 });
 
 
 
 
-// RESTful API
+// ------------------------- 以下為 RESTful API------------------------------
 
+
+// 編輯表單 PI
 router.post('/edit/:sid', upload.none(), async (req, res) => {
   const data = {
     ...req.body
@@ -128,15 +197,56 @@ router.post('/edit/:sid', upload.none(), async (req, res) => {
 });
 
 
+// 單張圖片上傳 API
+router.post("/try-upload", upload.single('myfile'), (req, res) => {
+  console.log('req.file' + req.file);
+
+  if (req.file && req.file.originalname) {
+    let ext = "";
+
+    switch (req.file.mimetype) {
+      case "image/png":
+      case "image/jpeg":
+      case "image/gif":
+        fs.rename(
+          req.file.path,
+          __dirname + "/../public/img/" + req.file.originalname,
+          (error) => {
+            return res.json({
+              success: true,
+              path: "/img/" + req.file.originalname,
+              newFileName: req.file.filename
+            });
+          }
+        );
+
+        break;
+      default:
+        fs.unlink(req.file.path, (error) => {
+          return res.json({
+            success: false,
+            msg: "不是圖檔",
+          });
+        });
+    }
+  } else {
+    return res.json({
+      success: false,
+      msg: "沒有上傳檔案",
+    });
+  }
+});
 
 
-router.post('/add', upload.single('photo'), async (req, res) => {
+// 新增表單 API
+router.post('/add', upload.none(), async (req, res) => {
   const data = {
     ...req.body
   };
   data.last_edit_time = moment(new Date()).format(
     "YYYY-MM-DD");
- 
+
+
 
   const sql = "INSERT INTO `w_product_mainlist` set ?";
   const [{
@@ -153,11 +263,17 @@ router.post('/add', upload.single('photo'), async (req, res) => {
   });
 });
 
+
+// 資料刪除 API
 router.delete("/del/:sid", async (req, res) => {
   const sql = "DELETE FROM `w_product_mainlist` WHERE sid=?";
   const [results] = await db.query(sql, [req.params.sid]);
   res.json(results);
 });
+
+
+// -------------------------------- 以下匯出模組------------------------------
+
 
 // 記得加這句呀～module匯出index才能用呀～
 module.exports = router;

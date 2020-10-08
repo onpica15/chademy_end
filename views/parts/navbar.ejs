@@ -1,12 +1,45 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<style>
+    .ver-nav {
+        min-width: 10rem;
+        width: 10rem;
+        height: 100vh;
+        /* display: inline-block; */
+      /* margin-right: 80%; */
+        z-index: 10;
+        top: 0;
+        left: 0; 
+        
+        /* transition: all 0.4s; */
+        position: fixed;
+      
+    }
+</style>
+
+<nav class="ver-nav navbar navbar-expand-lg navbar-light bg-light flex-column">
     <a class="navbar-brand" href="../home.php">後台管理</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
+    <div class="collapse navbar-collapse flex-column" id="navbarSupportedContent">
+        <ul class="navbar-nav flex-column">
+        
+            <li class="nav-item">
+                <a class="nav-link">您好！</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">登出</a>
+            </li>
+        
+        
+            <li class="nav-item ">
+                <a class="nav-link" href="#">登入</a>
+            </li>
+        
+        
+        </ul>
+        <ul class="navbar-nav mr-auto flex-column">
 
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
@@ -39,8 +72,8 @@
                     體驗管理
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="../test/data_list.php">體驗活動列表</a>
-                    <a class="dropdown-item" href="../test/data_experienceinsert.php">新增體驗資料</a>
+                    <a class="dropdown-item" href="/a_experience_mainlist/list">體驗活動列表</a>
+                    <a class="dropdown-item" href="/a_experience_mainlist/add">新增體驗資料</a>
                     <a class="dropdown-item" href="../test/wood_list.php">木工創客地點表</a>
                     <a class="dropdown-item" href="../test/wood_experienceinsert.php">新增木工創客地點資料</a>
                     <a class="dropdown-item" href="../test/title_data_list.php">文章列表</a>
@@ -144,22 +177,7 @@
 
 
         </ul>
-        <ul class="navbar-nav">
-            <?php if (isset($_SESSION['admin'])) : ?>
-            <li class="nav-item">
-                <a class="nav-link">您好！<?= $_SESSION['admin']['nickname'] ?></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="../product/log-out.php">登出</a>
-            </li>
-
-            <?php else : ?>
-            <li class="nav-item <?= $page_name == 'login' ? 'active' : '' ?>">
-                <a class="nav-link" href="../product/log-in.php">登入</a>
-            </li>
-            <?php endif; ?>
-
-        </ul>
+       
 
     </div>
 </nav>
