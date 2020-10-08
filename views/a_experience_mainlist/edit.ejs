@@ -79,51 +79,51 @@
             <div class="col">
 
                 <div class="form-group">
-                    <label for="activitie_name"><span class="red-stars">**</span>1. 活動名稱</label>
-                    <input type="text" class="form-control" id="activitie_name" name="activitie_name" value="<%= activitie_name %>">
-                    <small class="form-text error-msg">必填</small>
+                    <label><span class="red-stars">** </span>1. 活動名稱
+                        <input type="text" class="form-control" name="activitie_name" value="<%=row.activitie_name%>">
+                        <small class="form-text error-msg">必填</small>
+                    </label>
                 </div>
 
-        
                 <div class="form-group">
                     <label for="activitie_id"><span class="red-stars">**</span>2. 活動代碼</label>
-                    <input type="text" class="form-control" id="activitie_id" name="activitie_id" value="<%= activitie_id %>">
+                    <input type="text" class="form-control" id="activitie_id" name="activitie_id" value="<%=row.activitie_id%>">
                     <small class="form-text error-msg">必填</small>
                 </div>
 
                 <div class="form-group">
                     <label for="address"><span class="red-stars">**</span>3. 地址</label>
-                    <input type="text" class="form-control" id="address" name="address" value="<%= address %>">
+                    <input type="text" class="form-control" id="address" name="address" value="<%=row.address%>">
                     <small class="form-text error-msg">必填</small>
                 </div>
 
                 <div class="form-group">
                     <label for="teacher"><span class="red-stars">**</span>4. 師資</label>
-                    <input type="text" class="form-control" id="teacher" name="teacher" value="<%= teacher %>">
+                    <input type="text" class="form-control" id="teacher" name="teacher" value="<%=row.teacher%>">
                     <small class="form-text error-msg">必填</small>
                 </div>
 
                 <div class="form-group">
                     <label for="start_date"><span class="red-stars">**</span>5. 體驗開始日期</label>
-                    <input type="date" class="form-control" id="start_date" name="start_date" value="<%= start_date %>">
+                    <input type="date" class="form-control" id="start_date" name="start_date" value="<%=row.start_date%>">
                     <small class="form-text error-msg">必填</small>
                 </div>
 
                 <div class="form-group">
                     <label for="end_date"><span class="red-stars">**</span>6. 體驗結束日期</label>
-                    <input type="date" class="form-control" id="end_date" name="end_date" value="<%= end_date %>">
+                    <input type="date" class="form-control" id="end_date" name="end_date" value="<%=row.end_date%>">
                     <small class="form-text error-msg">必填</small>
                 </div>
 
                 <div class="form-group">
                     <label for="origina_price"><span class="red-stars">**</span>7. 原價</label>
-                    <input type="text" class="form-control" id="origina_price" name="origina_price" value="<%= origina_price %>">
+                    <input type="text" class="form-control" id="origina_price" name="origina_price" value="<%=row.origina_price%>">
                     <small class="form-text error-msg">免費請填 "0" </small>
                 </div>
 
                 <div class="form-group">
                     <label for="sale_price"><span class="red-stars">**</span>8. 特價</label>
-                    <input type="text" class="form-control" id="sale_price" name="sale_price" value="<%= sale_price %>">
+                    <input type="text" class="form-control" id="sale_price" name="sale_price" value="<%=row.sale_price%>">
                     <small class="form-text error-msg">免費請填 "0" </small>
                 </div>
 
@@ -132,19 +132,19 @@
             <div class="col">
                 <div class="form-group" style="display: none">
                     <label for="registered_people"><span class="red-stars">**</span>已報名人數</label>
-                    <input type="text" class="form-control" id="registered_people" name="registered_people" value="<%= registered_people %>">
+                    <input type="text" class="form-control" id="registered_people" name="registered_people" value="<%=row.registered_people%>">
                     <small class="form-text error-msg">必填</small>
                 </div>
 
                 <div class="form-group">
                     <label for="low_people"><span class="red-stars">**</span>9. 最低開班人數</label>
-                    <input type="text" class="form-control" id="low_people" name="low_people" value="<%= low_people %>">
+                    <input type="text" class="form-control" id="low_people" name="low_people" value="<%=row.low_people%>">
                     <small class="form-text error-msg">沒有限制人數請填 "0" </small>
                 </div>
 
                 <div class="form-group">
                     <label for="total_people"><span class="red-stars">**</span>10. 截止人數</label>
-                    <input type="text" class="form-control" id="total_people" name="total_people" value="<%= total_people %>">
+                    <input type="text" class="form-control" id="total_people" name="total_people" value="<%=row.total_people%>">
                     <small class="form-text error-msg">沒有限制人數請填 "0" </small>
                 </div>
 
@@ -152,7 +152,7 @@
                     <label for="category_sid"><span class="red-stars">**</span>11. 活動種類</label>
                     <select class="form-control" id="category_sid" name="category_sid" > 
                          <% for(let i of cates){ %>
-                            <option value="<%=i.name%>" <%=i.name == category_sid ? 'selected' : ''%>><%= i.name %>
+                            <option value="<%=i.name%>" <%=i.name == row.category_sid ? 'selected' : ''%>><%= i.name %>
                             </option>
                             <% } %>
 </select>
@@ -166,11 +166,11 @@
             
                 <div class="form-group" style="display: none">
                     <label for="following">追蹤</label>
-                    <input type="text" class="form-control" id="following" name="following" value="<%= following %>">
+                    <input type="text" class="form-control" id="following" name="following" value="<%=row.following%>">
                 </div>
                 <div class="form-group" style="display: none">
                     <label for="visible">上架</label>
-                    <input type="text" class="form-control" id="visible" name="visible" value="<%= visible %>">
+                    <input type="text" class="form-control" id="visible" name="visible" value="<%=row.visible%>">
                 </div>
 
 
@@ -181,7 +181,7 @@
 
                     <input type="hidden" id="images" name="images" class="form-control">
                     <div>
-                        <img src="/img/<%= images %>" alt="" id="myimg" width="400px">
+                        <img src="/img/<%=row.images %>" alt="" id="myimg" width="400px">
                     </div>
 
                 </div>
@@ -191,7 +191,7 @@
                  
                 <div class="form-group">
                     <label for="introduction"><span class="red-stars">**</span>13. 介紹</label>
-                    <textarea class="form-control" id="introduction" name="introduction" cols="30" rows="3"style="resize:none"><%= introduction %></textarea>
+                    <textarea class="form-control" id="introduction" name="introduction" cols="30" rows="3"style="resize:none"><%=row. introduction %></textarea>
                     <small class="form-text error-msg">例如:活動簡介、活動流程等</small>
                 </div>
 

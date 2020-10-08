@@ -78,6 +78,7 @@ async function getListData(req) {
 async function getEditList(req) {
   const output = {
     cates: [],
+    row: [],
   };
 
   const sql_cates = `SELECT * FROM a_experience_category`;
@@ -152,8 +153,7 @@ router.post('/edit/:sid', upload.none(), async (req, res) => {
   const data = {
     ...req.body
   };
-  data.last_edit_time = moment(new Date()).format(
-    "YYYY-MM-DD");
+
   const sql = "UPDATE `a_experience_mainlist` SET ? WHERE `sid`=?";
   const [{
     affectedRows,
@@ -216,8 +216,7 @@ router.post('/add', upload.none(), async (req, res) => {
   const data = {
     ...req.body
   };
-  data.last_edit_time = moment(new Date()).format(
-    "YYYY-MM-DD");
+
 
 
 
