@@ -37,8 +37,8 @@ app.use("/product", require(__dirname + "/routes/product"));
 app.use("/man_product", require(__dirname + "/routes/man_product"));
 
 // 引入二手路由
-
-
+app.use("/secondhand", require(__dirname + "/routes/secondhand"));
+app.use("/man_secondhand", require(__dirname + "/routes/man_secondhand"));
 
 // 引入募資路由
 

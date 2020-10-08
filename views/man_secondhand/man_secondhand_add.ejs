@@ -1,0 +1,239 @@
+<%- include('../parts/html-head') %>
+
+<style>
+    span.red-stars {
+        color: red;
+    }
+
+    small.error-msg {
+        color: red;
+    }
+
+    body {
+        background-color: #EFF0F0;
+    }
+
+
+    .form-group button {
+        width: 540px;
+        height: 45px;
+
+    }
+
+    .button {
+        width: 540px;
+        height: 45px;
+        color: white;
+    }
+
+    .redstars {
+        color: red;
+    }
+
+    #infobar {
+        margin: auto
+    }
+
+    h3 {
+        margin: 30px auto;
+    }
+
+    .breadcrumb {
+        background-color: #EFF0F0;
+    }
+
+    .breadcrumb .breadcrumb-item.active {
+        color: #C77334;
+    }
+</style>
+
+<%- include('../parts/navbar') %>
+
+
+
+
+
+<div class="container">
+    <div class="row">
+        <h3>新增產品</h3>
+    </div>
+
+    <div class="row">
+        <div id="infobar" class="alert alert-success" role="alert" style="display: none ; width:875px">
+            A simple success alert—check it out!
+        </div>
+    </div>
+    <!-- `sid`, `product_no`, `productname`, `photo`, `price`, `description`, `stock`, `conditions_sid`, `categories_sid`, `material_sid`, `framework_sid` -->
+    <div class="row">
+
+        <form class="d-flex justify-content-center" name="form1" onsubmit="checkForm(); return false;" novalidate>
+
+            <div class="col">
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>商品編號
+                        <input type="text" class="form-control" name="product_no">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>商品名稱
+                        <input type="text" class="form-control" name="productname">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>產品價格
+                        <input type="text" class="form-control" name="price" value="">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>庫存
+                        <input type="text" class="form-control" name="stock" value="">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>商品描述
+                        <textarea class="form-control" name="description" rows="10" style="resize:none"></textarea>
+                    </label>
+                </div>
+
+            </div>
+
+            <div class="col">
+
+                <div class="form-group">
+                    <div>產品圖</div>
+
+                    <button type="button" class="btn btn-secondary" onclick="file_input.click()">新增圖片</button>
+
+                    <input type="hidden" id="photo" name="photo" class="form-control">
+                    <div>
+                        <img src="/../img/" alt="" id="myimg" width="400px">
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+                    <label>商品狀況
+
+                        <select class="form-control" name="conditions_sid">
+
+                            <% for(let i of conditions){ %>
+                            <option><%= i.conditions %></option>
+                            <% } %>
+
+                        </select>
+
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>骨架
+
+                        <select class="form-control" name="framework_sid">
+
+                            <% for(let i of framework){ %>
+                            <option><%= i.framework %></option>
+                            <% } %>
+
+                        </select>
+
+                    </label>
+                </div>
+
+
+                <div class="form-group">
+                    <label>材質
+
+                        <select class="form-control" name="material_sid">
+
+                            <% for(let i of material){ %>
+                            <option><%= i.material %></option>
+                            <% } %>
+
+                        </select>
+
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>分類
+
+                        <select class="form-control" name="categories_sid">
+
+                            <% for(let i of categories){ %>
+                            <option><%= i.categories %></option>
+                            <% } %>
+
+                        </select>
+
+                    </label>
+                </div>
+
+
+                <div class="form-group button">
+                    <input type="submit" value="新增商品" class="btn btn-warning">
+                </div>
+
+
+            </div>
+
+        </form>
+
+        <input type="file" id="file_input" name="myfile" style="display: none">
+    </div>
+
+</div>
+
+<%- include('../parts/scripts') %>
+<script>
+    const email_pattern = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+    const mobile_pattern = /^09\d{2}-?\d{3}-?\d{3}$/;
+    const $name = document.querySelector('#name');
+    const $email = document.querySelector('#email');
+    const $mobile = document.querySelector('#mobile');
+    const r_fields = [$name, $email, $mobile];
+    const infobar = $('#infobar');
+    const submitBtn = document.querySelector('button[type=submit]');
+
+
+
+
+
+    function checkForm() {
+
+        const fd = new FormData(document.form1);
+
+        fetch('', {
+            method: 'POST',
+            body: fd
+        })
+            .then(r => r.json())
+            .then(obj => {
+                console.log(obj);
+                if (obj.success) {
+                    infobar.html('新增成功');
+                    infobar.removeClass('alert-danger').addClass('alert-success');
+                    // setTimeout(() => {
+                    //     location.href = 'data-list.php';
+                    // }, 3000)
+                } else {
+                    infobar.html(obj.error || '新增失敗');
+                    infobar.removeClass('alert-success').addClass('alert-danger');
+
+                    submitBtn.style.display = 'block';
+                }
+                infobar.slideDown();
+                setTimeout(() => {
+                    infobar.slideUp();
+                }, 3000)
+            });
+
+    };
+
+</script>
+<%- include('../parts/html-foot') %>
