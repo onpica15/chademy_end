@@ -52,6 +52,7 @@ app.use("/man_secondhand", require(__dirname + "/routes/man_secondhand"));
 
 // 引入課程路由
 app.use("/a_experience_mainlist", require(__dirname + "/routes/a_experience_mainlist"));
+app.use("/a_wood_maker", require(__dirname + "/routes/a_wood_maker"));
 
 
 
