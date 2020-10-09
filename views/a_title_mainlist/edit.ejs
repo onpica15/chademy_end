@@ -1,0 +1,205 @@
+<%- include('../parts/html-head') %>
+
+<style>
+    body {
+        background-color: #EFF0F0;
+    }
+
+    h3 {
+        margin: auto;
+        margin-top: 40px;
+        margin-bottom: 20px;
+    }
+
+    form {
+        margin: auto;
+        margin-bottom: 100px;
+    }
+
+    .form-group {
+        margin: 20px;
+    }
+
+    .form-group input {
+        width: 400px;
+        border: none;
+        height: 45px;
+        margin-top: 10px;
+        height: 45px;
+
+    }
+
+    .form-group textarea {
+        width: 400px;
+        border: none;
+        margin-top: 10px;
+    }
+
+    .form-group select {
+        width: 400px;
+        border: none;
+        margin-top: 10px;
+        height: 45px;
+    }
+
+    .form-group button {
+        width: 400px;
+        height: 45px;
+        margin-bottom: 25px;
+        margin-top: 10px;
+    }
+
+    .red-stars {
+        color: red;
+    }
+
+    #infobar {
+        margin: auto
+    }
+</style>
+
+
+<%- include('../parts/navbar') %>
+
+
+<div class="container">
+    <div class="row">
+        <h3>新增文章資料</h3>
+    </div>
+
+    <div class="row">
+        <div id="infobar" class="alert alert-success" role="alert" style="display: none; width:875px">
+            A simple success alert—check it out!
+        </div>
+    </div>
+
+    <div class="row">
+        <form class="d-flex justify-content-center" name="form1" onsubmit="checkForm(); return false;" novalidate>
+
+            <div class="col">
+                <div class="form-group">
+                    <label for="title"><span class="red-stars">**</span>1. 文章名稱</label>
+                    <input type="text" class="form-control" id="title" name="title" value="<%=row.title%>">
+                    <small class="form-text error-msg">必填</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="images"><span class="red-stars">**</span>2. 文章圖</label><br>
+
+                    <button type="button" class="btn btn-warning" onclick="file_input.click()">上傳照片</button>
+
+                    <input type="hidden" id="images" name="images" class="form-control">
+                    <div>
+                        <img src="/img/<%=row.images %>" alt="" id="myimg" width="400px">
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label for="introduction"><span class="red-stars">**</span>3. 文章介紹</label>
+                    <textarea class="form-control" id="introduction" name="introduction" cols="30" rows="3"style="resize:none"><%=row. introduction %></textarea>
+                    <small class="form-text error-msg">例如:文章簡介等</small>
+                </div>
+
+                </div>
+                <div class="col">
+                 <div class="form-group">
+                    <label for="title_sid"><span class="red-stars">**</span>4. 活動種類</label>
+                    <select class="form-control" id="title_sid" name="title_sid" > 
+                         <% for(let i of cates){ %>
+                            <option value="<%=i.title_name%>" <%=i.name == row.title_sid ? 'selected' : ''%>><%= i.title_name %>
+                            </option>
+                            <% } %>
+</select>
+                    <small class="form-text error-msg">必選</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="created_at"><span class="red-stars">**</span>5. 文章發佈日期</label>
+                    <input type="date" class="form-control" id="created_at" name="created_at" value="<%=row.created_at%>">
+                    <small class="form-text error-msg">必填</small>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-warning">上架</button>
+                </div>
+                </div>
+
+
+        </form>
+        <input type="file" id="file_input" style="display: none">
+
+    </div>
+
+
+</div>
+</div>
+
+
+<%- include('../parts/scripts') %>
+<script>
+ 
+    const infobar = $('#infobar');
+    const submitBtn = document.querySelector('button[type=submit]');
+
+    document.querySelector('#file_input').addEventListener('change', uploadFile);
+
+    function uploadFile(event) {
+        console.log(file_input.files[0].name);
+        const fd = new FormData();
+        fd.append('myfile', file_input.files[0]);
+     
+        // const fd = new FormData(document.form1);
+
+        fetch('/a_title_mainlist/try-upload', {
+            method: 'POST',
+            body: fd
+        })
+            .then(r => r.json())
+            .then(o => {
+                console.log(o);
+                if (o.success) {
+                    document.querySelector('#myimg').src = '/img/'+o.newFileName;
+                    document.querySelector('#images').value = o.newFileName;
+                } else {
+                    alert(o.msg);
+                }
+            })
+    }
+
+
+
+    function checkForm() {
+
+        const fd = new FormData(document.form1);
+
+        fetch('', {
+            method: 'POST',
+            body: fd
+        })
+            .then(r => r.json())
+            .then(obj => {
+                console.log(obj);
+                if (obj.success) {
+                    infobar.html('編輯成功');
+                    infobar.removeClass('alert-danger').addClass('alert-success');
+                    // setTimeout(() => {
+                    //     location.href = 'data-list.php';
+                    // }, 3000)
+                } else {
+                    infobar.html(obj.error || '編輯失敗');
+                    infobar.removeClass('alert-success').addClass('alert-danger');
+
+                    submitBtn.style.display = 'block';
+                }
+                infobar.slideDown();
+                setTimeout(() => {
+                    infobar.slideUp();
+                }, 3000)
+            });
+
+    };
+
+</script>
+
+<%- include('../parts/html-foot') %>
