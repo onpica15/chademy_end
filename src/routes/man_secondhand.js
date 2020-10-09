@@ -2,9 +2,71 @@ const express = require("express");
 const router = express.Router();
 const db = require(__dirname + "/../db_connect2");
 const moment = require("moment-timezone");
+const multer = require("multer");
 const upload = require(__dirname + "/../upload-img-module");
+const fs = require("fs");
 
+// get data頁碼
+async function getListData(req) {
+  const output = {
+    page: 0,
+    perPage: 10,
+    totalRows: 0,
+    totalPages: 0,
+    rows: [],
+    pages: []
+  };
 
+  const [
+    [{
+      totalRows
+    }]
+  ] = await db.query("SELECT COUNT(1) totalRows FROM i_secondhand_product");
+  if (totalRows > 0) {
+    let page = parseInt(req.query.page) || 1;
+    output.totalRows = totalRows;
+    output.totalPages = Math.ceil(totalRows / output.perPage);
+
+    if (page < 1) {
+      output.page = 1;
+    } else if (page > output.totalPages) {
+      output.page = output.totalPages;
+    } else {
+      output.page = page;
+    }
+
+    (function (page, totalPages, prevNum) {
+      let beginPage, endPage;
+      if (totalPages <= prevNum * 2 + 1) {
+        beginPage = 1;
+        endPage = totalPages;
+      } else if (page - 1 < prevNum) {
+        beginPage = 1;
+        endPage = prevNum * 2 + 1;
+      } else if (totalPages - page < prevNum) {
+        beginPage = totalPages - (prevNum * 2 + 1);
+        endPage = totalPages;
+      } else {
+        beginPage = page - prevNum;
+        endPage = page + prevNum;
+      }
+      output.beginPage = beginPage;
+      output.endPage = endPage;
+    })(page, output.totalPages, 3);
+
+    let sql = `SELECT * FROM i_secondhand_product LIMIT ${(output.page-1)*output.perPage}, ${output.perPage}`;
+
+    const [results] = await db.query(sql);
+    results.forEach(el => {
+      el.last_edit_time = moment(el.last_edit_time).format("YYYY-MM-DD");
+      el.on_shelf_time = moment(el.on_shelf_time).format("YYYY-MM-DD");
+      el.off_shelf_time = moment(el.off_shelf_time).format("YYYY-MM-DD");
+    });
+    output.rows = results;
+  }
+
+  return output;
+};
 
 // 畫面
 
@@ -25,9 +87,6 @@ router.get("/list", async (req, res) => {
 
 
 
-
-
-
 router.get("/edit/:sid", async (req, res) => {
 
   const output = {
@@ -41,7 +100,7 @@ router.get("/edit/:sid", async (req, res) => {
   const sql_categories = `SELECT * FROM i_secondhand_categories`;
   const sql_material = `SELECT * FROM i_secondhand_material`;
   const sql_framework = `SELECT * FROM i_secondhand_framework`;
-  const sql = "SELECT * FROM w_product_mainlist WHERE sid=?";
+  const sql = "SELECT * FROM i_secondhand_product WHERE sid=?";
  
 
   [output.conditions] = await db.query(sql_conditions);
@@ -61,8 +120,6 @@ router.get("/edit/:sid", async (req, res) => {
   // res.send(results[0]);
   res.render("man_secondhand/man_secondhand_edit", output);
 });
-
-
 
 
 router.get("/add", async (req, res) => {
@@ -95,13 +152,10 @@ router.get("/add", async (req, res) => {
 
 // RESTful API
 
-router.post('/add', upload.single('photo'), async (req, res) => {
+router.post('/add', upload.none(), async (req, res) => {
   const data = {
     ...req.body
   };
-
- 
-
   const sql = "INSERT INTO `i_secondhand_product` set ?";
   const [{
     affectedRows,
@@ -116,6 +170,7 @@ router.post('/add', upload.single('photo'), async (req, res) => {
     insertId,
   });
 });
+
 
 router.post('/edit/:sid', upload.none(), async (req, res) => {
   const data = {
