@@ -124,7 +124,8 @@
                         <select class="form-control" name="conditions_sid">
 
                             <% for(let i of conditions){ %>
-                            <option value="<%= i.name %>" <%= i.name == row.conditions ? 'selected' : ''%>><%= i.name %>
+                            <option value="<%= i.sid %>" <%= i.sid == row.conditions_sid  ? 'selected' : ''%>>
+                                <%= i.name %>
                             </option>
                             <% } %>
 
@@ -139,7 +140,7 @@
                         <select class="form-control" name="framework_sid">
 
                             <% for(let i of framework){ %>
-                            <option value="<%=i.name%>" <%=i.name == row.framework ? 'selected' : ''%>><%= i.name %>
+                            <option value="<%=i.sid%>" <%=i.sid == row.framework_sid ? 'selected' : ''%>><%= i.name %>
                             </option>
                             <% } %>
 
@@ -155,7 +156,7 @@
                         <select class="form-control" name="material_sid">
 
                             <% for(let i of material){ %>
-                            <option value="<%= i.name %>" <%= i.name == row.material ? 'selected' : ''%>><%= i.name %>
+                            <option value="<%= i.sid %>" <%= i.sid == row.material_sid? 'selected' : ''%>><%= i.name %>
                             </option>
                             <% } %>
 
@@ -170,7 +171,7 @@
                         <select class="form-control" name="categories_sid">
 
                             <% for(let i of categories){ %>
-                            <option value="<%= i.name %>" <%= i.name == row.categories ? 'selected' : ''%>>
+                            <option value="<%= i.sid %>" <%= i.name == row.categories_sid ? 'selected' : ''%>>
                                 <%= i.name %>
                             </option>
                             <% } %>

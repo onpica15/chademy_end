@@ -123,7 +123,7 @@
                         <select class="form-control" name="conditions_sid" id="conditions_sid">
 
                             <% for(let i of conditions){ %>
-                            <option><%= i.name %></option>
+                            <option value="<%= i.sid %>"><%= i.name %></option>
                             <% } %>
 
                         </select>
@@ -131,13 +131,13 @@
                     </label>
                 </div>
 
-                <div class="form-group">
+                <div class=" form-group">
                     <label>骨架
 
                         <select class="form-control" name="framework_sid" id="framework_sid">
 
                             <% for(let i of framework){ %>
-                            <option><%= i.name %></option>
+                            <option value="<%= i.sid %>"><%= i.name %></option>
                             <% } %>
 
                         </select>
@@ -152,7 +152,7 @@
                         <select class="form-control" name="material_sid" id="material_sid">
 
                             <% for(let i of material){ %>
-                            <option><%= i.name %></option>
+                            <option value="<%= i.sid %>"><%= i.name %></option>
                             <% } %>
 
                         </select>
@@ -166,7 +166,7 @@
                         <select class="form-control" name="categories_sid" id="categories_sid">
 
                             <% for(let i of categories){ %>
-                            <option><%= i.name %></option>
+                            <option value="<%= i.sid %>"><%= i.name %></option>
                             <% } %>
 
                         </select>
