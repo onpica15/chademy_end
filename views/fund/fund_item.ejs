@@ -1,0 +1,273 @@
+<%- include('../parts/html-head') %>
+
+<style>
+    body {
+        background-color: #EFF0F0;
+    }
+
+    h3 {
+        margin: auto;
+        margin-top: 40px;
+        margin-bottom: 20px;
+    }
+
+    form {
+        margin: auto;
+        margin-bottom: 100px;
+    }
+
+    .form-group {
+        margin: 20px;
+    }
+
+    .form-group input {
+        width: 400px;
+        border: none;
+        height: 45px;
+        margin-top: 10px;
+        height: 45px;
+
+    }
+
+    .form-group textarea {
+        width: 400px;
+        border: none;
+        margin-top: 10px;
+    }
+
+    .form-group select {
+        width: 400px;
+        border: none;
+        margin-top: 10px;
+        height: 45px;
+    }
+
+    .form-group button {
+        width: 400px;
+        height: 45px;
+        margin-bottom: 25px;
+        margin-top: 10px;
+    }
+
+    .redstars {
+        color: red;
+    }
+
+    #infobar {
+        margin: auto
+    }
+</style>
+
+<%- include('../parts/navbar') %>
+
+
+
+
+
+
+<div class="container">
+    <div class="row">
+        <h3>編輯募資專案</h3>
+    </div>
+
+    <div class="row">
+        <div id="infobar" class="alert alert-success" role="alert" style="display: none ; width:875px">
+            A simple success alert—check it out!
+        </div>
+    </div>
+
+
+    <!-- `sid`, `e_designer_sid`, `e_proname`, `e_cate`, `e_pic`, `e_prointro`, `e_lowprice`, `e_goal`, `e_start_time`, `e_end_time`, `e_pro_url`, `e_realize_time`, `e_created_at`SELECT * FROM `e_fund_project`  -->
+    <div class="row">
+
+        <form class="d-flex justify-content-center" name="form1" onsubmit="checkForm(); return false;" novalidate>
+
+            <div class="col">
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>募資編號
+                        <input type="text" class="form-control" name="sid" value="<%=row.sid%>">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>設計師編號
+                        <input type="text" class="form-control" name="e_designer_sid" value="<%= row.e_designer_sid%>">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>募資名稱
+                        <input type="text" class="form-control" name="e_proname" value="<%= row.e_proname %>">
+                    </label>
+                </div>
+
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>種類
+
+                        <select class="form-control" name="e_cate">
+
+                            <% for(let i of cates){ %>
+                            <option value="<%=i.name%>" <%=i.name == row.e_cate? 'selected' : ''%>><%= i.name %>
+                            </option>
+                            <% } %>
+
+                        </select>
+
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <div>產品圖</div>
+
+                    <button type="button" class="btn btn-warning" onclick="file_input.click()">上傳照片</button>
+
+                    <input type="hidden" id="photo" name="e_pic" class="form-control" value="<%= row.e_pic%>">
+                    <div>
+                   
+                        <img src="/img/<%= row.e_pic%>" alt="" id="e_pic" width="400px">
+                      
+                    </div>
+
+                </div>
+
+            </div>
+
+                
+
+                
+            <div class="col">
+
+                
+                <div class="form-group">
+                    <label>募資介紹
+                        <textarea class="form-control" name="e_prointro" rows="10"
+                            style="resize:none"><%= row.e_prointro%></textarea>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>最低價格
+                        <input type="text" class="form-control" name="e_lowprice" value="<%= row.e_lowprice%>">
+                    </label>
+                </div>
+
+                
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>目標金額
+                        <input type="text" class="form-control" name="e_goal" value="<%= row.e_goal%>">
+                    </label>
+                </div>
+
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>開始日期
+                        <input type="date" class="form-control" name="e_start_time" value="<%= row.e_start_time%>">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>結束日期
+                        <input type="date" class="form-control" name="e_end_time" value="<%= row.e_end_time%>">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>實踐時間
+                        <input type="text" class="form-control" name="e_realize_time" value="<%= row.e_realize_time%>"
+                            disabled>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="上傳" class="btn btn-warning">
+                </div>
+
+
+            </div>
+
+        </form>
+
+        <input type="file" id="file_input" name="myfile" style="display: none">
+    </div>
+
+</div>
+
+<%- include('../parts/scripts') %>
+<script>
+    const email_pattern = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+    const mobile_pattern = /^09\d{2}-?\d{3}-?\d{3}$/;
+    const $name = document.querySelector('#name');
+    const $email = document.querySelector('#email');
+    const $mobile = document.querySelector('#mobile');
+    const r_fields = [$name, $email, $mobile];
+    const infobar = $('#infobar');
+    const submitBtn = document.querySelector('button[type=submit]');
+
+
+    document.querySelector('#file_input').addEventListener('change', uploadFile);
+
+    function uploadFile(event) {
+        console.log(file_input.files[0].name);
+        const fd = new FormData();
+        fd.append('myfile', file_input.files[0]);
+
+        // const fd = new FormData(document.form1);
+
+        fetch('/man_product/try-upload', {
+            method: 'POST',
+            body: fd
+        })
+            .then(r => r.json())
+            .then(o => {
+                console.log(o);
+                if (o.success) {
+                    document.querySelector('#myimg').src = '/img/' + o.newFileName;
+                    document.querySelector('#photo').value = o.newFileName;
+                } else {
+                    alert(o.msg);
+                }
+            })
+    }
+
+
+
+    function checkForm() {
+  
+   
+            const fd = new FormData(document.form1);
+
+            fetch('', {
+                method: 'POST',
+                body: fd
+            })
+                .then(r => r.json())
+                .then(obj => {
+                    console.log(obj);
+                    if (obj.success) {
+                        infobar.html('修改成功');
+                        infobar.removeClass('alert-danger').addClass('alert-success');
+                        // setTimeout(() => {
+                        //     location.href = 'data-list.php';
+                        // }, 3000)
+                    } else if (obj.changedRows == 0) {
+                        infobar.html('資料沒有修改');
+                        infobar.removeClass('alert-success').addClass('alert-danger');
+                    } else {
+                        infobar.html(obj.error || '修改失敗');
+                        infobar.removeClass('alert-success').addClass('alert-danger');
+
+                        submitBtn.style.display = 'block';
+                    }
+                    infobar.slideDown();
+                    setTimeout(() => {
+                        infobar.slideUp();
+                    }, 3000)
+                });
+
+        } 
+    
+</script>
+<%- include('../parts/html-foot') %>

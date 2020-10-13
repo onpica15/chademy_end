@@ -29,7 +29,7 @@ async function getListData(req) {
     [{
       totalRows
     }]
-  ] = await db.query("SELECT COUNT(1) totalRows FROM w_product_mainlist");
+  ] = await db.query("SELECT COUNT(1) totalRows FROM e_fund_project");
   if (totalRows > 0) {
     let page = parseInt(req.query.page) || 1;
     output.totalRows = totalRows;
@@ -62,13 +62,13 @@ async function getListData(req) {
       output.endPage = endPage;
     })(page, output.totalPages, 3);
 
-    let sql = `SELECT * FROM w_product_mainlist LIMIT ${(output.page-1)*output.perPage}, ${output.perPage}`;
+    let sql = `SELECT * FROM e_fund_project LIMIT ${(output.page-1)*output.perPage}, ${output.perPage}`;
 
     const [results] = await db.query(sql);
     results.forEach(el => {
-      el.last_edit_time = moment(el.last_edit_time).format("YYYY-MM-DD");
-      el.on_shelf_time = moment(el.on_shelf_time).format("YYYY-MM-DD");
-      el.off_shelf_time = moment(el.off_shelf_time).format("YYYY-MM-DD");
+      el.e_start_time = moment(el.e_start_time).format("YYYY-MM-DD");
+      el.e_end_time = moment(el.e_end_time).format("YYYY-MM-DD");
+      el.e_realize_time= moment(el.e_realize_time).format("YYYY-MM");
     });
     output.rows = results;
   }
@@ -79,42 +79,33 @@ async function getListData(req) {
 async function getEditList(req) {
   const output = {
     cates: [],
-    colors: [],
     row: [],
-    chair_body: [],
-    chair_seat: [],
-    designer: []
+    
   };
 
-  const sql_cates = `SELECT * FROM w_product_categories`;
-  const sql_color = `SELECT * FROM w_chair_color`;
-  const sql_chair_body = `SELECT * FROM w_chair_body`;
-  const sql_chair_seat = `SELECT * FROM w_chair_seat`;
-  const sql_chair_designer = `SELECT * FROM w_chair_designer`;
-  const sql = "SELECT * FROM w_product_mainlist WHERE sid=?";
+  const sql_cates = `SELECT * FROM e_fund_categories`;
+  
+  const sql = "SELECT * FROM e_fund_project WHERE sid=?";
 
   [output.cates] = await db.query(sql_cates);
-  [output.colors] = await db.query(sql_color);
-  [output.chair_body] = await db.query(sql_chair_body);
-  [output.chair_seat] = await db.query(sql_chair_seat);
-  [output.designer] = await db.query(sql_chair_designer);
+  
 
   const [results] = await db.query(sql, [req.params.sid]);
   output.row = results[0];
   // length>0 則為true
   if (!results.length) {
     // return用意是讓function結束，下面不執行
-    return res.redirect("/man_product/list");
+    return res.redirect("/man_fund/list");
   }
 
-  results[0].last_edit_time = moment(results[0].last_edit_time).format(
+  results[0].e_start_time = moment(results[0].e_start_time).format(
     "YYYY-MM-DD"
   );
-  results[0].on_shelf_time = moment(results[0].on_shelf_time).format(
+  results[0].e_end_time = moment(results[0].e_end_time).format(
     "YYYY-MM-DD"
   );
-  results[0].off_shelf_time = moment(results[0].off_shelf_time).format(
-    "YYYY-MM-DD"
+  results[0].e_realize_time = moment(results[0].e_realize_time).format(
+    "YYYY-MM"
   );
   return output;
 }
@@ -128,14 +119,14 @@ async function getEditList(req) {
 // 列表頁面
 router.get("/list", async (req, res) => {
   const output = await getListData(req);
-  res.render("man_product/man_product_list", output);
+  res.render("man_fund/list", output);
 });
 
 
 // 編輯頁面
 router.get("/edit/:sid", async (req, res) => {
   const output = await getEditList(req);
-  res.render("man_product/man_product_edit", output);
+  res.render("man_fund/edit", output);
 });
 
 
@@ -146,26 +137,17 @@ router.get("/add", async (req, res) => {
 
   const output = {
     cates: [],
-    colors: [],
-    chair_body: [],
-    chair_seat: [],
-    designer: []
+    
   };
 
-  const sql_cates = `SELECT * FROM w_product_categories`;
-  const sql_color = `SELECT * FROM w_chair_color`;
-  const sql_chair_body = `SELECT * FROM w_chair_body`;
-  const sql_chair_seat = `SELECT * FROM w_chair_seat`;
-  const sql_chair_designer = `SELECT * FROM w_chair_designer`;
+  const sql_cates = `SELECT * FROM e_fund_categories`;
+  
 
   [output.cates] = await db.query(sql_cates);
-  [output.colors] = await db.query(sql_color);
-  [output.chair_body] = await db.query(sql_chair_body);
-  [output.chair_seat] = await db.query(sql_chair_seat);
-  [output.designer] = await db.query(sql_chair_designer);
+  
 
  
-  res.render("man_product/man_product_add", output);
+  res.render("man_fund/add", output);
 });
 
 
@@ -174,13 +156,14 @@ router.get("/add", async (req, res) => {
 // ------------------------- 以下為 RESTful API------------------------------
 
 
-// 編輯表單 API
+// 編輯表單 PI
 router.post('/edit/:sid', upload.none(), async (req, res) => {
   const data = {
     ...req.body
   };
-
-  const sql = "UPDATE `e_fund_project` SET ? WHERE `sid`=?";
+  data.last_edit_time = moment(new Date()).format(
+    "YYYY-MM-DD");
+  const sql = "UPDATE `w_product_mainlist` SET ? WHERE `sid`=?";
   const [{
     affectedRows,
     changedRows
@@ -242,12 +225,12 @@ router.post('/add', upload.none(), async (req, res) => {
   const data = {
     ...req.body
   };
-  // data.last_edit_time = moment(new Date()).format(
-  //   "YYYY-MM-DD");
+  data.last_edit_time = moment(new Date()).format(
+    "YYYY-MM-DD");
 
 
 
-  const sql = "INSERT INTO `e_fund_project` set ?";
+  const sql = "INSERT INTO `w_product_mainlist` set ?";
   const [{
     affectedRows,
     insertId
@@ -265,7 +248,7 @@ router.post('/add', upload.none(), async (req, res) => {
 
 // 資料刪除 API
 router.delete("/del/:sid", async (req, res) => {
-  const sql = "DELETE FROM `e_fund_project` WHERE sid=?";
+  const sql = "DELETE FROM `w_product_mainlist` WHERE sid=?";
   const [results] = await db.query(sql, [req.params.sid]);
   res.json(results);
 });

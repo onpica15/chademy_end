@@ -1,0 +1,292 @@
+<%- include('../parts/html-head') %>
+
+<style>
+    body {
+        background-color: #EFF0F0;
+    }
+
+    h3 {
+        margin: auto;
+        margin-top: 40px;
+        margin-bottom: 20px;
+    }
+
+    form {
+        margin: auto;
+        margin-bottom: 100px;
+    }
+
+    .form-group {
+        margin: 20px;
+    }
+
+    .form-group input {
+        width: 400px;
+        border: none;
+        height: 45px;
+        margin-top: 10px;
+        height: 45px;
+
+    }
+
+    .form-group textarea {
+        width: 400px;
+        border: none;
+        margin-top: 10px;
+    }
+
+    .form-group select {
+        width: 400px;
+        border: none;
+        margin-top: 10px;
+        height: 45px;
+    }
+
+    .form-group button {
+        width: 400px;
+        height: 45px;
+        margin-bottom: 25px;
+        margin-top: 10px;
+    }
+
+    .redstars {
+        color: red;
+    }
+
+    #infobar {
+        margin: auto
+    }
+</style>
+
+<%- include('../parts/navbar') %>
+
+
+
+
+
+
+<div class="container">
+    <div class="row">
+        <h3>新增產品</h3>
+    </div>
+
+    <div class="row">
+        <div id="infobar" class="alert alert-success" role="alert" style="display: none ; width:875px">
+            A simple success alert—check it out!
+        </div>
+    </div>
+
+    <div class="row">
+
+        <form class="d-flex justify-content-center" name="form1" onsubmit="checkForm(); return false;" novalidate>
+
+            <div class="col">
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>產品編號
+                        <input type="text" class="form-control" name="product_no">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>產品名稱
+                        <input type="text" class="form-control" name="product_name">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>產品描述
+                        <textarea class="form-control" name="description" rows="10"
+                            style="resize:none">From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.</textarea>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>產品價格
+                        <input type="text" class="form-control" name="price" value="5000">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>產品類別
+
+                        <select class="form-control" name="category">
+
+                            <% for(let i of cates){ %>
+                            <option><%= i.name %></option>
+                            <% } %>
+
+                        </select>
+
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>顏色
+                        <select class="form-control" name="color">
+                            <% for(let i of colors){ %>
+                            <option><%= i.name %></option>
+                            <% } %>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>椅身材質
+                        <select class="form-control" name="chair_body">
+                            <% for(let i of chair_body){ %>
+                            <option><%= i.name %></option>
+                            <% } %>
+
+                        </select>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>椅墊材質
+                        <select class="form-control" name="chair_seat">
+                            <% for(let i of chair_seat){ %>
+                            <option><%= i.name %></option>
+                            <% } %>
+
+                        </select>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>品牌
+                        <select class="form-control" name="designer">
+                            <% for(let i of designer){ %>
+                            <option><%= i.name %></option>
+                            <% } %>
+
+                        </select>
+                    </label>
+                </div>
+
+
+            </div>
+
+            <div class="col">
+
+                <div class="form-group">
+                    <div>產品圖</div>
+
+                    <button type="button" class="btn btn-warning" onclick="file_input.click()">上傳照片</button>
+
+                    <input type="hidden" id="photo" name="photo" class="form-control">
+                    <div>
+                        <img src="" alt="" id="myimg" width="400px">
+                    </div>
+
+                </div>
+
+
+
+
+                <div class="form-group">
+                    <label>Hashtag
+                        <textarea class="form-control" name="hashtag" rows="5" style="resize:none"></textarea>
+                    </label>
+                </div>
+
+
+
+
+
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>上架日期
+                        <input type="date" class="form-control" name="on_shelf_time">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="redstars">** </span>下架日期
+                        <input type="date" class="form-control" name="off_shelf_time">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="上架" class="btn btn-warning">
+                </div>
+
+
+            </div>
+
+        </form>
+
+        <input type="file" id="file_input" name="myfile" style="display: none">
+    </div>
+
+</div>
+
+<%- include('../parts/scripts') %>
+<script>
+     const $e_proname = document.querySelector('#e_proname');
+    const $e_prointro = document.querySelector('#e_prointro');
+    const r_fields = [$e_proname, $e_prointro];
+    const infobar = document.querySelector('#infobar');
+    const submitBtn = document.querySelector('button[type=submit]');
+
+
+
+    
+    function uploadFile(event) {
+        console.log(file_input.files[0].name);
+        const fd = new FormData();
+        fd.append('myfile', file_input.files[0]);
+     
+        // const fd = new FormData(document.form1);
+
+        fetch('/man_product/try-upload', {
+            method: 'POST',
+            body: fd
+        })
+            .then(r => r.json())
+            .then(o => {
+                console.log(o);
+                if (o.success) {
+                    document.querySelector('#myimg').src = '/img/'+o.newFileName;
+                    document.querySelector('#photo').value = o.newFileName;
+                } else {
+                    alert(o.msg);
+                }
+            })
+    }
+
+
+
+    function checkForm() {
+
+        const fd = new FormData(document.form1);
+
+        fetch('', {
+            method: 'POST',
+            body: fd
+        })
+            .then(r => r.json())
+            .then(obj => {
+                console.log(obj);
+                if (obj.success) {
+                    infobar.html('新增成功');
+                    infobar.removeClass('alert-danger').addClass('alert-success');
+                    // setTimeout(() => {
+                    //     location.href = 'data-list.php';
+                    // }, 3000)
+                } else {
+                    infobar.html(obj.error || '新增失敗');
+                    infobar.removeClass('alert-success').addClass('alert-danger');
+
+                    submitBtn.style.display = 'block';
+                }
+                infobar.slideDown();
+                setTimeout(() => {
+                    infobar.slideUp();
+                }, 3000)
+            });
+
+    };
+
+</script>
+<%- include('../parts/html-foot') %>
