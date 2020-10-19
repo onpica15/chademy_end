@@ -55,7 +55,7 @@
 
 <div class="container">
     <div class="row">
-        <h3>新增產品</h3>
+        <h3>編輯二手產品</h3>
     </div>
 
     <div class="row">
@@ -72,31 +72,32 @@
 
                 <div class="form-group">
                     <label><span class="redstars">** </span>商品編號
-                        <input type="text" class="form-control" name="product_no">
+                        <input type="text" class="form-control" name="product_no" value="<%=row.product_no%>">
                     </label>
                 </div>
 
                 <div class="form-group">
                     <label><span class="redstars">** </span>商品名稱
-                        <input type="text" class="form-control" name="productname">
+                        <input type="text" class="form-control" name="productname" value="<%=row.productname%>">
                     </label>
                 </div>
 
                 <div class="form-group">
                     <label><span class="redstars">** </span>產品價格
-                        <input type="text" class="form-control" name="price" value="">
+                        <input type="text" class="form-control" name="price" value="<%=row.price%>">
                     </label>
                 </div>
 
                 <div class="form-group">
                     <label><span class="redstars">** </span>庫存
-                        <input type="text" class="form-control" name="stock" value="">
+                        <input type="text" class="form-control" name="stock" value="<%=row.stock%>">
                     </label>
                 </div>
 
                 <div class="form-group">
                     <label>商品描述
-                        <textarea class="form-control" name="description" rows="10" style="resize:none"></textarea>
+                        <textarea class="form-control" name="description" rows="15"
+                            style="resize:none"><%= row.description%></textarea>
                     </label>
                 </div>
 
@@ -109,9 +110,9 @@
 
                     <button type="button" class="btn btn-secondary" onclick="file_input.click()">新增圖片</button>
 
-                    <input type="hidden" id="photo" name="photo" class="form-control">
+                    <input type="hidden" id="photo" name="photo" class="form-control" value="<%= row.photo%>">
                     <div>
-                        <img src="/../img/" alt="" id="myimg" width="400px">
+                        <img src="/img/<%= row.photo%>" alt="" id="myimg" width="400px">
                     </div>
 
                 </div>
@@ -123,7 +124,8 @@
                         <select class="form-control" name="conditions_sid">
 
                             <% for(let i of conditions){ %>
-                            <option><%= i.conditions %></option>
+                            <option value="<%= i.name %>" <%= i.name == row.conditions ? 'selected' : ''%>><%= i.name %>
+                            </option>
                             <% } %>
 
                         </select>
@@ -137,7 +139,8 @@
                         <select class="form-control" name="framework_sid">
 
                             <% for(let i of framework){ %>
-                            <option><%= i.framework %></option>
+                            <option value="<%=i.name%>" <%=i.name == row.framework ? 'selected' : ''%>><%= i.name %>
+                            </option>
                             <% } %>
 
                         </select>
@@ -152,7 +155,8 @@
                         <select class="form-control" name="material_sid">
 
                             <% for(let i of material){ %>
-                            <option><%= i.material %></option>
+                            <option value="<%= i.name %>" <%= i.name == row.material ? 'selected' : ''%>><%= i.name %>
+                            </option>
                             <% } %>
 
                         </select>
@@ -166,7 +170,9 @@
                         <select class="form-control" name="categories_sid">
 
                             <% for(let i of categories){ %>
-                            <option><%= i.categories %></option>
+                            <option value="<%= i.name %>" <%= i.name == row.categories ? 'selected' : ''%>>
+                                <%= i.name %>
+                            </option>
                             <% } %>
 
                         </select>
@@ -200,7 +206,30 @@
     const infobar = $('#infobar');
     const submitBtn = document.querySelector('button[type=submit]');
 
+    document.querySelector('#file_input').addEventListener('change', uploadFile);
 
+    function uploadFile(event) {
+        console.log(file_input.files[0].name);
+        const fd = new FormData();
+        fd.append('myfile', file_input.files[0]);
+
+        // const fd = new FormData(document.form1);
+
+        fetch('/man_product/try-upload', {
+            method: 'POST',
+            body: fd
+        })
+            .then(r => r.json())
+            .then(o => {
+                console.log(o);
+                if (o.success) {
+                    document.querySelector('#myimg').src = '/img/' + o.newFileName;
+                    document.querySelector('#photo').value = o.newFileName;
+                } else {
+                    alert(o.msg);
+                }
+            })
+    }
 
 
 

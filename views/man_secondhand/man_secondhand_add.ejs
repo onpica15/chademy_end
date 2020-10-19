@@ -55,7 +55,7 @@
 
 <div class="container">
     <div class="row">
-        <h3>新增產品</h3>
+        <h3>新增二手產品</h3>
     </div>
 
     <div class="row">
@@ -111,7 +111,7 @@
 
                     <input type="hidden" id="photo" name="photo" class="form-control">
                     <div>
-                        <img src="/../img/" alt="" id="myimg" width="400px">
+                        <img src="/../img/" alt="" id="myimg" width="300px">
                     </div>
 
                 </div>
@@ -120,10 +120,10 @@
                 <div class="form-group">
                     <label>商品狀況
 
-                        <select class="form-control" name="conditions_sid">
+                        <select class="form-control" name="conditions_sid" id="conditions_sid">
 
                             <% for(let i of conditions){ %>
-                            <option><%= i.conditions %></option>
+                            <option><%= i.name %></option>
                             <% } %>
 
                         </select>
@@ -134,10 +134,10 @@
                 <div class="form-group">
                     <label>骨架
 
-                        <select class="form-control" name="framework_sid">
+                        <select class="form-control" name="framework_sid" id="framework_sid">
 
                             <% for(let i of framework){ %>
-                            <option><%= i.framework %></option>
+                            <option><%= i.name %></option>
                             <% } %>
 
                         </select>
@@ -149,10 +149,10 @@
                 <div class="form-group">
                     <label>材質
 
-                        <select class="form-control" name="material_sid">
+                        <select class="form-control" name="material_sid" id="material_sid">
 
                             <% for(let i of material){ %>
-                            <option><%= i.material %></option>
+                            <option><%= i.name %></option>
                             <% } %>
 
                         </select>
@@ -163,10 +163,10 @@
                 <div class="form-group">
                     <label>分類
 
-                        <select class="form-control" name="categories_sid">
+                        <select class="form-control" name="categories_sid" id="categories_sid">
 
                             <% for(let i of categories){ %>
-                            <option><%= i.categories %></option>
+                            <option><%= i.name %></option>
                             <% } %>
 
                         </select>
@@ -200,7 +200,30 @@
     const infobar = $('#infobar');
     const submitBtn = document.querySelector('button[type=submit]');
 
+    document.querySelector('#file_input').addEventListener('change', uploadFile);
 
+    function uploadFile(event) {
+        console.log(file_input.files[0].name);
+        const fd = new FormData();
+        fd.append('myfile', file_input.files[0]);
+
+        // const fd = new FormData(document.form1);
+
+        fetch('/man_product/try-upload', {
+            method: 'POST',
+            body: fd
+        })
+            .then(r => r.json())
+            .then(o => {
+                console.log(o);
+                if (o.success) {
+                    document.querySelector('#myimg').src = '/img/' + o.newFileName;
+                    document.querySelector('#photo').value = o.newFileName;
+                } else {
+                    alert(o.msg);
+                }
+            })
+    }
 
 
 
