@@ -93,7 +93,8 @@ router.get("/edit/:sid", async (req, res) => {
     conditions: [],
     categories: [],
     material: [],
-    framework: []
+    framework: [],
+    row:[]
   };
 
   const sql_conditions = `SELECT * FROM i_secondhand_conditions`;
