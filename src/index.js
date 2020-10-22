@@ -4,7 +4,7 @@ const db = require(__dirname + "/db_connect2"); // 引用模組，模組裡安�
 const moment = require('moment-timezone');
 const upload = require(__dirname + "/upload-img-module");
 const multer = require("multer");
-
+const cors = require("cors");
 
 
 // -------------------以下開始物件、top use middleware設定------------------------
@@ -22,6 +22,15 @@ app.use(
 // 解析json格式middleware
 app.use(express.json());
 
+// cors
+const corsOptions = {
+  credentials: true,
+  origin: function (origin, cb) {
+    console.log(`origin: ${origin}`);
+    cb(null, true);
+  },
+};
+app.use(cors(corsOptions));
 
 // 使用樣版引擎
 app.set("view engine", "ejs");
@@ -87,6 +96,6 @@ app.use((req, res) => {
 
 // -------------------------------以下開始伺服器監聽------------------------
 
-app.listen(3000, () => {
+app.listen(3001, () => {
   console.log("伺服器已啟動");
 });

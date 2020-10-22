@@ -131,6 +131,11 @@ router.get("/list", async (req, res) => {
   res.render("man_product/man_product_list", output);
 });
 
+router.get("/reactlist", async (req, res) => {
+  const [totalRows
+  ] = await db.query("SELECT * FROM w_product_mainlist");
+  res.json(totalRows);
+});
 
 // 編輯頁面
 router.get("/edit/:sid", async (req, res) => {
