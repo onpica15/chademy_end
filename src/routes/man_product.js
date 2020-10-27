@@ -119,11 +119,27 @@ async function getEditList(req) {
   return output;
 }
 
+// -----------------React：列表頁面、編輯頁面、新增頁面--------------------
 
+// 列表頁面
+router.get("/reactlist", async (req, res) => {
+  const [totalRows
+  ] = await db.query("SELECT * FROM w_product_mainlist");
+  res.json(totalRows);
+});
+
+// 產品頁面
+router.get("/reactitem/:sid", async (req, res) => {
+  
+  const sql = "SELECT * FROM w_product_mainlist WHERE sid=?";
+  const [row] = await db.query(sql, [req.params.sid]);
+  
+  
+  res.json(row); // [{}]
+});
 
 
 // -----------------畫面3個：列表頁面、編輯頁面、新增頁面--------------------
-
 
 // 列表頁面
 router.get("/list", async (req, res) => {
@@ -131,11 +147,7 @@ router.get("/list", async (req, res) => {
   res.render("man_product/man_product_list", output);
 });
 
-router.get("/reactlist", async (req, res) => {
-  const [totalRows
-  ] = await db.query("SELECT * FROM w_product_mainlist");
-  res.json(totalRows);
-});
+
 
 // 編輯頁面
 router.get("/edit/:sid", async (req, res) => {
