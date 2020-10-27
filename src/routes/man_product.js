@@ -134,8 +134,40 @@ router.get("/reactitem/:sid", async (req, res) => {
   const sql = "SELECT * FROM w_product_mainlist WHERE sid=?";
   const [row] = await db.query(sql, [req.params.sid]);
   
-  
+
   res.json(row); // [{}]
+});
+
+
+// 加入追蹤 API
+router.post('/addheart', upload.none(), async (req, res) => {
+  const data = {
+    ...req.body
+  };
+  data.follow_time = moment(new Date()).format(
+    "YYYY-MM-DD");
+
+  const sql = "INSERT INTO `w_follow` set ?";
+  const [{
+    affectedRows,
+    insertId
+  }] = await db.query(sql, [data]);
+  // sql是語法一個問號即可，data是array
+  // [{"fieldCount":0,"affectedRows":1,"insertId":860,"info":"","serverStatus":2,"warningStatus":1},null]
+
+  res.json({
+    success: !!affectedRows,
+    affectedRows,
+    insertId,
+  });
+});
+
+
+// 刪除追蹤 API
+router.delete("/del/:sid", async (req, res) => {
+  const sql = "DELETE FROM `w_follow` WHERE follow_product=?";
+  const [results] = await db.query(sql, [req.params.sid]);
+  res.json(results);
 });
 
 
