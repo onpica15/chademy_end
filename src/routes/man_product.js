@@ -138,6 +138,16 @@ router.get("/reactitem/:sid", async (req, res) => {
   res.json(row); // [{}]
 });
 
+// get 追蹤狀態
+router.get("/heart/:sid", async (req, res) => {
+  
+  const sql = "SELECT * FROM `w_follow` WHERE follow_product=?";
+  const [row] = await db.query(sql, [req.params.sid]);
+  
+
+  res.json(row); // [{}]
+});
+
 
 // 加入追蹤 API
 router.post('/addheart', upload.none(), async (req, res) => {
