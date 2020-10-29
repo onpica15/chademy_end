@@ -7,7 +7,8 @@ const router = express.Router();
 const db = require(__dirname + "/../db_connect2");
 const moment = require("moment-timezone");
 const multer = require("multer");
-const upload = require(__dirname + "/../upload-img-module");
+// const upload = require(__dirname + "/../upload-img-module");
+const upload = require(__dirname + "/../react-upload-img-module");
 const fs = require("fs");
 
 
@@ -179,6 +180,52 @@ router.delete("/del/:sid", async (req, res) => {
   const [results] = await db.query(sql, [req.params.sid]);
   res.json(results);
 });
+
+
+
+// 評論單張圖片上傳 API
+router.post("/reactupload", upload.single('myfile'), (req, res) => {
+  console.log('req.myfile' + req.myfile );
+
+  if (req.myfile && req.myfile.originalname) {
+    let ext = "";
+
+    switch (req.file.mimetype) {
+      case "image/png":
+      case "image/jpeg":
+      case "image/gif":
+        fs.rename(
+          req.file.path,
+          __dirname + "../../../Chademy ( React + Node )/React-Chademy/public/images/" + req.file.originalname,
+          (error) => {
+            return res.json({
+              success: true,
+              path: "/images/" + req.file.originalname,
+              newFileName: req.file.filename
+            });
+          }
+        );
+
+        break;
+      default:
+        fs.unlink(req.file.path, (error) => {
+          return res.json({
+            success: false,
+            msg: "不是圖檔",
+          });
+        });
+    }
+  } else {
+    return res.json({
+      success: false,
+      msg: "沒有上傳檔案",
+    });
+  }
+});
+
+
+
+
 
 
 // -----------------畫面3個：列表頁面、編輯頁面、新增頁面--------------------
