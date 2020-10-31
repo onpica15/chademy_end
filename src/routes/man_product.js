@@ -128,6 +128,15 @@ router.get("/reactlist", async (req, res) => {
   ] = await db.query("SELECT * FROM w_product_mainlist");
   res.json(totalRows);
 });
+// filter頁面
+router.get("/reactfilter", async (req, res) => {
+  const fil=req.query.category
+  const sql=`SELECT * FROM w_product_mainlist WHERE category='${fil}'`
+  console.log(req.query.category);
+  const [totalRows
+  ] = await db.query(sql);
+  res.json(totalRows);
+});
 
 // 產品頁面
 router.get("/reactitem/:sid", async (req, res) => {
@@ -280,13 +289,15 @@ router.get("/add", async (req, res) => {
 // ------------------------- 以下為 RESTful API------------------------------
 
 
-// 編輯表單 API
+
+// 編輯表單 PI
 router.post('/edit/:sid', upload.none(), async (req, res) => {
   const data = {
     ...req.body
   };
-
-  const sql = "UPDATE `e_fund_project` SET ? WHERE `sid`=?";
+  data.last_edit_time = moment(new Date()).format(
+    "YYYY-MM-DD");
+  const sql = "UPDATE `w_product_mainlist` SET ? WHERE `sid`=?";
   const [{
     affectedRows,
     changedRows
@@ -348,12 +359,12 @@ router.post('/add', upload.none(), async (req, res) => {
   const data = {
     ...req.body
   };
-  // data.last_edit_time = moment(new Date()).format(
-  //   "YYYY-MM-DD");
+  data.last_edit_time = moment(new Date()).format(
+    "YYYY-MM-DD");
 
 
 
-  const sql = "INSERT INTO `e_fund_project` set ?";
+  const sql = "INSERT INTO `w_product_mainlist` set ?";
   const [{
     affectedRows,
     insertId
@@ -371,12 +382,10 @@ router.post('/add', upload.none(), async (req, res) => {
 
 // 資料刪除 API
 router.delete("/del/:sid", async (req, res) => {
-  const sql = "DELETE FROM `e_fund_project` WHERE sid=?";
+  const sql = "DELETE FROM `w_product_mainlist` WHERE sid=?";
   const [results] = await db.query(sql, [req.params.sid]);
   res.json(results);
 });
-
-
 // -------------------------------- 以下匯出模組------------------------------
 
 

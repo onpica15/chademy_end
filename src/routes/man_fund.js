@@ -156,14 +156,13 @@ router.get("/add", async (req, res) => {
 // ------------------------- 以下為 RESTful API------------------------------
 
 
-// 編輯表單 PI
+// 編輯表單 API
 router.post('/edit/:sid', upload.none(), async (req, res) => {
   const data = {
     ...req.body
   };
-  data.last_edit_time = moment(new Date()).format(
-    "YYYY-MM-DD");
-  const sql = "UPDATE `w_product_mainlist` SET ? WHERE `sid`=?";
+
+  const sql = "UPDATE `e_fund_project` SET ? WHERE `sid`=?";
   const [{
     affectedRows,
     changedRows
@@ -225,12 +224,12 @@ router.post('/add', upload.none(), async (req, res) => {
   const data = {
     ...req.body
   };
-  data.last_edit_time = moment(new Date()).format(
-    "YYYY-MM-DD");
+  // data.last_edit_time = moment(new Date()).format(
+  //   "YYYY-MM-DD");
 
 
 
-  const sql = "INSERT INTO `w_product_mainlist` set ?";
+  const sql = "INSERT INTO `e_fund_project` set ?";
   const [{
     affectedRows,
     insertId
@@ -248,7 +247,7 @@ router.post('/add', upload.none(), async (req, res) => {
 
 // 資料刪除 API
 router.delete("/del/:sid", async (req, res) => {
-  const sql = "DELETE FROM `w_product_mainlist` WHERE sid=?";
+  const sql = "DELETE FROM `e_fund_project` WHERE sid=?";
   const [results] = await db.query(sql, [req.params.sid]);
   res.json(results);
 });

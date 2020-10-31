@@ -24,13 +24,24 @@ app.use(express.json());
 
 // cors
 const corsOptions = {
-  credentials: true,
-  origin: function (origin, cb) {
-    console.log(`origin: ${origin}`);
-    cb(null, true);
-  },
+  origin: [
+
+    'http://localhost:3000',
+  ],
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
+
 app.use(cors(corsOptions));
+// app.use(cors())
+// const corsOptions = {
+//   credentials: true,
+//   origin: function (origin, cb) {
+//     console.log(`origin: ${origin}`);
+//     cb(null, true);
+//   },
+// };
+// app.use(cors(corsOptions));
 
 // 使用樣版引擎
 app.set("view engine", "ejs");
