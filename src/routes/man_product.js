@@ -158,9 +158,10 @@ router.get("/reactfilter", async (req, res) => {
   console.log('cateWhere.join'+cateWhere.join(' OR '));
   console.log('seatWhere.join'+seatWhere.join(' OR '));
   console.log('where'+where);
-  console.log('where.join'+where.join(' AND '));
+  console.log('where.join: '+where.join(' AND '));
 
-  // let sql = ''
+// SELECT * FROM `w_product_mainlist` WHERE category = 'chair' AND chair_seat = '木頭' OR category = 'chair' AND chair_seat = '布料'
+
   let sql = `SELECT * FROM w_product_mainlist WHERE ` + where.join(' AND ')
  
   const [totalRows
