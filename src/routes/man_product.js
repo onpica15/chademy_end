@@ -130,9 +130,39 @@ router.get("/reactlist", async (req, res) => {
 });
 // filter頁面
 router.get("/reactfilter", async (req, res) => {
-  const fil=req.query.category
-  const sql=`SELECT * FROM w_product_mainlist WHERE category='${fil}'`
+
+  const cateWhere = []
+  const seatWhere = []
+  // console.log(where);
   console.log(req.query.category);
+  console.log(req.query.chairSeat);
+  console.log(cateWhere);
+  console.log(seatWhere);
+
+  if (req.query.category){
+    const cate = req.query.category.split(',')
+    cate.forEach(element => cateWhere.push(`category = '${element}'`))
+   
+  }
+  if (req.query.chairSeat) {
+    const cate = decodeURI(req.query.chairSeat).split(',')
+    console.log(cate);
+    cate.forEach(element => seatWhere.push(`chair_seat = '${element}'`))
+
+  }  
+
+  let where=[]
+ 
+  if (cateWhere.length>0)where.push(cateWhere.join(' OR '))
+  if (seatWhere.length>0)where.push(seatWhere.join(' OR '))
+  console.log('cateWhere.join'+cateWhere.join(' OR '));
+  console.log('seatWhere.join'+seatWhere.join(' OR '));
+  console.log('where'+where);
+  console.log('where.join'+where.join(' AND '));
+
+  // let sql = ''
+  let sql = `SELECT * FROM w_product_mainlist WHERE ` + where.join(' AND ')
+ 
   const [totalRows
   ] = await db.query(sql);
   res.json(totalRows);
@@ -151,8 +181,6 @@ router.get("/heart/:sid", async (req, res) => {
   
   const sql = "SELECT * FROM `w_follow` WHERE follow_product=?";
   const [row] = await db.query(sql, [req.params.sid]);
-  
-
   res.json(row); // [{}]
 });
 
