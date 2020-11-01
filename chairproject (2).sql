@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： localhost
--- 產生時間： 2020 年 10 月 13 日 21:10
--- 伺服器版本： 10.4.14-MariaDB
--- PHP 版本： 7.3.21
+-- 產生時間： 2020 年 11 月 01 日 17:26
+-- 伺服器版本： 10.4.13-MariaDB
+-- PHP 版本： 7.3.20
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -322,28 +322,6 @@ INSERT INTO `e_frecord` (`sid`, `e_memember_sid`, `e_f_order_sid`, `e_fproj_sid`
 (1, 'ming@gg.com', 4, 5, '布倫特口音扶手椅，愛琴海藍', '28000', '2019-03-20 13:00:00', '希望可以幫忙包好送禮\r\n'),
 (2, 'aaa@qq.com\r\n', 45, 6, '多功能氣墊椅', '30000', '2020-08-02 09:54:12', '氣墊第二層想換成紅色'),
 (3, 'aaa@qq.coma\r\n', 33, 2, '丹麥兒童椅', '20000', '2020-08-11 09:56:23', NULL);
-
--- --------------------------------------------------------
-
---
--- 資料表結構 `e_fund_categories`
---
-
-CREATE TABLE `e_fund_categories` (
-  `sid` int(11) NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- 傾印資料表的資料 `e_fund_categories`
---
-
-INSERT INTO `e_fund_categories` (`sid`, `name`) VALUES
-(1, 'chair'),
-(2, 'armchair'),
-(3, 'dining'),
-(4, 'lounge'),
-(5, 'stool');
 
 -- --------------------------------------------------------
 
@@ -764,7 +742,12 @@ INSERT INTO `members` (`sid`, `name`, `avatar`, `email`, `password`, `birthday`,
 (244, '是會我員', 'abraham_lincoln_PNG31.png', 'i4kjkgnb@sbtztwd.com', '123456', '1960-01-09', '0946914399', '', 0, 1, '2020-09-10 10:04:44'),
 (245, '我會員是', 'abraham_lincoln_PNG31.png', '6ddxr5ja2p@akyqb.com', '123456', '1983-05-14', '0951406107', '', 0, 1, '2020-09-10 10:04:44'),
 (246, '我是會員', 'yuri_gagarin_PNG65810.png', '6cnt7f26n6t@dezzr.com', '123456', '1991-05-03', '0964152275', '', 0, 1, '2020-09-10 10:04:44'),
-(247, 'ghthtt', '1b4e85ac3bf90a4872bfa1d66aff4ce8.jpg', 'pfse64289@gmail.com', 'htht', '2000-10-10', '0955888777', '', 0, 1, '2020-09-10 10:11:11');
+(247, 'ghthtt', '1b4e85ac3bf90a4872bfa1d66aff4ce8.jpg', 'pfse64289@gmail.com', 'htht', '2000-10-10', '0955888777', '', 0, 1, '2020-09-10 10:11:11'),
+(248, '是會員我', 'hillary_clinton_PNG52.png', 'wdyzc3te@xjiusse.com', '123456', '1958-06-20', '0942910662', '', 0, 1, '2020-09-13 13:32:46'),
+(249, '員是會我', 'burger_king_PNG7.png', 'cyp2szp2mg@jfssttbtxu.com', '123456', '1976-07-15', '0957071080', '', 0, 1, '2020-09-13 13:32:46'),
+(250, '員是會我', 'yuri_gagarin_PNG65810.png', 'mk65a9r@jnjrqddgfy.com', '123456', '1970-05-06', '0923891456', '', 0, 1, '2020-09-13 13:32:46'),
+(251, '是會我員', 'abraham_lincoln_PNG31.png', '65k6gtwfmph@pdwr.com', '123456', '2006-01-18', '0942818667', '', 0, 1, '2020-09-13 13:32:46'),
+(252, '會員我是', 'abraham_lincoln_PNG31.png', 'pewe6bk@ygxncibkey.com', '123456', '2009-04-09', '0980021742', '', 0, 1, '2020-09-13 13:32:46');
 
 -- --------------------------------------------------------
 
@@ -859,11 +842,36 @@ CREATE TABLE `w_chair_seat` (
 --
 
 INSERT INTO `w_chair_seat` (`sid`, `name`) VALUES
-(1, '皮革'),
+(1, 'leather'),
 (2, '布料'),
 (3, '木頭'),
 (4, '藤編'),
 (5, '塑膠');
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `w_follow`
+--
+
+CREATE TABLE `w_follow` (
+  `sid` int(11) NOT NULL,
+  `follow_product` varchar(225) NOT NULL,
+  `member_id` varchar(225) NOT NULL,
+  `follow_status` int(11) NOT NULL,
+  `follow_time` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- 傾印資料表的資料 `w_follow`
+--
+
+INSERT INTO `w_follow` (`sid`, `follow_product`, `member_id`, `follow_status`, `follow_time`) VALUES
+(46, 'CH88P', 'AMY', 1, '2020-10-28 00:00:00'),
+(61, 'CH29P', 'AMY', 1, '2020-10-28 00:00:00'),
+(62, 'CH26', 'AMY', 1, '2020-10-28 00:00:00'),
+(69, '214K', 'AMY', 1, '2020-10-28 00:00:00'),
+(79, 'COVER ARM CHAIR', 'AMY', 1, '2020-10-29 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -916,18 +924,17 @@ CREATE TABLE `w_product_mainlist` (
 --
 
 INSERT INTO `w_product_mainlist` (`sid`, `product_no`, `product_name`, `description`, `category`, `color`, `chair_body`, `chair_seat`, `designer`, `photo`, `price`, `hashtag`, `on_shelf_time`, `off_shelf_time`, `last_edit_time`) VALUES
-(151, 'OD210', 'Circle Dining Chair', ' From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'armchair', '灰', '木頭', '布料', 'overgaard', '65258f22f93cf7e40e322d26a999dbfd.png', 5000, '#丹麥椅', '2020-09-07', '2020-09-24', '2020-09-07'),
-(152, 'OD11-43', 'WIRE DINING CHAIR', ' From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'dining', '褐', '金屬', '皮革', 'overgaard', '22c2a33c3d3b33f5b142bac1ef25aa52.png', 5000, '#丹麥椅', '2020-09-11', '2020-09-04', '2020-09-07'),
-(154, 'OD12', 'Wire Lounge Chair', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'lounge', '褐', '金屬', '皮革', 'overgaard', '84c6079da0154ef9c767b37955b7aa37.png', 5000, '#丹麥椅', '2020-09-10', '2020-09-17', '2020-09-08'),
-(155, 'OD13', 'Wire Lounge Sofa', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'lounge', '褐', '金屬', '皮革', 'overgaard', '5f9863c9b0622ceaea951f1cc3c74188.png', 5000, '#丹麥椅', '2020-09-10', '2020-09-30', '2020-09-07'),
+(151, '歐洲銀行扶手沙發型餐椅', 'Circle Dining Chair', '個性、態度和多用性全部融于一款優美的設計表達。Vienna 椅子別具匠心地結合了折痕線條、柔軟形狀和誇張邊緣，確保您的用餐或工作區域兼具舒適和美觀。', 'armchair', '灰', '木頭', '布料', 'overgaard', '5cbb0ac7-6aee-4ee9-840b-d54e1c896bd2.jpg', 5000, '#丹麥椅', '2020-09-07', '2020-09-24', '2020-10-07'),
+(152, 'OD11-4lkkk', 'WIRE DINING CHAIRll', ' From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'dining', '褐', '金屬', '皮革', 'overgaard', '6a5b509f-8e2d-40a7-8278-fc89854eba75.jpg', 5000, '#丹麥椅', '2020-09-18', '2020-09-04', '2020-10-08'),
+(154, 'OD12', 'Wire Lounge Chair', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'lounge', '褐', '金屬', '皮革', 'overgaard', 'acfc1c88-6e7b-4b28-a23e-5f4b21dd03aa.jpg', 5000, '#丹麥椅', '2020-09-10', '2020-09-17', '2020-10-07'),
+(155, 'OD13', 'Wire Lounge Sofa', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'lounge', '褐', '金屬', '皮革', 'overgaard', '3b7afa7e-d7a5-4918-a197-dceb986706e2.jpg', 5000, '#丹麥椅', '2020-09-10', '2020-09-30', '2020-10-07'),
 (156, 'OD14', 'Wire Bar Stool', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'stool', '褐', '金屬', '皮革', 'overgaard', 'd5f5fd7656c5a58d8b65ebde9e199cf0.png', 5000, '#丹麥椅', '2020-09-17', '2020-09-11', '2020-09-08'),
 (157, 'OD15', 'Wire Stool', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'stool', '褐', '金屬', '皮革', 'overgaard', 'b6f1d242b279ed9ee4c1755fb894e014.png', 5000, '#丹麥椅', '2020-09-22', '2020-09-24', '2020-09-07'),
 (158, '214K', '214K', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '黑', '木頭', '木頭', 'thonet', 'dd1e209161c29143e1cc050da4777810.png', 5000, '#丹麥椅', '2020-09-16', '2020-09-11', '2020-09-07'),
 (159, '204RH', '204RH', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'stool', '白', '木頭', '藤編', 'thonet', 'a98821338b6fd18a4051cfd130bf3e43.png', 5000, '#丹麥椅', '2020-09-12', '2020-09-22', '2020-09-07'),
-(160, 'S32PV', 'S32PV', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'stool', '米', '金屬', '藤編', 'thonet', '0c3bef39c7d0f6435b0f24de52996810.png', 5000, '#丹麥椅', '2020-09-23', '2020-09-11', '2020-09-08'),
-(161, 'CH24', 'WISHBONE', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '綠', '木頭', '藤編', 'carl hansen & Son', '444d677c266554cf556fcf44dd59e7c8.png', 5000, '#丹麥椅', '2020-09-01', '2020-09-09', '2020-09-07'),
+(160, 'S32PV', '歐洲銀行扶手沙發型餐椅', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'stool', '米', '金屬', '藤編', 'thonet', '0c3bef39c7d0f6435b0f24de52996810.png', 5000, '#丹麥椅', '2020-09-23', '2020-09-11', '2020-09-08'),
 (162, 'CH23', 'CH23', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '黑', '木頭', '藤編', 'carl hansen & Son', '0735e6590b110a8794263ce6fded99d6.png', 5000, '#丹麥椅', '2020-09-18', '2020-09-19', '2020-09-07'),
-(163, 'CH88P', 'CH88P', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '褐', '金屬', '皮革', 'carl hansen & Son', '87f70e8f0779313c5d432dc32140ab8e.png', 5000, '#丹麥椅', '2020-09-10', '2020-09-22', '2020-09-07'),
+(163, 'CH88P', 'CH88P', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '褐', '金屬', 'leather', 'carl hansen & Son', '87f70e8f0779313c5d432dc32140ab8e.png', 5000, '#丹麥椅', '2020-09-10', '2020-09-22', '2020-09-07'),
 (164, 'CH26', 'CH26', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'armchair', '米', '木頭', '藤編', 'carl hansen & Son', 'bbf36c9cc602962f82a746ce7b9c818c.png', 5000, '#丹麥椅', '2020-09-22', '2020-09-24', '2020-09-07'),
 (165, 'CH33T', 'CH33T', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '褐', '木頭', '木頭', 'carl hansen & Son', '534a4101b43574b906139773799af5c1.png', 5000, '#丹麥椅', '2020-09-23', '2020-09-09', '2020-09-07'),
 (166, 'CH29P', 'CH29P', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '米', '木頭', '木頭', 'carl hansen & Son', '62be3ce0f5b29cb2c31b1e32116fd765.png', 5000, '#丹麥椅', '2020-09-10', '2020-09-17', '2020-09-07'),
@@ -1024,7 +1031,21 @@ INSERT INTO `w_product_mainlist` (`sid`, `product_no`, `product_name`, `descript
 (258, 'DJ01', 'Easy Lounge Chair - Darkened Teak', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'armchair', '米', '木頭', '藤編', 'DETJER', '7dbc8d10986060f4998a11d2eca3e441.png', 5000, '#丹麥椅', '2020-09-18', '2020-09-11', '2020-09-07'),
 (259, 'DJ02', 'Kangaroo Chair - Darkened Teak', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '米', '木頭', '藤編', 'DETJER', 'a931053d291ed99e5e5c99c83bb5ac6b.png', 5000, '#丹麥椅', '2020-09-11', '2020-10-01', '2020-09-07'),
 (260, 'DJ03', 'Favourites Dining Chair -', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'dining', '米', '木頭', '藤編', 'DETJER', 'b0e2d7ea7e9705e04d989a70af63840f.png', 5000, '#丹麥椅', '2020-09-24', '2020-09-15', '2020-09-07'),
-(261, 'DJ06', 'Library Chair - Charcoal Black', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '黑', '木頭', '藤編', 'DETJER', '770f4b9ab71e3b3a2c6d3cff006d2582.png', 5000, '#丹麥椅', '2020-09-10', '2020-09-11', '2020-09-07');
+(261, 'DJ06', 'Library Chair - Charcoal Black', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '黑', '木頭', '藤編', 'DETJER', '770f4b9ab71e3b3a2c6d3cff006d2582.png', 5000, '#丹麥椅', '2020-09-10', '2020-09-11', '2020-09-07'),
+(266, 'rr', 'rr', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '白', '木頭', '皮革', 'overgaard', '', 5000, 'rr', '2020-10-06', '2020-10-16', '2020-10-04'),
+(267, '55', '55', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '白', '木頭', '皮革', 'overgaard', '', 5000, '55', '2020-10-22', '2020-10-29', '2020-10-04'),
+(268, 'ss', 'ss', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '白', '木頭', '皮革', 'overgaard', '', 5000, 'ss', '2020-10-23', '2020-10-29', '2020-10-04'),
+(269, 'ss', 'ss', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '白', '木頭', '皮革', 'overgaard', '', 5000, 'ss', '2020-10-23', '2020-10-29', '2020-10-04'),
+(270, 'ss', 'ss', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '白', '木頭', '皮革', 'overgaard', '', 5000, 'ss', '2020-10-23', '2020-10-29', '2020-10-04'),
+(271, 'ss', 'ss', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '白', '木頭', '皮革', 'overgaard', '', 5000, 'ss', '2020-10-23', '2020-10-29', '2020-10-04'),
+(272, 'ss', 'ss', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '白', '木頭', '皮革', 'overgaard', '', 5000, 'ss', '2020-10-23', '2020-10-29', '2020-10-04'),
+(273, 'ss', 'ss', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '白', '木頭', '皮革', 'overgaard', '', 5000, 'ss', '2020-10-23', '2020-10-29', '2020-10-04'),
+(274, '', '', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '白', '木頭', '皮革', 'overgaard', '', 5000, '', '2020-10-14', '2020-09-30', '2020-10-04'),
+(275, '33', '33', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '白', '木頭', '皮革', 'overgaard', '91c228cf-2c71-4a05-97c3-834f046b3cf1.jpg', 5000, '33', '2020-10-28', '2020-10-09', '2020-10-07'),
+(276, '', '', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '白', '木頭', '皮革', 'overgaard', '', 5000, '', '2020-10-12', '2020-10-02', '2020-10-04'),
+(277, '33', '33', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '白', '木頭', '皮革', 'overgaard', 'e4ae9b84-8d93-474e-a1e7-9d2a9df23f4b.jpg', 5000, '', '2020-10-15', '2020-10-15', '2020-10-07'),
+(278, '339999', '33', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'chair', '白', '木頭', '皮革', 'overgaard', 'e4ae9b84-8d93-474e-a1e7-9d2a9df23f4b.jpg', 5000, '', '2020-10-15', '2020-10-15', '2020-10-07'),
+(279, '334e', '33', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'dining', '黑', '塑膠', '藤編', 'MUUTO', 'c3d731b3-8235-4b1e-86ba-d6a7ceec21db.jpg', 5000, '', '2020-10-05', '2020-10-07', '2020-10-07');
 
 -- --------------------------------------------------------
 
@@ -1034,24 +1055,27 @@ INSERT INTO `w_product_mainlist` (`sid`, `product_no`, `product_name`, `descript
 
 CREATE TABLE `w_review` (
   `sid` int(11) NOT NULL,
+  `order_no` varchar(225) COLLATE utf8_unicode_ci NOT NULL,
   `buy_product` varchar(225) COLLATE utf8_unicode_ci NOT NULL,
-  `buy_member` varchar(225) COLLATE utf8_unicode_ci NOT NULL,
+  `buy_member_id` varchar(225) COLLATE utf8_unicode_ci NOT NULL,
   `stars` varchar(225) COLLATE utf8_unicode_ci NOT NULL,
-  `review` varchar(225) COLLATE utf8_unicode_ci NOT NULL,
-  `user_photo` varchar(225) COLLATE utf8_unicode_ci NOT NULL
+  `review_title` varchar(225) COLLATE utf8_unicode_ci NOT NULL,
+  `review_comment` varchar(225) COLLATE utf8_unicode_ci NOT NULL,
+  `review_photo` varchar(225) COLLATE utf8_unicode_ci NOT NULL,
+  `review_time` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- 傾印資料表的資料 `w_review`
 --
 
-INSERT INTO `w_review` (`sid`, `buy_product`, `buy_member`, `stars`, `review`, `user_photo`) VALUES
-(1, 'dd', '', '五顆星', '', 'd255a1d4d7a061ccc62b203777e95666.png'),
-(2, 'rrrr', '4', '三顆星', 'lllll', '02c11d145853f4077a824cdb6341c322.png'),
-(3, '', '', '五顆星', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.5555555', '574e76368c3ef43d73cb1e08a916e293.png'),
-(4, '3', '3', '五顆星', '', 'a9fa313bde8d366750fe13062873555b.png'),
-(5, 'r', '4', '二顆星', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'e8b9104cf6b478d89c706c49512e9110.png'),
-(6, 'r', '4', '三顆星', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'b250389659d666b63e866233cbe19684.png');
+INSERT INTO `w_review` (`sid`, `order_no`, `buy_product`, `buy_member_id`, `stars`, `review_title`, `review_comment`, `review_photo`, `review_time`) VALUES
+(1, '', '丹麥藤編椅', 'Amy', '五顆星', '', '個性、態度和多用性全部融于一款優美的設計表達。Vienna 椅子別具匠心地結合了折痕線條、柔軟形狀和誇張邊緣，確保您的用餐或工作區域兼具舒適和美觀。', 'd255a1d4d7a061ccc62b203777e95666.png', '2020-10-27 20:15:08'),
+(2, '', '丹麥藤編椅', '4', '三顆星', '', '個性、態度和多用性全部融于一款優美的設計表達。Vienna 椅子別具匠心地結合了折痕線條、柔軟形狀和誇張邊緣，確保您的用餐或工作區域兼具舒適和美觀。', '02c11d145853f4077a824cdb6341c322.png', '2020-10-27 20:15:08'),
+(3, '', '丹麥扶手椅', '', '五顆星', '', '個性、態度和多用性全部融于一款優美的設計表達。Vienna 椅子別具匠心地結合了折痕線條、柔軟形狀和誇張邊緣，確保您的用餐或工作區域兼具舒適和美觀。', 'a42b9867f07c716ec49ee6a873c4590d.png', '2020-10-27 20:15:08'),
+(4, '', '3', '3', '五顆星', '', '', 'a9fa313bde8d366750fe13062873555b.png', '2020-10-27 20:15:08'),
+(5, '', 'r', '4', '二顆星', '', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'e8b9104cf6b478d89c706c49512e9110.png', '2020-10-27 20:15:08'),
+(6, '', 'r', '4', '三顆星', '', 'From ancient mathematicians like Euclid, to Leonardo da Vinci, to Denmark’s own Hans J.', 'b250389659d666b63e866233cbe19684.png', '2020-10-27 20:15:08');
 
 -- --------------------------------------------------------
 
@@ -1224,6 +1248,12 @@ ALTER TABLE `w_chair_seat`
   ADD PRIMARY KEY (`sid`);
 
 --
+-- 資料表索引 `w_follow`
+--
+ALTER TABLE `w_follow`
+  ADD PRIMARY KEY (`sid`);
+
+--
 -- 資料表索引 `w_product_categories`
 --
 ALTER TABLE `w_product_categories`
@@ -1363,7 +1393,7 @@ ALTER TABLE `i_second_manage`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `members`
 --
 ALTER TABLE `members`
-  MODIFY `sid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=248;
+  MODIFY `sid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=253;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `w_chair_body`
@@ -1390,6 +1420,12 @@ ALTER TABLE `w_chair_seat`
   MODIFY `sid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
+-- 使用資料表自動遞增(AUTO_INCREMENT) `w_follow`
+--
+ALTER TABLE `w_follow`
+  MODIFY `sid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
+
+--
 -- 使用資料表自動遞增(AUTO_INCREMENT) `w_product_categories`
 --
 ALTER TABLE `w_product_categories`
@@ -1399,7 +1435,7 @@ ALTER TABLE `w_product_categories`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `w_product_mainlist`
 --
 ALTER TABLE `w_product_mainlist`
-  MODIFY `sid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=264;
+  MODIFY `sid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=280;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `w_review`
