@@ -55,15 +55,15 @@ app.get("/", (req, res) => {
 });
 
 // 引入產品路由
-app.use("/product", require(__dirname + "/routes/product"));
+
 app.use("/man_product", require(__dirname + "/routes/man_product"));
 
 // 引入二手路由
-app.use("/secondhand", require(__dirname + "/routes/secondhand"));
+
 app.use("/man_secondhand", require(__dirname + "/routes/man_secondhand"));
 
 // 引入募資路由
-app.use("/fund", require(__dirname + "/routes/fund"));
+
 app.use("/man_fund", require(__dirname + "/routes/man_fund"));
 
 
