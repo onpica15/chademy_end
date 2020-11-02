@@ -136,12 +136,11 @@
 
                 <div class="form-group">
                     <label><span class="redstars">** </span>募資介紹
-                        <textarea class="form-control" name="e_prointro" rows="10"
-                            style="resize:none"></textarea>
+                        <textarea class="form-control" name="e_prointro" rows="10" style="resize:none"></textarea>
                     </label>
                 </div>
 
-                 
+
                 <div class="form-group">
                     <label><span class="redstars">** </span>最低價格
                         <input type="text" class="form-control" name="e_lowprice" value="">
@@ -170,8 +169,7 @@
 
                 <div class="form-group">
                     <label><span class="redstars">** </span>實踐時間
-                        <input type="text" class="form-control" name="e_realize_time" value=" "
-                            >
+                        <input type="text" class="form-control" name="e_realize_time" value=" ">
                     </label>
                 </div>
 
@@ -191,31 +189,31 @@
 
 <%- include('../parts/scripts') %>
 <script>
-     const $e_proname = document.querySelector('#e_proname');
+    const $e_proname = document.querySelector('#e_proname');
     const $e_prointro = document.querySelector('#e_prointro');
     const r_fields = [$e_proname, $e_prointro];
     const infobar = document.querySelector('#infobar');
     const submitBtn = document.querySelector('button[type=submit]');
 
+    document.querySelector('#file_input').addEventListener('change', uploadFile);
 
 
-    
     function uploadFile(event) {
         console.log(file_input.files[0].name);
         const fd = new FormData();
         fd.append('myfile', file_input.files[0]);
-     
-        // const fd = new FormData(document.form1);
+
+      
 
         fetch('/man_fund/try-upload', {
-            method: 'POST',
-            body: fd
-        })
+                method: 'POST',
+                body: fd
+            })
             .then(r => r.json())
             .then(o => {
                 console.log(o);
                 if (o.success) {
-                    document.querySelector('#myimg').src = '/img/'+o.newFileName;
+                    document.querySelector('#myimg').src = '/img/' + o.newFileName;
                     document.querySelector('#photo').value = o.newFileName;
                 } else {
                     alert(o.msg);
@@ -230,18 +228,16 @@
         const fd = new FormData(document.form1);
 
         fetch('', {
-            method: 'POST',
-            body: fd
-        })
+                method: 'POST',
+                body: fd
+            })
             .then(r => r.json())
             .then(obj => {
                 console.log(obj);
                 if (obj.success) {
                     infobar.html('新增成功');
                     infobar.removeClass('alert-danger').addClass('alert-success');
-                    // setTimeout(() => {
-                    //     location.href = 'data-list.php';
-                    // }, 3000)
+                   
                 } else {
                     infobar.html(obj.error || '新增失敗');
                     infobar.removeClass('alert-success').addClass('alert-danger');
@@ -255,6 +251,5 @@
             });
 
     };
-
 </script>
 <%- include('../parts/html-foot') %>

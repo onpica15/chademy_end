@@ -27,6 +27,7 @@
     "es-checker": "^1.4.2",
     "express": "^4.17.1",
     "fs": "0.0.1-security",
+    "http-proxy-middleware": "^1.0.6",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.31",
     "multer": "^1.4.2",

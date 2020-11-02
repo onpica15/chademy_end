@@ -125,21 +125,21 @@
 
                     <input type="hidden" id="photo" name="e_pic" class="form-control" value="<%= row.e_pic%>">
                     <div>
-                   
+
                         <img src="/img/<%= row.e_pic%>" alt="" id="e_pic" width="400px">
-                      
+
                     </div>
 
                 </div>
 
             </div>
 
-                
 
-                
+
+
             <div class="col">
 
-                
+
                 <div class="form-group">
                     <label><span class="redstars">** </span>募資介紹
                         <textarea class="form-control" name="e_prointro" rows="10"
@@ -153,7 +153,7 @@
                     </label>
                 </div>
 
-                
+
 
                 <div class="form-group">
                     <label><span class="redstars">** </span>目標金額
@@ -176,8 +176,7 @@
 
                 <div class="form-group">
                     <label><span class="redstars">** </span>實踐時間
-                        <input type="text" class="form-control" name="e_realize_time" value="<%= row.e_realize_time%>"
-                            >
+                        <input type="text" class="form-control" name="e_realize_time" value="<%= row.e_realize_time%>">
                     </label>
                 </div>
 
@@ -197,8 +196,6 @@
 
 <%- include('../parts/scripts') %>
 <script>
-    
-   
     const $e_proname = document.querySelector('#e_proname');
     const $e_prointro = document.querySelector('#e_prointro');
     const r_fields = [$e_proname, $e_prointro];
@@ -215,9 +212,9 @@
         // const fd = new FormData(document.form1);
 
         fetch('/man_fund/try-upload', {
-            method: 'POST',
-            body: fd
-        })
+                method: 'POST',
+                body: fd
+            })
             .then(r => r.json())
             .then(o => {
                 console.log(o);
@@ -232,40 +229,42 @@
 
 
 
-    function checkForm() {
-  
-   
-            const fd = new FormData(document.form1);
+    document.querySelector('#file_input').addEventListener('change', uploadFile);
 
-            fetch('', {
+
+    function checkForm() {
+
+
+        const fd = new FormData(document.form1);
+
+        fetch('', {
                 method: 'POST',
                 body: fd
             })
-                .then(r => r.json())
-                .then(obj => {
-                    console.log(obj);
-                    if (obj.success) {
-                        infobar.html('修改成功');
-                        infobar.removeClass('alert-danger').addClass('alert-success');
-                        // setTimeout(() => {
-                        //     location.href = 'data-list.php';
-                        // }, 3000)
-                    } else if (obj.changedRows == 0) {
-                        infobar.html('資料沒有修改');
-                        infobar.removeClass('alert-success').addClass('alert-danger');
-                    } else {
-                        infobar.html(obj.error || '修改失敗');
-                        infobar.removeClass('alert-success').addClass('alert-danger');
+            .then(r => r.json())
+            .then(obj => {
+                console.log(obj);
+                if (obj.success) {
+                    infobar.html('修改成功');
+                    infobar.removeClass('alert-danger').addClass('alert-success');
+                    // setTimeout(() => {
+                    //     location.href = 'data-list.php';
+                    // }, 3000)
+                } else if (obj.changedRows == 0) {
+                    infobar.html('資料沒有修改');
+                    infobar.removeClass('alert-success').addClass('alert-danger');
+                } else {
+                    infobar.html(obj.error || '修改失敗');
+                    infobar.removeClass('alert-success').addClass('alert-danger');
 
-                        submitBtn.style.display = 'block';
-                    }
-                    infobar.slideDown();
-                    setTimeout(() => {
-                        infobar.slideUp();
-                    }, 3000)
-                });
+                    submitBtn.style.display = 'block';
+                }
+                infobar.slideDown();
+                setTimeout(() => {
+                    infobar.slideUp();
+                }, 3000)
+            });
 
-        } 
-    
+    }
 </script>
 <%- include('../parts/html-foot') %>

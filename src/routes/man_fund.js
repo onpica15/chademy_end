@@ -122,6 +122,58 @@ router.get("/list", async (req, res) => {
   res.render("man_fund/list", output);
 });
 
+router.get("/fundlistnode", async (req, res) => {
+  let sql = `SELECT * FROM e_fund_project ORDER BY sid  LIMIT 10`;
+  const [results] = await db.query(sql); 
+  res.json(results);
+
+});
+
+// get 追蹤狀態
+router.get("/heart/:sid", async (req, res) => {
+  
+  const sql = "SELECT * FROM `e_follow` WHERE follow_project=?";
+  const [row] = await db.query(sql, [req.params.sid]);
+
+  res.json(row); // [{}]
+});
+
+// 加入追蹤 API
+router.post('/addheart', upload.none(), async (req, res) => {
+  const data = {
+    ...req.body
+  };
+  data.follow_time = moment(new Date()).format(
+    "YYYY-MM-DD");
+
+  const sql = "INSERT INTO `e_follow` set ?";
+  const [{
+    affectedRows,
+    insertId
+  }] = await db.query(sql, [data]);
+  // sql是語法一個問號即可，data是array
+  // [{"fieldCount":0,"affectedRows":1,"insertId":860,"info":"","serverStatus":2,"warningStatus":1},null]
+
+  res.json({
+    success: !!affectedRows,
+    affectedRows,
+    insertId,
+  });
+});
+
+
+// 刪除追蹤 API
+router.delete("/del/:sid", async (req, res) => {
+  const sql = "DELETE FROM `e_follow` WHERE follow_project=?";
+  const [results] = await db.query(sql, [req.params.sid]);
+  res.json(results);
+});
+
+
+
+
+
+
 
 // 編輯頁面
 router.get("/edit/:sid", async (req, res) => {
@@ -161,7 +213,8 @@ router.post('/edit/:sid', upload.none(), async (req, res) => {
   const data = {
     ...req.body
   };
-
+  data.last_edit_time = moment(new Date()).format(
+    "YYYY-MM-DD");
   const sql = "UPDATE `e_fund_project` SET ? WHERE `sid`=?";
   const [{
     affectedRows,
@@ -224,8 +277,7 @@ router.post('/add', upload.none(), async (req, res) => {
   const data = {
     ...req.body
   };
-  // data.last_edit_time = moment(new Date()).format(
-  //   "YYYY-MM-DD");
+
 
 
 
@@ -234,8 +286,8 @@ router.post('/add', upload.none(), async (req, res) => {
     affectedRows,
     insertId
   }] = await db.query(sql, [data]);
-  // sql是語法一個問號即可，data是array
-  // [{"fieldCount":0,"affectedRows":1,"insertId":860,"info":"","serverStatus":2,"warningStatus":1},null]
+  
+  
 
   res.json({
     success: !!affectedRows,

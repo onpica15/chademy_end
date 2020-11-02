@@ -7,8 +7,8 @@ const router = express.Router();
 const db = require(__dirname + "/../db_connect2");
 const moment = require("moment-timezone");
 const multer = require("multer");
-// const upload = require(__dirname + "/../upload-img-module");
-const upload = require(__dirname + "/../react-upload-img-module");
+const upload = require(__dirname + "/../upload-img-module");
+const upload2 = require(__dirname + "/../react-upload-img-module");
 const fs = require("fs");
 
 
@@ -220,7 +220,7 @@ router.delete("/del/:sid", async (req, res) => {
 
 
 // 評論單張圖片上傳 API
-router.post("/reactupload", upload.single('myfile'), (req, res) => {
+router.post("/reactupload", upload2.single('myfile'), (req, res) => {
   console.log('req.myfile' + req.myfile );
 
   if (req.myfile && req.myfile.originalname) {
