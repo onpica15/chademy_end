@@ -80,7 +80,7 @@ app.use("/a_title_mainlist", require(__dirname + "/routes/a_title_mainlist"));
 
 
 // 引入購物車路由
-
+app.use("/j_cart", require(__dirname + "/routes/j_cart"));
 
 
 // public 資料夾middleware
