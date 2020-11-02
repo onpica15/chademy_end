@@ -7,8 +7,8 @@ const router = express.Router();
 const db = require(__dirname + "/../db_connect2");
 const moment = require("moment-timezone");
 const multer = require("multer");
-// const upload = require(__dirname + "/../upload-img-module");
-const upload = require(__dirname + "/../react-upload-img-module");
+const upload = require(__dirname + "/../upload-img-module");
+// const upload = require(__dirname + "/../react-upload-img-module");
 const fs = require("fs");
 
 
@@ -128,11 +128,13 @@ router.get("/reactlist", async (req, res) => {
   ] = await db.query("SELECT * FROM w_product_mainlist");
   res.json(totalRows);
 });
+
 // filter頁面
 router.get("/reactfilter", async (req, res) => {
 
-  const cateWhere = []
-  const seatWhere = []
+  let cateWhere = ''
+  let seatWhere = ''
+  let colorWhere = ''
   // console.log(where);
   console.log(req.query.category);
   console.log(req.query.chairSeat);
@@ -141,29 +143,54 @@ router.get("/reactfilter", async (req, res) => {
 
   if (req.query.category){
     const cate = req.query.category.split(',')
-    cate.forEach(element => cateWhere.push(`category = '${element}'`))
+    if(cate && cate.length){
+      cateWhere = cate.map(el=>db.escape(el)).join(' OR category=');
+    }
+    console.log('cateWhere:', cateWhere);
+    cateWhere = ' ( category=' + cateWhere + ' ) ';
+    console.log('cateWhere:', cateWhere);
+    // cate.forEach(element => cateWhere.push(`category = '${element}'`))
    
   }
   if (req.query.chairSeat) {
     const cate = decodeURI(req.query.chairSeat).split(',')
     console.log(cate);
-    cate.forEach(element => seatWhere.push(`chair_seat = '${element}'`))
-
+    if(cate && cate.length){
+      seatWhere = cate.map(el=>db.escape(el)).join(' OR chair_seat=');
+    }
+    console.log('seatWhere:', seatWhere);
+    // cate.forEach(element => seatWhere.push(`chair_seat = '${element}'`))
+    seatWhere = ' ( chair_seat=' + seatWhere + ' ) ';
+    console.log('seatWhere:', seatWhere);
+  }  
+  // return res.json([]);
+  if (req.query.chairColor) {
+    console.log('req.query.chairColor'+req.query.chairColor);
+    const cate = decodeURI(req.query.chairColor).split(',')
+    console.log(cate);
+    if(cate && cate.length){
+      colorWhere = cate.map(el=>db.escape(el)).join(' OR color=');
+    }
+    colorWhere = ' ( color=' + colorWhere + ' ) ';
+    // cate.forEach(element => colorWhere.push(`color = '${element}'`))
   }  
 
   let where=[]
  
-  if (cateWhere.length>0)where.push(cateWhere.join(' OR '))
-  if (seatWhere.length>0)where.push(seatWhere.join(' OR '))
-  console.log('cateWhere.join'+cateWhere.join(' OR '));
-  console.log('seatWhere.join'+seatWhere.join(' OR '));
+  if (cateWhere.length>0)where.push(cateWhere)
+  if (seatWhere.length>0)where.push(seatWhere)
+  if (colorWhere.length>0)where.push(colorWhere)
+  console.log('cateWhere.join'+cateWhere);
+  console.log('seatWhere.join'+seatWhere);
+  console.log('colorWhere.join'+colorWhere);
   console.log('where'+where);
   console.log('where.join: '+where.join(' AND '));
 
 // SELECT * FROM `w_product_mainlist` WHERE category = 'chair' AND chair_seat = '木頭' OR category = 'chair' AND chair_seat = '布料'
 
   let sql = `SELECT * FROM w_product_mainlist WHERE ` + where.join(' AND ')
- 
+  console.log('sql: '+sql);
+  console.log('where'+where);
   const [totalRows
   ] = await db.query(sql);
   res.json(totalRows);
@@ -194,6 +221,8 @@ router.post('/addheart', upload.none(), async (req, res) => {
   data.follow_time = moment(new Date()).format(
     "YYYY-MM-DD");
 
+  console.log(req.body)
+  console.log(data)
   const sql = "INSERT INTO `w_follow` set ?";
   const [{
     affectedRows,
@@ -215,6 +244,29 @@ router.delete("/del/:sid", async (req, res) => {
   const sql = "DELETE FROM `w_follow` WHERE follow_product=?";
   const [results] = await db.query(sql, [req.params.sid]);
   res.json(results);
+});
+
+// 評論寫入資料庫 API
+router.post('/addreview', upload.none(), async (req, res) => {
+  const data = {
+    ...req.body
+  };
+  data.review_time = moment(new Date()).format(
+    "YYYY-MM-DD");
+
+  const sql = "INSERT INTO `w_review` set ?";
+  const [{
+    affectedRows,
+    insertId
+  }] = await db.query(sql, [data]);
+  // sql是語法一個問號即可，data是array
+  // [{"fieldCount":0,"affectedRows":1,"insertId":860,"info":"","serverStatus":2,"warningStatus":1},null]
+
+  res.json({
+    success: !!affectedRows,
+    affectedRows,
+    insertId,
+  });
 });
 
 
