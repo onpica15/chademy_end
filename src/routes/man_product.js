@@ -128,14 +128,52 @@ router.get("/reactlist", async (req, res) => {
   ] = await db.query("SELECT * FROM w_product_mainlist");
   res.json(totalRows);
 });
+// filter頁面
+router.get("/reactfilter", async (req, res) => {
+
+  const cateWhere = []
+  const seatWhere = []
+  // console.log(where);
+  console.log(req.query.category);
+  console.log(req.query.chairSeat);
+  console.log(cateWhere);
+  console.log(seatWhere);
+
+  if (req.query.category){
+    const cate = req.query.category.split(',')
+    cate.forEach(element => cateWhere.push(`category = '${element}'`))
+   
+  }
+  if (req.query.chairSeat) {
+    const cate = decodeURI(req.query.chairSeat).split(',')
+    console.log(cate);
+    cate.forEach(element => seatWhere.push(`chair_seat = '${element}'`))
+
+  }  
+
+  let where=[]
+ 
+  if (cateWhere.length>0)where.push(cateWhere.join(' OR '))
+  if (seatWhere.length>0)where.push(seatWhere.join(' OR '))
+  console.log('cateWhere.join'+cateWhere.join(' OR '));
+  console.log('seatWhere.join'+seatWhere.join(' OR '));
+  console.log('where'+where);
+  console.log('where.join: '+where.join(' AND '));
+
+// SELECT * FROM `w_product_mainlist` WHERE category = 'chair' AND chair_seat = '木頭' OR category = 'chair' AND chair_seat = '布料'
+
+  let sql = `SELECT * FROM w_product_mainlist WHERE ` + where.join(' AND ')
+ 
+  const [totalRows
+  ] = await db.query(sql);
+  res.json(totalRows);
+});
 
 // 產品頁面
 router.get("/reactitem/:sid", async (req, res) => {
   
   const sql = "SELECT * FROM w_product_mainlist WHERE sid=?";
   const [row] = await db.query(sql, [req.params.sid]);
-  
-
   res.json(row); // [{}]
 });
 
@@ -144,8 +182,6 @@ router.get("/heart/:sid", async (req, res) => {
   
   const sql = "SELECT * FROM `w_follow` WHERE follow_product=?";
   const [row] = await db.query(sql, [req.params.sid]);
-  
-
   res.json(row); // [{}]
 });
 
@@ -280,13 +316,15 @@ router.get("/add", async (req, res) => {
 // ------------------------- 以下為 RESTful API------------------------------
 
 
-// 編輯表單 API
+
+// 編輯表單 PI
 router.post('/edit/:sid', upload.none(), async (req, res) => {
   const data = {
     ...req.body
   };
-
-  const sql = "UPDATE `e_fund_project` SET ? WHERE `sid`=?";
+  data.last_edit_time = moment(new Date()).format(
+    "YYYY-MM-DD");
+  const sql = "UPDATE `w_product_mainlist` SET ? WHERE `sid`=?";
   const [{
     affectedRows,
     changedRows
@@ -304,7 +342,7 @@ router.post('/edit/:sid', upload.none(), async (req, res) => {
 
 // 單張圖片上傳 API
 router.post("/try-upload", upload.single('myfile'), (req, res) => {
-  console.log('req.file' + req.file);
+  console.log(req);
 
   if (req.file && req.file.originalname) {
     let ext = "";
@@ -348,12 +386,12 @@ router.post('/add', upload.none(), async (req, res) => {
   const data = {
     ...req.body
   };
-  // data.last_edit_time = moment(new Date()).format(
-  //   "YYYY-MM-DD");
+  data.last_edit_time = moment(new Date()).format(
+    "YYYY-MM-DD");
 
 
 
-  const sql = "INSERT INTO `e_fund_project` set ?";
+  const sql = "INSERT INTO `w_product_mainlist` set ?";
   const [{
     affectedRows,
     insertId
@@ -371,12 +409,10 @@ router.post('/add', upload.none(), async (req, res) => {
 
 // 資料刪除 API
 router.delete("/del/:sid", async (req, res) => {
-  const sql = "DELETE FROM `e_fund_project` WHERE sid=?";
+  const sql = "DELETE FROM `w_product_mainlist` WHERE sid=?";
   const [results] = await db.query(sql, [req.params.sid]);
   res.json(results);
 });
-
-
 // -------------------------------- 以下匯出模組------------------------------
 
 

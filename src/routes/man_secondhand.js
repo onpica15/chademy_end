@@ -6,6 +6,7 @@ const multer = require("multer");
 const upload = require(__dirname + "/../upload-img-module");
 const fs = require("fs");
 
+//MVC
 // get data頁碼
 async function getListData(req) {
   const output = {
@@ -85,6 +86,20 @@ router.get("/list", async (req, res) => {
   res.render("man_secondhand/man_secondhand_list", output);
 });
 
+router.get("/secondhandlist", async (req, res) => {
+ 
+  let sql = `SELECT * FROM i_secondhand_product ORDER BY sid  LIMIT 16`;
+  const [results] = await db.query(sql);
+ 
+  res.json(results);
+});
+
+// 產品頁面
+router.get("/secondhandlist/:sid", async (req, res) => {
+  const sql = "SELECT * FROM i_secondhand_product WHERE sid=?";
+  const [row] = await db.query(sql, [req.params.sid]);
+  res.json(row); // [{}]
+});
 
 
 router.get("/edit/:sid", async (req, res) => {
@@ -148,7 +163,7 @@ router.get("/add", async (req, res) => {
   res.render("man_secondhand/man_secondhand_add", output);
 });
 
-
+//////////////////
 
 
 // RESTful API
@@ -158,6 +173,7 @@ router.post('/add', upload.none(), async (req, res) => {
     ...req.body
   };
   const sql = "INSERT INTO `i_secondhand_product` set ?";
+  console.log(JSON.stringify(data));
   const [{
     affectedRows,
     insertId
