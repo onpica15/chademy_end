@@ -269,6 +269,14 @@ router.post('/addreview', upload.none(), async (req, res) => {
   });
 });
 
+// get 評論 API
+router.get("/review", async (req, res) => {
+  
+  const sql = "SELECT * FROM `w_review` Order By `sid` DESC LIMIT 1";
+  const [row] = await db.query(sql);
+  res.json(row); // [{}]
+});
+
 
 
 // 評論單張圖片上傳 API
