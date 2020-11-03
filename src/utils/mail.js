@@ -18,27 +18,37 @@ module.exports = function () {
   })
 
   return {
-    send({ to, subject = 'Chademy 會員身分認證通知信', data }) {
-      mailTransport.sendMail(
-        {
-          from: process.env.GMAIL_USER,
-          to: to, // 該會員信箱
-          subject: subject, // 郵件主旨
-          html: mailTemplate(data), // 兩種格式: text/html
+    send({
+      to,
+      subject = 'Chademy 會員身分認證通知信',
+      data,
+      html = mailTemplate(data), // 兩種格式: text/html
+    }) {
+      const option = {
+        from: process.env.GMAIL_USER,
+        to: to, // 該會員信箱
+        subject: subject, // 郵件主旨
+        html: html,
+      }
 
-          // 為了要在信箱加上 logo
-          attachments: [
-            {
-              filename: 'logo.png', // 檔案名稱
-              path: __dirname + '/logo.png', // 檔案路徑
-              cid: 'unique@logo', //same cid value as in the html img src
-            },
-          ],
-        },
-        (err) => {
-          if (err) console.log('Unable to send email: ' + err)
-        }
-      )
+      // 認證信就加上圖片
+      if (subject === 'Chademy 會員身分認證通知信') {
+        option.attachments = [
+          {
+            filename: 'logo.png', // 檔案名稱
+            path: __dirname + '/logo.png', // 檔案路徑
+            cid: 'unique@logo', //same cid value as in the html img src
+          },
+        ]
+      }
+
+      return new Promise((resolve, reject) => {
+        // 寄出郵件
+        mailTransport.sendMail(option, (err) => {
+          // 如果失敗 reject()，否則就 resolve()
+          err ? reject('Unable to send email: ' + err) : resolve()
+        })
+      })
     },
   }
 }

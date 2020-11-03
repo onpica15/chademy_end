@@ -13,30 +13,49 @@ console.log(emailService, emailService.send)
 const Login = require(__dirname + '/modules/login')
 const Register = require(__dirname + '/modules/register')
 
+// const EXPIRES_IN = 15 * 1000 // NOTE: 測試用 10 秒
+const EXPIRES_IN = 1 * 60 * 60 * 1000 // 過期時間一小時
+
+function setCookies(data, res) {
+  // 註冊後登入
+  const token = jwt.sign({ ...data }, process.env.TOKEN_SECRET, {
+    expiresIn: EXPIRES_IN,
+  })
+
+  // 設定前端的 cookie，讓前端發送請求會帶這個 cookie
+  res.cookie('chademy-token', token, {
+    maxAge: EXPIRES_IN,
+    httpOnly: true,
+  })
+}
+
 // 導出模組
 module.exports = {
   // 登入
   async login(req, res, next) {
-    let Member = new Login(req.body.email, req.body.password) // 之後需要加密 encry
+    let Member = new Login(req.body.email) // 之後需要加密 encry
     const [response] = await db.query(Member.getSQL())
 
-    if (response.length) {
-      // const EXPIRES_IN = 24 * 60 * 60 * 1000 // 過期時間一天
-      const EXPIRES_IN = 10 * 1000 // NOTE: 測試用 10 秒
+    // 比對解密後的密碼是否相同
+    const passwordEqual =
+      decrypt(response[0].password) === decrypt(encry(req.body.password))
 
-      // 這邊還沒完全好
-      const token = jwt.sign({ ...req.body }, process.env.TOKEN_SECRET, {
-        expiresIn: EXPIRES_IN,
-      })
+    if (response.length && passwordEqual) {
+      // // 這邊還沒完全好
+      // const token = jwt.sign({ ...req.body }, process.env.TOKEN_SECRET, {
+      //   expiresIn: EXPIRES_IN,
+      // })
 
-      // 設定前端的 cookie，讓前端發送請求會帶這個 cookie
-      res.cookie('chademy-token', token, { maxAge: EXPIRES_IN, httpOnly: true })
+      // // 設定前端的 cookie，讓前端發送請求會帶這個 cookie
+      // res.cookie('chademy-token', token, { maxAge: EXPIRES_IN, httpOnly: true })
+
+      setCookies(req.body, res)
 
       // 除了 password 的其他資料，前端登入後不需要知道密碼
       const { password, ...otherData } = response[0]
 
       // 將其他資料在 data 中展開
-      const data = { ...otherData }
+      const data = { ...otherData, token }
 
       res.json({
         success: true,
@@ -56,31 +75,9 @@ module.exports = {
 
   // 註冊
   async register(req, res, next) {
-    console.log(' register API ')
     // 取出 email, mobile，驗證是否註冊過
     const { email, mobile } = req.body
 
-    // const token = encry(JSON.stringify(req.body))
-
-    //
-
-    // console.log(' 寄出認證信 ', encry(JSON.stringify(req.body)))
-
-    // // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
-    // // 因為透過 GET 要 encodeURIComponent 加密過的 TOKEN，接 token 才能拿到正確的值
-    // const apiUrl = `http://${req.headers.host}/members/userAuth?token=`
-
-    // // 先將會員資料用 JSON.stringify 轉成字串，然後 encry 加密，最後 encodeURIComponent
-    // const token = `${encodeURIComponent(encry(JSON.stringify(req.body)))}`
-    // const data = apiUrl + token
-
-    // emailService.send({ to: email, data: data })
-    // console.log('req.headers.host', req.headers.host)
-    // console.log('url:', url)
-
-    // emailService.send(email)
-
-    //
     let Member = new Register({ email, mobile })
 
     const checkEmailMobile = async () => {
@@ -122,7 +119,14 @@ module.exports = {
       const UPDATE_TOKEN_SQL = 'UPDATE `members` SET token = ? WHERE sid = ?'
       await db.query(UPDATE_TOKEN_SQL, [token, insertId])
 
+      const QUERY_USER = `
+        SELECT sid, name, avatar, email, birthday, mobile, address
+        FROM members
+        WHERE sid = ?`
+      const [[userData]] = await db.query(QUERY_USER, [insertId])
+
       return {
+        userData,
         result,
         token,
       }
@@ -143,18 +147,33 @@ module.exports = {
 
     // 沒有註冊過
     if (noRegister) {
-      console.log(' 新增註冊的會員 ')
       // 新增註冊的會員
-      const { result, token } = await insertUser()
+      const { userData, result, token } = await insertUser()
+
+      console.log(' 新增註冊的會員 => ', result)
 
       // 有註冊才寄信
       if (result.length > 0) {
         console.log('註冊結果: ', result.length > 0, email)
 
+        // // 註冊後登入
+        // const token = jwt.sign({ ...userData }, process.env.TOKEN_SECRET, {
+        //   expiresIn: EXPIRES_IN,
+        // })
+
+        // // 設定前端的 cookie，讓前端發送請求會帶這個 cookie
+        // res.cookie('chademy-token', token, {
+        //   maxAge: EXPIRES_IN,
+        //   httpOnly: true,
+        // })
+
+        // 設定前端的 cookie，讓前端發送請求會帶這個 cookie
+        setCookies(userData, res)
+
         res.json({
           success: true,
-          msg: '註冊成功！請不要去信箱查看，因為不會寄認證信件。',
-          data: null,
+          msg: '註冊成功！請去信箱查看會員認證信件。',
+          data: userData,
         })
 
         console.log(' 寄出認證信 ')
@@ -166,9 +185,6 @@ module.exports = {
         // 先將會員資料用 JSON.stringify 轉成字串，然後 encry 加密，最後 encodeURIComponent
         const encodeToken = `${encodeURIComponent(token)}`
         const data = apiUrl + encodeToken
-
-        // console.log('  req.headers.host', req.headers.host)
-        console.log('  url:', data)
 
         emailService.send({ to: email, data: data })
       }
@@ -196,7 +212,7 @@ module.exports = {
     console.log('sid: ', data.sid)
 
     // 透過 sid 將會員的 status 設定成 1，代表啟用。
-    const STATUS_SQL = 'UPDATE `members` set status = 1 WHERE sid = ?'
+    const STATUS_SQL = 'UPDATE `members` SET status = 1 WHERE sid = ?'
     const [{ changedRows, affectedRows }] = await db.query(STATUS_SQL, [
       data.sid,
     ])
@@ -237,6 +253,7 @@ module.exports = {
 
   // 測試
   async loginTest(req, res, next) {
+    console.log(' => loginTest ')
     // const EXPIRES_IN = 10 * 1000;
 
     // const token = jwt.sign({ test: 123 }, "YOUR_JWT_SECRET", { expiresIn: EXPIRES_IN });
@@ -244,7 +261,7 @@ module.exports = {
     // console.log("token", token);
     // res.cookie("token", token, { maxAge: EXPIRES_IN, httpOnly: true });
 
-    res.json({})
+    res.json({ success: true })
   },
 
   async getTest(req, res, next) {
@@ -254,7 +271,107 @@ module.exports = {
 
     res.json({})
   },
+
+  // 忘記密碼
+  async forgetPwd(req, res) {
+    let email = req.body.email
+
+    // 拿 token 去找有沒有會員
+    let QUERY_SQL = `SELECT token FROM members WHERE email = ?`
+    const [row] = await db.query(QUERY_SQL, [email])
+
+    if (!row.length) {
+      return res.json({
+        success: false,
+        msg: '這個信箱還未註冊過',
+        data: null,
+      })
+    }
+
+    const options = {
+      to: email,
+      subject: 'Chademy 會員身分重設密碼',
+      html: `
+        <h1>親愛的Chademy會員您好:</h1><br>
+        <h3>請點擊下方進行重新設定密碼</h3><br>
+        <a href="http://localhost:3000/reset-password?token=${row[0].token}">
+          <h2>重設密碼頁</h2>
+        </a>`,
+    }
+
+    emailService.send(options).then(() => {
+      // 寄信成功後
+      res.json({
+        success: true,
+        msg: '請到信箱修改密碼',
+        data: null,
+      })
+    })
+  },
+
+  //修改會員密碼
+  async changePassword(req, res, next) {
+    let email = req.body.email
+    let password = req.body.password
+    // console.log(number, password);
+    let sql = `UPDATE members SET password = '${password}' WHERE email = '${email}' `
+
+    db.query(sql, (err, row) => {
+      if (err) return res.json({ err: err })
+      // console.log(row);
+      if (row.changedRows == 0) {
+        res.json({
+          success: false,
+          msg: '信箱有誤',
+          data: null,
+        })
+        return
+      } else {
+        res.json({
+          success: true,
+          msg: '完成密碼更新',
+          data: null,
+        })
+      }
+    })
+  },
+
+  // 更新密碼
+  async resetPWD(req, res, next) {
+    const token = req.body.token
+    const password = req.body.password
+
+    // 確認 token
+    const QUERY_SQL = `SELECT email FROM members WHERE token = ?`
+    const [emailRow] = await db.query(QUERY_SQL, [token])
+
+    console.log(emailRow, emailRow[0])
+
+    if (!emailRow.length) {
+      res.json({
+        success: false,
+        msg: '密碼更新失敗',
+        data: emailRow[0],
+      })
+      return
+    }
+
+    // 確認 token
+
+    const UPDATE_PWD_SQL = 'UPDATE `members` SET password = ? WHERE token = ?'
+    const [row] = await db.query(UPDATE_PWD_SQL, [encry(password), token])
+
+    console.log(row)
+
+    res.json({
+      success: true,
+      msg: '密碼更新成功',
+      data: row[0],
+    })
+  },
 }
+
+//用token查詢email，再去修改密碼
 
 /**
  *
@@ -284,6 +401,16 @@ mobile
      curl -X POST -H "Content-Type: application/json" -d \
     '{"name":"test","mobile":"0928555655","birthday":"2020-11-04","address":"test","email":"enter3017sky@gmail.com","password":"999"}' \
     "http://localhost:3001/members/register"
+
+
+
+     curl -X POST -H "Content-Type: application/json" -d \
+    '{ "email":"enter3017sky@gmail.com" }' \
+    "http://localhost:3001/members/forgetPwd"
+
+     curl -X POST -H "Content-Type: application/json" -d \
+    '{ "email":"enter3017sky@gmail.com" }' \
+    "http://localhost:3001/members/resetPWD"
 
 
 

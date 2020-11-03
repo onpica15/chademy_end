@@ -48,6 +48,42 @@ app.use(cors(corsOptions))
 // 使用樣版引擎
 app.set('view engine', 'ejs')
 
+// 路由驗證
+app.use((req, res, next) => {
+  // 跟下面一樣 => const token = req.cookies['chademy-token']
+  const { ['chademy-token']: token } = req.cookies
+
+  // 白名單
+  const whiteList = ['list', 'login', 'logout', 'register']
+
+  // // 如果請求的網址 "包含" 白名單，就給過。
+  // const isWhiteList = whiteList.some((url) => ~req.url.indexOf(url))
+
+  const beforeQqeryUrl = req.url.split('?')[0]
+
+  // =>  [ '', 'members', 'login' ]
+  const oneLevelUrl = beforeQqeryUrl.split('/')
+
+  console.log(oneLevelUrl)
+
+  if (
+    whiteList.includes(oneLevelUrl[1]) ||
+    whiteList.includes(oneLevelUrl[2])
+  ) {
+    next()
+  } else if (!token) {
+    // 如果沒有 token 以及不在白名單內
+    return res.json({
+      code: 999,
+      success: false,
+      msg: '時間過長，請重新登入',
+      data: null,
+    })
+  } else {
+    next()
+  }
+})
+
 // -------------------------------以下開始路由設定------------------------
 
 // 首頁路由

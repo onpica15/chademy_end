@@ -1,7 +1,6 @@
 class Login {
   constructor(email, password) {
-    this.email = email;
-    this.password = password;
+    this.email = email
   }
 
   getSQL() {
@@ -13,9 +12,9 @@ class Login {
       FROM
         members
       WHERE
-        email = '${this.email}' AND password = '${this.password}'`;
-    return sql;
+        email = '${this.email}'`
+    return sql
   }
 }
 
-module.exports = Login;
+module.exports = Login
