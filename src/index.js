@@ -14,12 +14,8 @@ const jwt = require('jsonwebtoken')
 // 建立app物件
 const app = express()
 
+// 解析 request Cookies
 app.use(cookieParser())
-
-// -------------------以下開始物件、top use middleware設定------------------------
-
-// 建立app物件
-const app = express()
 
 // 解析urlencoded格式middleware
 app.use(
