@@ -6,6 +6,15 @@ const upload = require(__dirname + "/upload-img-module");
 const multer = require("multer");
 const cors = require("cors");
 
+const cookieParser = require('cookie-parser')
+const jwt = require('jsonwebtoken')
+
+// -------------------以下開始物件、top use middleware設定------------------------
+
+// 建立app物件
+const app = express()
+
+app.use(cookieParser())
 
 // -------------------以下開始物件、top use middleware設定------------------------
 
