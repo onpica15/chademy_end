@@ -86,9 +86,10 @@ router.get("/list", async (req, res) => {
   res.render("man_secondhand/man_secondhand_list", output);
 });
 
+//react
 router.get("/secondhandlist", async (req, res) => {
  
-  let sql = `SELECT * FROM i_secondhand_product ORDER BY sid  LIMIT 16`;
+  let sql = `SELECT * FROM i_secondhand_product ORDER BY sid `;
   const [results] = await db.query(sql);
  
   res.json(results);
