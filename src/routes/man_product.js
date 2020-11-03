@@ -8,11 +8,7 @@ const db = require(__dirname + "/../db_connect2");
 const moment = require("moment-timezone");
 const multer = require("multer");
 const upload = require(__dirname + "/../upload-img-module");
-<<<<<<< Updated upstream
-const upload2 = require(__dirname + "/../react-upload-img-module");
-=======
 // const upload = require(__dirname + "/../react-upload-img-module");
->>>>>>> Stashed changes
 const fs = require("fs");
 
 
