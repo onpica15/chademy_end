@@ -84,6 +84,7 @@ app.use('/a_title_mainlist', require(__dirname + '/routes/a_title_mainlist'))
 // 引入部落格路由
 
 // 引入會員路由
+app.use('/members', require(__dirname + '/routes/members'))
 
 // 引入購物車路由
 app.use('/j_cart', require(__dirname + '/routes/j_cart'))
