@@ -54,10 +54,22 @@ app.use((req, res, next) => {
   const { ['chademy-token']: token } = req.cookies
 
   // 白名單
-  const whiteList = ['list', 'login', 'logout', 'register','man_product','man_secondhand','man_fund','a_experience_mainlist','j_cart']
+  const whiteList = [
+    'list',
+    'login',
+    'logout',
+    'register',
+    'userAuth',
+    'forgetPwd',
+    'resetPWD',
+    'man_product',
+    'man_secondhand',
+    'man_fund',
+    'a_experience_mainlist',
+    'j_cart',
+  ]
 
-  // // 如果請求的網址 "包含" 白名單，就給過。
-  // const isWhiteList = whiteList.some((url) => ~req.url.indexOf(url))
+  // 如果請求的網址 "包含" 白名單，就給過。
 
   const beforeQqeryUrl = req.url.split('?')[0]
 
@@ -71,16 +83,34 @@ app.use((req, res, next) => {
     whiteList.includes(oneLevelUrl[2])
   ) {
     next()
-  } else if (!token) {
-    // 如果沒有 token 以及不在白名單內
-    return res.json({
-      code: 999,
-      success: false,
-      msg: '時間過長，請重新登入',
-      data: null,
-    })
   } else {
-    next()
+    let authToken = req.get('Authorization')
+
+    console.log(authToken)
+
+    // 沒有 authToken
+    if (!authToken) return res.type('text/plain').status(404).send('查無此頁')
+
+    authToken = authToken.slice(7)
+
+    jwt.verify(authToken, process.env.TOKEN_SECRET, (error, payload) => {
+      if (!error) {
+        console.log(' ! error ')
+        next()
+      } else {
+        // 如果沒有 token 以及不在白名單內
+        return res.json({
+          code: 999,
+          success: false,
+          msg: '時間過長，請重新登入',
+          data: null,
+        })
+      }
+    })
+
+    // next()
+
+    console.log('\n', 3)
   }
 })
 

@@ -16,17 +16,9 @@ const Register = require(__dirname + '/modules/register')
 // const EXPIRES_IN = 15 * 1000 // NOTE: 測試用 10 秒
 const EXPIRES_IN = 1 * 60 * 60 * 1000 // 過期時間一小時
 
-function setCookies(data, res) {
-  // 註冊後登入
-  const token = jwt.sign({ ...data }, process.env.TOKEN_SECRET, {
-    expiresIn: EXPIRES_IN,
-  })
-
-  // 設定前端的 cookie，讓前端發送請求會帶這個 cookie
-  res.cookie('chademy-token', token, {
-    maxAge: EXPIRES_IN,
-    httpOnly: true,
-  })
+// 登入驗證 token
+function getAuthToken(data) {
+  return jwt.sign({ ...data }, process.env.TOKEN_SECRET)
 }
 
 // 導出模組
@@ -41,21 +33,11 @@ module.exports = {
       decrypt(response[0].password) === decrypt(encry(req.body.password))
 
     if (response.length && passwordEqual) {
-      // // 這邊還沒完全好
-      // const token = jwt.sign({ ...req.body }, process.env.TOKEN_SECRET, {
-      //   expiresIn: EXPIRES_IN,
-      // })
-
-      // // 設定前端的 cookie，讓前端發送請求會帶這個 cookie
-      // res.cookie('chademy-token', token, { maxAge: EXPIRES_IN, httpOnly: true })
-
-      setCookies(req.body, res)
-
-      // 除了 password 的其他資料，前端登入後不需要知道密碼
+      // otherData: 除了 password 的其他資料，前端登入後不需要知道密碼
       const { password, ...otherData } = response[0]
 
       // 將其他資料在 data 中展開
-      const data = { ...otherData, token }
+      const data = { ...otherData, authToken: getAuthToken(response) }
 
       res.json({
         success: true,
@@ -110,26 +92,20 @@ module.exports = {
         decrypt(encry(req.body.password))
       )
 
+      console.log(789, data)
+
       const result = await db.query('INSERT INTO `members` set ?', [data])
 
-      // 把存入 db 的資料拿來生成 token
+      // 把存入 db 的資料拿來生成認證信箱的 token
       const token = encry(JSON.stringify(data))
 
+      // 然後透過 sid 將 [認證信 token] 更新到資料庫
       const [{ insertId }] = result
       const UPDATE_TOKEN_SQL = 'UPDATE `members` SET token = ? WHERE sid = ?'
       await db.query(UPDATE_TOKEN_SQL, [token, insertId])
 
-      const QUERY_USER = `
-        SELECT sid, name, avatar, email, birthday, mobile, address
-        FROM members
-        WHERE sid = ?`
-      const [[userData]] = await db.query(QUERY_USER, [insertId])
-
-      return {
-        userData,
-        result,
-        token,
-      }
+      // 返回以下資料
+      return { result, token }
     }
 
     // 取得註冊狀態
@@ -148,7 +124,7 @@ module.exports = {
     // 沒有註冊過
     if (noRegister) {
       // 新增註冊的會員
-      const { userData, result, token } = await insertUser()
+      const { result, token } = await insertUser()
 
       console.log(' 新增註冊的會員 => ', result)
 
@@ -156,24 +132,10 @@ module.exports = {
       if (result.length > 0) {
         console.log('註冊結果: ', result.length > 0, email)
 
-        // // 註冊後登入
-        // const token = jwt.sign({ ...userData }, process.env.TOKEN_SECRET, {
-        //   expiresIn: EXPIRES_IN,
-        // })
-
-        // // 設定前端的 cookie，讓前端發送請求會帶這個 cookie
-        // res.cookie('chademy-token', token, {
-        //   maxAge: EXPIRES_IN,
-        //   httpOnly: true,
-        // })
-
-        // 設定前端的 cookie，讓前端發送請求會帶這個 cookie
-        setCookies(userData, res)
-
         res.json({
           success: true,
           msg: '註冊成功！請去信箱查看會員認證信件。',
-          data: userData,
+          data: null,
         })
 
         console.log(' 寄出認證信 ')
@@ -206,15 +168,24 @@ module.exports = {
 
     // 拿 token 去找有沒有會員
     let QUERY_SQL = `SELECT * FROM members WHERE token = ?`
-    const [row] = await db.query(QUERY_SQL, [token])
-    const data = row[0]
+    const [[userData]] = await db.query(QUERY_SQL, [token])
 
-    console.log('sid: ', data.sid)
+    // 找不到會員
+    if (!userData) {
+      res.send(`
+        <h1 style="
+          text-align: center;
+          margin-top: 30vh;
+        ">查無會員</h1>
+      `)
+
+      return
+    }
 
     // 透過 sid 將會員的 status 設定成 1，代表啟用。
     const STATUS_SQL = 'UPDATE `members` SET status = 1 WHERE sid = ?'
     const [{ changedRows, affectedRows }] = await db.query(STATUS_SQL, [
-      data.sid,
+      userData.sid,
     ])
 
     // changedRows: 1 代表更新成功, 0 沒有更新
@@ -254,14 +225,8 @@ module.exports = {
   // 測試
   async loginTest(req, res, next) {
     console.log(' => loginTest ')
-    // const EXPIRES_IN = 10 * 1000;
 
-    // const token = jwt.sign({ test: 123 }, "YOUR_JWT_SECRET", { expiresIn: EXPIRES_IN });
-
-    // console.log("token", token);
-    // res.cookie("token", token, { maxAge: EXPIRES_IN, httpOnly: true });
-
-    res.json({ success: true })
+    res.json({ success: '測試成功' })
   },
 
   async getTest(req, res, next) {
@@ -283,7 +248,7 @@ module.exports = {
     if (!row.length) {
       return res.json({
         success: false,
-        msg: '這個信箱還未註冊過',
+        msg: '寄送失敗，這個信箱還未註冊過',
         data: null,
       })
     }
