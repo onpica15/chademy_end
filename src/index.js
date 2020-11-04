@@ -54,7 +54,7 @@ app.use((req, res, next) => {
   const { ['chademy-token']: token } = req.cookies
 
   // 白名單
-  const whiteList = ['list', 'login', 'logout', 'register']
+  const whiteList = ['list', 'login', 'logout', 'register','man_product','man_secondhand','man_fund','a_experience_mainlist','j_cart']
 
   // // 如果請求的網址 "包含" 白名單，就給過。
   // const isWhiteList = whiteList.some((url) => ~req.url.indexOf(url))
