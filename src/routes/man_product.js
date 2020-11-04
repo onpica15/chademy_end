@@ -270,54 +270,28 @@ router.post('/addreview', upload.none(), async (req, res) => {
 });
 
 // get 評論 API
-router.get("/review", async (req, res) => {
+router.get("/review/:sid", async (req, res) => {
   
-  const sql = "SELECT * FROM `w_review` Order By `sid` DESC LIMIT 1";
-  const [row] = await db.query(sql);
+  const sql = "SELECT * FROM `w_review` WHERE buy_product = ? Order By `sid` DESC ";
+  const [row] = await db.query(sql,[req.params.sid]);
+  row.forEach(el => {
+    el.review_time = moment(el.review_time).format("YYYY-MM-DD");  
+  });
   res.json(row); // [{}]
 });
 
 
+// get 相關產品 API
+router.get("/relate", async (req, res) => {
 
-// 評論單張圖片上傳 API
-// router.post("/reactupload", upload2.single('myfile'), (req, res) => {
-//   console.log('req.myfile' + req.myfile );
+  const cate = req.query.category
+  
+  const sql = `SELECT * FROM w_product_mainlist WHERE category = '${cate}' LIMIT 12 `;
+  const [row] = await db.query(sql);
+  
+  res.json(row); // [{}]
+});
 
-//   if (req.myfile && req.myfile.originalname) {
-//     let ext = "";
-
-//     switch (req.file.mimetype) {
-//       case "image/png":
-//       case "image/jpeg":
-//       case "image/gif":
-//         fs.rename(
-//           req.file.path,
-//           __dirname + "../../../Chademy ( React + Node )/React-Chademy/public/images/" + req.file.originalname,
-//           (error) => {
-//             return res.json({
-//               success: true,
-//               path: "/images/" + req.file.originalname,
-//               newFileName: req.file.filename
-//             });
-//           }
-//         );
-
-//         break;
-//       default:
-//         fs.unlink(req.file.path, (error) => {
-//           return res.json({
-//             success: false,
-//             msg: "不是圖檔",
-//           });
-//         });
-//     }
-//   } else {
-//     return res.json({
-//       success: false,
-//       msg: "沒有上傳檔案",
-//     });
-//   }
-// });
 
 
 
