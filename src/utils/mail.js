@@ -11,6 +11,7 @@ module.exports = function () {
   const mailTransport = nodemailer.createTransport({
     // service: 'gmail',
     // logger: true, // 可以在 terminal 看 log
+
     host: 'smtp.gmail.com',
     port: 465,
     auth: {
