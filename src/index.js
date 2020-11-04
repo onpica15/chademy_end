@@ -82,10 +82,12 @@ app.use((req, res, next) => {
     whiteList.includes(oneLevelUrl[1]) ||
     whiteList.includes(oneLevelUrl[2])
   ) {
+    console.log('  => Pass ')
     next()
   } else {
     let authToken = req.get('Authorization')
 
+    console.log('  => authToken ')
     console.log(authToken)
 
     // 沒有 authToken

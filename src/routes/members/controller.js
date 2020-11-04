@@ -28,11 +28,13 @@ module.exports = {
     let Member = new Login(req.body.email) // 之後需要加密 encry
     const [response] = await db.query(Member.getSQL())
 
-    // 比對解密後的密碼是否相同
-    const passwordEqual =
-      decrypt(response[0].password) === decrypt(encry(req.body.password))
+    console.log(response)
 
-    if (response.length && passwordEqual) {
+    if (response.length) {
+      // 比對解密後的密碼是否相同
+      const passwordEqual =
+        decrypt(response[0].password) === decrypt(encry(req.body.password))
+
       // otherData: 除了 password 的其他資料，前端登入後不需要知道密碼
       const { password, ...otherData } = response[0]
 
