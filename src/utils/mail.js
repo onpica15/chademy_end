@@ -9,8 +9,10 @@ const mailTemplate = require(__dirname + '/../template/register')
 
 module.exports = function () {
   const mailTransport = nodemailer.createTransport({
-    service: 'gmail',
-    logger: true, // 可以在 terminal 看 log
+    // service: 'gmail',
+    // logger: true, // 可以在 terminal 看 log
+    host: 'smtp.gmail.com',
+    port: 465,
     auth: {
       user: process.env.GMAIL_USER,
       pass: process.env.GMAIL_PASS,
