@@ -107,7 +107,7 @@ router.post('/add', upload.none(), async (req, res) => {
   }
   */
 
-  const sql = "INSERT INTO `J_cart_order` set ?";
+  const sql = "INSERT INTO `J_order_detail` set ?";
   const [{
     affectedRows,
     insertId
@@ -123,6 +123,27 @@ router.post('/add', upload.none(), async (req, res) => {
   });
 });
 
+router.post('/addorder', upload.none(), async (req, res) => {
+  const data = {
+    ...req.body
+  };
+
+  console.log(req.body);
+  const sql = "INSERT INTO `J_cart_order` set ?";
+  const [{
+    affectedRows,
+    insertId
+  }] = await db.query(sql, [data]);
+  // sql是語法一個問號即可，data是array
+  // [{"fieldCount":0,"affectedRows":1,"insertId":860,"info":"","serverStatus":2,"warningStatus":1},null]
+
+
+  res.json({
+    success: !!affectedRows,
+    affectedRows,
+    insertId,
+  });
+});
 
 // 記得加這句呀～module匯出index才能用呀～
 module.exports = router;
