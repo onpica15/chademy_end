@@ -86,28 +86,7 @@ router.post('/add', upload.none(), async (req, res) => {
 
   console.log(req.body);
 
-  /*
-  {
-      member_id=?, // session
-      data: [
-          {
-              p_id: 12,
-              p_name: '',
-              quantity: 2
-          },
-          {
-              p_id: 17,
-              quantity: 1
-          },
-          {
-              p_id: 2,
-              quantity: 3
-          },
-      ]
-  }
-  */
-
-  const sql = "INSERT INTO `J_order_detail` set ?";
+  const sql = "INSERT INTO `j_order_detail` set ?";
   const [{
     affectedRows,
     insertId
