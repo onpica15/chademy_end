@@ -135,6 +135,8 @@ router.get("/reactfilter", async (req, res) => {
   let cateWhere = ''
   let seatWhere = ''
   let colorWhere = ''
+  let searchWhere = ''
+  let sortWhere=''
   // console.log(where);
   console.log(req.query.category);
   console.log(req.query.chairSeat);
@@ -175,20 +177,54 @@ router.get("/reactfilter", async (req, res) => {
     // cate.forEach(element => colorWhere.push(`color = '${element}'`))
   }  
 
+  if (req.query.chairSearch) {
+    console.log('req.query.chairSearch'+req.query.chairSearch);
+    const cate = decodeURI(req.query.chairSearch)
+    console.log(cate);
+   
+    searchWhere = ` ( product_name LIKE '%${cate}%' ) `;
+    // cate.forEach(element => colorWhere.push(`color = '${element}'`))
+  }  
+
+  if (req.query.sortSearch) {
+    console.log('req.query.sortSearch'+req.query.sortSearch);
+    const cate = decodeURI(req.query.sortSearch)
+    console.log(cate);
+
+    if(cate==1){
+      sortWhere = 'ORDER BY `w_product_mainlist`.`last_edit_time` DESC  ';
+   }
+   if(cate==2){
+    sortWhere = 'ORDER BY `w_product_mainlist`.`last_edit_time` ASC';
+ }
+   if(cate==3){
+    sortWhere = 'ORDER BY `w_product_mainlist`.`price` DESC';
+   }
+
+   if(cate==4){
+    sortWhere = 'ORDER BY `w_product_mainlist`.`price` ASC';
+ }
+   
+    // cate.forEach(element => colorWhere.push(`color = '${element}'`))
+  }  
+
   let where=[]
  
   if (cateWhere.length>0)where.push(cateWhere)
   if (seatWhere.length>0)where.push(seatWhere)
   if (colorWhere.length>0)where.push(colorWhere)
+  if (searchWhere.length>0)where.push(searchWhere)
   console.log('cateWhere.join'+cateWhere);
   console.log('seatWhere.join'+seatWhere);
   console.log('colorWhere.join'+colorWhere);
+  console.log('searchWhere.join'+searchWhere);
+  console.log('sortWhere'+sortWhere);
   console.log('where'+where);
   console.log('where.join: '+where.join(' AND '));
 
 // SELECT * FROM `w_product_mainlist` WHERE category = 'chair' AND chair_seat = '木頭' OR category = 'chair' AND chair_seat = '布料'
 
-  let sql = `SELECT * FROM w_product_mainlist WHERE ` + where.join(' AND ')
+  let sql = `SELECT * FROM w_product_mainlist WHERE ` + where.join(' AND ') + sortWhere
   console.log('sql: '+sql);
   console.log('where'+where);
   const [totalRows

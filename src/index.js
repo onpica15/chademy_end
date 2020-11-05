@@ -67,6 +67,7 @@ app.use((req, res, next) => {
     'man_secondhand',
     'img',
     'man_fund',
+    'checkfinish',
     'a_experience_mainlist',
     'j_cart',
   ]
