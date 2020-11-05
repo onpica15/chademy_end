@@ -107,6 +107,35 @@ async function getEditList(req) {
 
 
 
+// -----------------React：列表頁面、編輯頁面、新增頁面--------------------
+
+// 列表頁面
+router.get("/reactlist", async (req, res) => {
+  const [totalRows
+  ] = await db.query("SELECT * FROM `a_experience_mainlist` WHERE `category_sid`=1 LIMIT 3");
+  res.json(totalRows);
+});
+
+
+router.get("/reactlistthree", async (req, res) => {
+  const [totalRows
+  ] = await db.query("SELECT * FROM `a_experience_mainlist` WHERE `category_sid`=3 LIMIT 3");
+  res.json(totalRows);
+});
+
+// 課程頁面
+router.get("/reactitem/:sid", async (req, res) => {
+
+  const sql = "SELECT * FROM a_experience_mainlist WHERE sid=?";
+  const [row] = await db.query(sql, [req.params.sid]);
+
+  res.json(row); // [{}]
+});
+
+
+
+
+
 // -----------------畫面3個：列表頁面、編輯頁面、新增頁面--------------------
 
 
@@ -148,7 +177,7 @@ router.get("/add", async (req, res) => {
 // ------------------------- 以下為 RESTful API------------------------------
 
 
-// 編輯表單 PI
+// 編輯表單 API
 router.post('/edit/:sid', upload.none(), async (req, res) => {
   const data = {
     ...req.body

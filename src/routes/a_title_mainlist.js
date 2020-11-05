@@ -95,6 +95,24 @@ async function getEditList(req) {
   return output;
 }
 
+
+// -----------------React：列表頁面、編輯頁面、新增頁面--------------------
+// 列表頁面
+router.get("/reactlistfive", async (req, res) => {
+  const [totalRows
+  ] = await db.query("SELECT * FROM `a_title_mainlist` WHERE 1");
+  res.json(totalRows);
+});
+
+
+
+
+
+
+
+
+
+
 // -----------------畫面3個：列表頁面、編輯頁面、新增頁面--------------------
 
 // 列表頁面

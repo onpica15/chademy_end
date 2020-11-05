@@ -102,6 +102,18 @@ async function getEditList(req) {
 
 
 
+// -----------------React：列表頁面、編輯頁面、新增頁面--------------------
+// 列表頁面
+router.get("/reactlistfour", async (req, res) => {
+  const [totalRows
+  ] = await db.query("SELECT * FROM `a_wood_maker` WHERE 1 LIMIT 4");
+  res.json(totalRows);
+});
+
+
+
+
+
 
 // -----------------畫面3個：列表頁面、編輯頁面、新增頁面--------------------
 
