@@ -89,7 +89,7 @@ router.get("/list", async (req, res) => {
 //react
 router.get("/secondhandlist", async (req, res) => {
  
-  let sql = `SELECT * FROM i_secondhand_product ORDER BY sid `;
+  let sql = `SELECT * FROM i_secondhand_product ORDER BY sid DESC`;
   const [results] = await db.query(sql);
  
   res.json(results);
@@ -98,6 +98,13 @@ router.get("/secondhandlist", async (req, res) => {
 // 產品頁面
 router.get("/secondhandlist/:sid", async (req, res) => {
   const sql = "SELECT * FROM i_secondhand_product WHERE sid=?";
+  const [row] = await db.query(sql, [req.params.sid]);
+  res.json(row); // [{}]
+});
+
+//猜你喜歡
+router.get("/relate/:sid", async (req, res) => {
+  const sql = "SELECT * FROM i_secondhand_product WHERE categories_sid=?";
   const [row] = await db.query(sql, [req.params.sid]);
   res.json(row); // [{}]
 });
