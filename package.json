@@ -33,7 +33,10 @@
     "fs": "0.0.1-security",
     "http-proxy-middleware": "^1.0.6",
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     "jsonwebtoken": "^8.5.1",
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     "moment": "^2.29.1",

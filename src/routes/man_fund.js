@@ -124,7 +124,11 @@ router.get("/list", async (req, res) => {
 
 router.get("/fundlistnode", async (req, res) => {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   let sql = `SELECT * FROM e_fund_project ORDER BY sid`;
+=======
+  let sql = `SELECT * FROM e_fund_project ORDER BY sid  LIMIT 10`;
+>>>>>>> Stashed changes
 =======
   let sql = `SELECT * FROM e_fund_project ORDER BY sid  LIMIT 10`;
 >>>>>>> Stashed changes
@@ -133,6 +137,7 @@ router.get("/fundlistnode", async (req, res) => {
 
 });
 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 // funditem
 router.get("/reactitem/:sid", async (req, res) => {
@@ -143,6 +148,8 @@ router.get("/reactitem/:sid", async (req, res) => {
 });
 
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 // get 追蹤狀態
@@ -297,7 +304,10 @@ router.post('/add', upload.none(), async (req, res) => {
 
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
   const sql = "INSERT INTO `e_fund_project` set ?";
@@ -319,7 +329,11 @@ router.post('/add', upload.none(), async (req, res) => {
 // 資料刪除 API
 router.delete("/del/:sid", async (req, res) => {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   const sql = "DELETE FROM `e_fund_project` WHERE sid=?";
+=======
+  const sql = "DELETE FROM `we_fund_project` WHERE sid=?";
+>>>>>>> Stashed changes
 =======
   const sql = "DELETE FROM `we_fund_project` WHERE sid=?";
 >>>>>>> Stashed changes
