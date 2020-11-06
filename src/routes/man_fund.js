@@ -123,11 +123,20 @@ router.get("/list", async (req, res) => {
 });
 
 router.get("/fundlistnode", async (req, res) => {
-  let sql = `SELECT * FROM e_fund_project ORDER BY sid  LIMIT 10`;
+  let sql = `SELECT * FROM e_fund_project ORDER BY sid`;
   const [results] = await db.query(sql); 
   res.json(results);
 
 });
+
+// funditem
+router.get("/reactitem/:sid", async (req, res) => {
+  
+  const sql = "SELECT * FROM e_fund_project WHERE sid=?";
+  const [row] = await db.query(sql, [req.params.sid]);
+  res.json(row); // [{}]
+});
+
 
 // get 追蹤狀態
 router.get("/heart/:sid", async (req, res) => {
@@ -287,7 +296,7 @@ router.post('/add', upload.none(), async (req, res) => {
     insertId
   }] = await db.query(sql, [data]);
   
-  
+
 
   res.json({
     success: !!affectedRows,
