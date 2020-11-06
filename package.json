@@ -30,7 +30,10 @@
     "express": "^4.17.1",
     "fs": "0.0.1-security",
     "http-proxy-middleware": "^1.0.6",
+<<<<<<< Updated upstream
     "jsonwebtoken": "^8.5.1",
+=======
+>>>>>>> Stashed changes
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.31",
     "multer": "^1.4.2",
