@@ -63,6 +63,7 @@ app.use((req, res, next) => {
     'forgetPwd',
     'resetPWD',
     'man_product',
+    
     'product',
     'productlist',
     'man_secondhand',
