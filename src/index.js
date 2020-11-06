@@ -69,6 +69,7 @@ app.use((req, res, next) => {
     'man_fund',
     'checkfinish',
     'a_experience_mainlist',
+    'a_title_mainlist',
     'j_cart',
   ]
 
@@ -148,13 +149,17 @@ app.use(
 
 app.use('/a_wood_maker', require(__dirname + '/routes/a_wood_maker'))
 
-app.use('/a_title_mainlist', require(__dirname + '/routes/a_title_mainlist'))
 
 
 
 // 引入品牌故事路由
 
 // 引入部落格路由
+app.use(
+  '/a_title_mainlist',
+  require(__dirname + '/routes/a_title_mainlist')
+)
+
 
 // 引入會員路由
 app.use('/members', require(__dirname + '/routes/members'))
