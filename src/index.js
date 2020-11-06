@@ -71,6 +71,7 @@ app.use((req, res, next) => {
     'a_experience_mainlist',
     'a_title_mainlist',
     'j_cart',
+    'product/api'
   ]
 
   // 如果請求的網址 "包含" 白名單，就給過。
@@ -140,6 +141,8 @@ app.use('/man_secondhand', require(__dirname + '/routes/man_secondhand'))
 app.use('/man_fund', require(__dirname + '/routes/man_fund'))
 
 // 引入競標路由
+
+app.use('/product/api',require(__dirname + '/routes/bid_product'))
 
 // 引入課程路由
 app.use(
