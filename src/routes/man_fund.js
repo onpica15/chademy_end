@@ -314,7 +314,7 @@ router.post('/add', upload.none(), async (req, res) => {
 
 // 資料刪除 API
 router.delete("/del/:sid", async (req, res) => {
- Updated upstream
+
   const sql = "DELETE FROM `e_fund_project` WHERE sid=?";
 
 
