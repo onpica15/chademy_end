@@ -129,6 +129,22 @@ router.get("/reactlist", async (req, res) => {
   res.json(totalRows);
 });
 
+// 系列
+router.get("/series", async (req, res) => {
+  if(req.query.category){
+  const series = req.query.category
+  let sql = `SELECT * FROM w_product_mainlist WHERE category = ` + series
+  console.log('sql: '+sql);
+  console.log('series'+series);
+  console.log('req.query'+req.query);
+  
+  const [totalRows
+  ] = await db.query(sql);
+  res.json(totalRows);
+}
+})
+
+
 // filter頁面
 router.get("/reactfilter", async (req, res) => {
 

@@ -64,6 +64,7 @@ app.use((req, res, next) => {
     'resetPWD',
     'man_product',
     'product',
+    'productlist',
     'man_secondhand',
     'img',
     'man_fund',
