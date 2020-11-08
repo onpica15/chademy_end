@@ -40,7 +40,15 @@ router.post('/register', controller.register)
 
 //忘記密碼
 router.post('/forgetPwd', controller.forgetPwd)
+
+// 重置密碼
 router.post('/resetPWD', controller.resetPWD)
+
+// 會員中心
+router.post('/getUserInfo', controller.getUserInfo)
+
+router.post('/setUserInfo', controller.setUserInfo)
+router.post('/getUserCouponInfo', controller.getUserCouponInfo)
 
 // 帳號驗證
 router.get('/userAuth', controller.userAuth)
@@ -48,5 +56,8 @@ router.get('/userAuth', controller.userAuth)
 // 測試 用
 router.post('/loginTest', controller.loginTest)
 router.get('/getTest', controller.getTest)
+
+// example
+router.post('/example', controller.example)
 
 module.exports = router

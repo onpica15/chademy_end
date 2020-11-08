@@ -1,5 +1,7 @@
 const db = require(__dirname + '/../../db_connect2')
 
+const moment = require('moment-timezone')
+
 // 生成 JSON WEB TOKEN
 const jwt = require('jsonwebtoken')
 
@@ -38,8 +40,12 @@ module.exports = {
       // otherData: 除了 password 的其他資料，前端登入後不需要知道密碼
       const { password, ...otherData } = response[0]
 
+      const authToken = getAuthToken(response)
+
       // 將其他資料在 data 中展開
-      const data = { ...otherData, authToken: getAuthToken(response) }
+      const data = { ...otherData, authToken: authToken }
+
+      console.log(' 認證 authToken: ', authToken)
 
       res.json({
         success: true,
@@ -336,6 +342,105 @@ module.exports = {
       data: row[0],
     })
   },
+
+  // example
+  async example(req, res, next) {
+    const { sid } = req.body
+
+    console.log('  sid', sid)
+
+    const QUERY_SQL = `SELECT * FROM members WHERE sid = ?`
+    const [row] = await db.query(QUERY_SQL, [sid])
+
+    console.log(row)
+
+    res.json('\n => example OK! \n')
+  },
+
+  // 個人資料撈出來
+  async getUserInfo(req, res, next) {
+    const { token } = req.body //跟前端拿請求，怎麼拿，post百分之兩百從body拿
+    console.log()
+
+    const QUERY_SQL = `SELECT name, mobile, birthday FROM members WHERE token = ?` // 從後端資料庫拿你指定要的資料
+    const [row] = await db.query(QUERY_SQL, [token]) //從資料庫拿出來 row(那筆資料)
+
+    row[0].birthday = moment(row[0].birthday).format('YYYY-MM-DD')
+
+    console.log(' row[0]: ', row[0])
+
+    res.json({
+      success: true,
+      msg: '會員資料已傳送',
+      data: row[0],
+    })
+  },
+
+  // 編輯會員資料 - 儲存
+  async setUserInfo(req, res, next) {
+    const { name, mobile, birthday, token } = req.body //跟前端拿請求，怎麼拿，post百分之兩百從body拿
+    console.log(name, mobile, birthday, token)
+
+    if (!name || !mobile || !birthday) {
+      return res.json({
+        success: false,
+        msg: '會員資料格式錯誤',
+        data: null,
+      })
+    }
+
+    const UPDATE_TOKEN_SQL = `
+      UPDATE members SET name = ?, mobile =?, birthday = ?
+      WHERE token = ?`
+
+    const [{ changedRows }] = await db.query(UPDATE_TOKEN_SQL, [
+      name,
+      mobile,
+      birthday,
+      token,
+    ])
+
+    console.log({
+      success: !!changedRows,
+      msg: `編輯會員資料${changedRows ? '成功' : '失敗'}`,
+      data: null,
+    })
+
+    res.json({
+      success: !!changedRows,
+      msg: `編輯會員資料${changedRows ? '成功' : '失敗'}`,
+      data: null,
+    })
+  },
+
+  //coupon資料撈出來
+  async getUserCouponInfo(req, res, next) {
+    const { token } = req.body //跟前端拿請求，怎麼拿，post百分之兩百從body拿
+    console.log()
+
+    const QUERY_SQL = `SELECT sid FROM members WHERE token = ?` // 從表裡透過where拿到select
+    const [[{ sid } = {}]] = await db.query(QUERY_SQL, [token]) //從資料庫拿出來 row(那筆資料)
+
+    console.log(sid) //row  => []  or [{ sid }]
+
+    if (sid) {
+      const QUERY_SQL1 = `SELECT * FROM coupon_receive CR  LEFT JOIN coupon C ON CR.coupon_id = C.coupon_id  WHERE user_id = ?` // 從後端資料庫拿你指定要的資料
+      const [couponrow] = await db.query(QUERY_SQL1, [sid])
+
+      console.log('couponrow', '\n', couponrow)
+      res.json({
+        success: true,
+        msg: '會員折價券資料已傳送',
+        data: couponrow,
+      })
+    } else {
+      res.json({
+        success: false,
+        msg: '會員折價券資料傳送失敗啦幹su3su;6ru 19',
+        data: null,
+      })
+    }
+  },
 }
 
 //用token查詢email，再去修改密碼
@@ -376,8 +481,15 @@ mobile
     "http://localhost:3001/members/forgetPwd"
 
      curl -X POST -H "Content-Type: application/json" -d \
-    '{ "email":"enter3017sky@gmail.com" }' \
-    "http://localhost:3001/members/resetPWD"
+    '{ "token":"U2FsdGVkX182eCyGifwALZio7nkK5dWWfcnvC1YLUaVap78/qxYfLldsnVZ7w/kcMKZ8WI0hYyfH8AY4Ss0UKiHeFX06YcDqA3tfEcn70DFjikyviHbFj4dL7B8bKIXPo/8vIxboKNyFwOPoGlUXEnr+uaBRl7RT7hglvoOYmByZqU8V+zOVyYdf+OwbOM1mJDH6ZbawqgA2iPDwmxKjyu7+kUcb6WO/K57g48x+jDRxJwJR3dTOYquNciydzk+kYxhZwqV9nsPuOxosH7dXfm5r7VE+9hnxKs86cUj7bQs9o8xqonObBZKZAIAPTmFl" }' \
+    "http://localhost:3001/members/getUserCouponInfo"
+
+
+
+
+curl -X POST -H "Content-Type: application/json" -d \
+'{ "sid":"158" }' \
+"http://localhost:3001/members/example"
 
 
 

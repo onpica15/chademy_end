@@ -73,7 +73,9 @@ app.use((req, res, next) => {
     'a_experience_mainlist',
     'a_title_mainlist',
     'j_cart',
-    'product/api'
+    'product/api',
+    'example',
+    'getUserCouponInfo',
   ]
 
   // 如果請求的網址 "包含" 白名單，就給過。
@@ -81,32 +83,31 @@ app.use((req, res, next) => {
   const beforeQqeryUrl = req.url.split('?')[0]
 
   // =>  [ '', 'members', 'login' ]
-  const oneLevelUrl = beforeQqeryUrl.split('/')
+  const utlList = beforeQqeryUrl.split('/')
 
-  console.log(oneLevelUrl)
+  console.log(' api url: ', utlList)
 
-  if (
-    whiteList.includes(oneLevelUrl[1]) ||
-    whiteList.includes(oneLevelUrl[2])
-  ) {
+  if (whiteList.includes(utlList[1]) || whiteList.includes(utlList[2])) {
     console.log('  => Pass ')
     next()
   } else {
     let authToken = req.get('Authorization')
 
-    console.log('  => authToken ')
-    console.log(authToken)
+    console.log('  => authToken: ')
 
     // 沒有 authToken
     if (!authToken) return res.type('text/plain').status(404).send('查無此頁')
 
     authToken = authToken.slice(7)
 
+    console.log(authToken)
+
     jwt.verify(authToken, process.env.TOKEN_SECRET, (error, payload) => {
       if (!error) {
-        console.log(' ! error ')
+        console.log(' authToken: PASS!!! ')
         next()
       } else {
+        console.log(' authToken: Fail!!! ')
         // 如果沒有 token 以及不在白名單內
         return res.json({
           code: 999,
