@@ -5,6 +5,7 @@ const moment = require("moment-timezone");
 const multer = require("multer");
 const upload = require(__dirname + "/../upload-img-module");
 const fs = require("fs");
+const { request } = require('http');
 
 // get data頁碼
 async function getListData (req){
@@ -37,22 +38,46 @@ async function getListData (req){
 }
 
 // 畫面
-
+//getAll
 router.get("/list", async (req, res) => {
-  const output = {
-    rows: [],
-  };
-  let sql = `SELECT * FROM J_cart_order ORDER BY sid  LIMIT 2`;
-  const [results] = await db.query(sql);
-  output.rows = results;
-//   results.forEach((el) => {
-//     el.last_edit_time = moment(el.last_edit_time).format("YYYY-MM-DD");
-//     el.on_shelf_time = moment(el.on_shelf_time).format("YYYY-MM-DD");
-//     el.off_shelf_time = moment(el.off_shelf_time).format("YYYY-MM-DD");
-//   });
-  res.json(output);
+  const member = req.query.member
+  console.log(member)
+  let sql = `SELECT * FROM J_cart_order WHERE member='${member}'`;
+  console.log(sql)
+  const [row] = await db.query(sql);
+  res.json(row);
 });
 
+//get pending
+router.get("/listpending", async (req, res) => {
+  const member = req.query.member
+  console.log(member)
+  let sql = `SELECT * FROM J_cart_order WHERE (member='${member}')AND(order_status =1)`;
+  console.log(sql)
+  console.log('pending')
+  const [row] = await db.query(sql);
+  res.json(row);
+});
+
+//get cancel
+router.get("/listcancel", async (req, res) => {
+  const member = req.query.member
+  console.log(member)
+  let sql = `SELECT * FROM J_cart_order WHERE (member='${member}')AND(order_status =4)`;
+  console.log(sql)
+  const [row] = await db.query(sql);
+  res.json(row);
+});
+//get finish
+router.get("/listfinish", async (req, res) => {
+  const member = req.query.member
+  console.log(member)
+  let sql = `SELECT * FROM J_cart_order WHERE (member='${member}')AND(order_status =3)`;
+  console.log(sql)
+  console.log('finish')
+  const [row] = await db.query(sql);
+  res.json(row);
+});
 
 
 router.get("/add", async (req, res) => {
