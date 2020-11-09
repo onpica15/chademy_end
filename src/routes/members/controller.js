@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken')
 // 加密 解密
 const { encry, decrypt } = require(__dirname + '/../../utils/crypto')
 const emailService = require(__dirname + '/../../utils/mail')() //
+const { creditCardFormat } = require(__dirname + '/../../utils')
 
 console.log(emailService, emailService.send)
 
@@ -416,7 +417,6 @@ module.exports = {
   //coupon資料撈出來
   async getUserCouponInfo(req, res, next) {
     const { token } = req.body //跟前端拿請求，怎麼拿，post百分之兩百從body拿
-    console.log()
 
     const QUERY_SQL = `SELECT sid FROM members WHERE token = ?` // 從表裡透過where拿到select
     const [[{ sid } = {}]] = await db.query(QUERY_SQL, [token]) //從資料庫拿出來 row(那筆資料)
@@ -436,10 +436,173 @@ module.exports = {
     } else {
       res.json({
         success: false,
-        msg: '會員折價券資料傳送失敗啦幹su3su;6ru 19',
+        msg: '會員折價券資料傳送失敗啦幹',
         data: null,
       })
     }
+  },
+
+  // 編輯 creditcard
+  async setUserCreditcardInfo(req, res, next) {
+    const { token, data } = req.body //跟前端拿請求，怎麼拿，post百分之兩百從body拿
+    const { cardNumber, cardHolder, cardMonth, cardYear, cardCvv } = data
+
+    // 沒有來源資料(data.originCard)，就代表新增
+    if (!data.originCard) {
+      const QUERY_SQL = `SELECT sid FROM members WHERE token = ?` // 從表裡透過where拿到select
+      const [[{ sid } = {}]] = await db.query(QUERY_SQL, [token]) //從資料庫拿出來 row(那筆資料)
+
+      const INSERT_SQL = `
+        INSERT INTO credit_card
+        SET
+          user_id = ?,
+          name = ?,
+          card_number = ?,
+          expiry_date = ?,
+          security_code = ?,
+          create_time = ?`
+
+      const [{ affectedRows, insertId }] = await db.query(INSERT_SQL, [
+        sid, // user_id
+        cardHolder,
+        cardNumber.replace(/\s/g, ''), // 移除空格
+        `${cardMonth}/${cardYear.slice(-2)}`,
+        cardCvv,
+        moment(new Date()).format('YYYY-MM-DD'),
+      ])
+
+      let creditCardRow = null
+      if (affectedRows) {
+        // 如果更新成功了，就撈更新過的資料，並回傳給前端
+        const [
+          row,
+        ] = await db.query(`SELECT * FROM credit_card WHERE user_id = ?`, [sid])
+
+        creditCardRow = row
+      }
+
+      return res.json({
+        success: !!affectedRows,
+        msg: `會員信用卡資料新增${!!affectedRows ? '成功' : '失敗'}`,
+        data: creditCardRow ? creditCardFormat(creditCardRow) : creditCardRow,
+      })
+    }
+
+    // 以下為更新
+    const { sid, user_id } = data.originCard
+
+    const UPDATE_SQL = `
+      UPDATE credit_card
+      SET
+        card_number = ?,
+        name = ?,
+        expiry_date = ?,
+        security_code = ?
+      WHERE sid =? AND user_id = ?`
+
+    // 更新
+    const [{ changedRows }] = await db.query(UPDATE_SQL, [
+      cardNumber.replace(/\s/g, ''), // 移除空格
+      cardHolder,
+      `${cardMonth}/${cardYear.slice(-2)}`,
+      cardCvv,
+      sid, // 信用卡的 sid
+      user_id,
+    ])
+
+    let creditCardRow = null
+    if (changedRows) {
+      // 如果更新成功了，就撈更新過的資料，並回傳給前端
+      const [
+        row,
+      ] = await db.query(`SELECT * FROM credit_card WHERE user_id = ?`, [
+        user_id,
+      ])
+
+      creditCardRow = row
+    }
+
+    return res.json({
+      success: !!changedRows,
+      msg: `會員信用卡資料更新${!!changedRows ? '成功' : '失敗'}`,
+      data: creditCardRow ? creditCardFormat(creditCardRow) : creditCardRow,
+    })
+  },
+
+  //creditcard資料撈出來
+  async getUserCreditcardInfo(req, res, next) {
+    const { token } = req.body //跟前端拿請求，怎麼拿，post百分之兩百從body拿
+    console.log()
+
+    const QUERY_SQL = `SELECT sid FROM members WHERE token = ?` // 從表裡透過where拿到select
+    const [[{ sid } = {}]] = await db.query(QUERY_SQL, [token]) //從資料庫拿出來 row(那筆資料)
+
+    console.log(sid) //row  => []  or [{ sid }]
+
+    if (sid) {
+      const QUERY_SQL1 = `SELECT * FROM credit_card WHERE user_id = ?` // 從後端資料庫拿你指定要的資料
+      const [creditCardRow] = await db.query(QUERY_SQL1, [sid])
+
+      res.json({
+        success: true,
+        msg: '會員信用卡資料已傳送',
+        data: creditCardFormat(creditCardRow),
+      })
+    } else {
+      res.json({
+        success: false,
+        msg: '會員visa資料傳送失敗啦',
+        data: null,
+      })
+    }
+  },
+
+  // 電子郵件撈出來
+  async getUserEmail(req, res, next) {
+    const { token } = req.body //跟前端拿請求，怎麼拿，post百分之兩百從body拿
+    console.log()
+
+    const QUERY_SQL = `SELECT email FROM members WHERE token = ?` // 從後端資料庫拿你指定要的資料
+    const [row] = await db.query(QUERY_SQL, [token]) //從資料庫拿出來 row(那筆資料)
+
+    // row[0].birthday = moment(row[0].birthday).format('YYYY-MM-DD')
+
+    console.log(' row[0]: ', row[0])
+
+    res.json({
+      success: true,
+      msg: '電子郵件已傳送',
+      data: row[0],
+    })
+  },
+
+  // 編輯信箱資料 - 儲存
+  async setUserEmail(req, res, next) {
+    const { email, token } = req.body //跟前端拿請求，怎麼拿，post百分之兩百從body拿
+    console.log(email, token)
+
+    if (!email) {
+      return res.json({
+        success: false,
+        msg: '會員資料格式錯誤',
+        data: null,
+      })
+    }
+
+    const UPDATE_TOKEN_SQL = `UPDATE members SET email = ? WHERE token = ?`
+    const [{ changedRows }] = await db.query(UPDATE_TOKEN_SQL, [email, token])
+
+    console.log({
+      success: !!changedRows,
+      msg: `編輯會員資料${changedRows ? '成功' : '失敗'}`,
+      data: null,
+    })
+
+    res.json({
+      success: !!changedRows,
+      msg: `編輯會員資料${changedRows ? '成功' : '失敗'}`,
+      data: null,
+    })
   },
 }
 
@@ -481,8 +644,14 @@ mobile
     "http://localhost:3001/members/forgetPwd"
 
      curl -X POST -H "Content-Type: application/json" -d \
+    '{ "email":"test@gmail.com", "token":"U2FsdGVkX182eCyGifwALZio7nkK5dWWfcnvC1YLUaVap78/qxYfLldsnVZ7w/kcMKZ8WI0hYyfH8AY4Ss0UKiHeFX06YcDqA3tfEcn70DFjikyviHbFj4dL7B8bKIXPo/8vIxboKNyFwOPoGlUXEnr+uaBRl7RT7hglvoOYmByZqU8V+zOVyYdf+OwbOM1mJDH6ZbawqgA2iPDwmxKjyu7+kUcb6WO/K57g48x+jDRxJwJR3dTOYquNciydzk+kYxhZwqV9nsPuOxosH7dXfm5r7VE+9hnxKs86cUj7bQs9o8xqonObBZKZAIAPTmFl" }' \
+    "http://localhost:3001/members/setUserEmail"
+
+
+
+     curl -X POST -H "Content-Type: application/json" -d \
     '{ "token":"U2FsdGVkX182eCyGifwALZio7nkK5dWWfcnvC1YLUaVap78/qxYfLldsnVZ7w/kcMKZ8WI0hYyfH8AY4Ss0UKiHeFX06YcDqA3tfEcn70DFjikyviHbFj4dL7B8bKIXPo/8vIxboKNyFwOPoGlUXEnr+uaBRl7RT7hglvoOYmByZqU8V+zOVyYdf+OwbOM1mJDH6ZbawqgA2iPDwmxKjyu7+kUcb6WO/K57g48x+jDRxJwJR3dTOYquNciydzk+kYxhZwqV9nsPuOxosH7dXfm5r7VE+9hnxKs86cUj7bQs9o8xqonObBZKZAIAPTmFl" }' \
-    "http://localhost:3001/members/getUserCouponInfo"
+    "http://localhost:3001/members/getUserEmail"
 
 
 

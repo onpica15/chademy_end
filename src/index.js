@@ -63,7 +63,6 @@ app.use((req, res, next) => {
     'forgetPwd',
     'resetPWD',
     'man_product',
-    
     'product',
     'productlist',
     'man_secondhand',
@@ -76,6 +75,9 @@ app.use((req, res, next) => {
     'product/api',
     'example',
     'getUserCouponInfo',
+    'getUserCreditcardInfo',
+    'getUserEmail',
+    'setUserEmail',
   ]
 
   // 如果請求的網址 "包含" 白名單，就給過。
@@ -145,7 +147,7 @@ app.use('/man_fund', require(__dirname + '/routes/man_fund'))
 
 // 引入競標路由
 
-app.use('/product/api',require(__dirname + '/routes/bid_product'))
+app.use('/product/api', require(__dirname + '/routes/bid_product'))
 
 // 引入課程路由
 app.use(
@@ -155,17 +157,10 @@ app.use(
 
 app.use('/a_wood_maker', require(__dirname + '/routes/a_wood_maker'))
 
-
-
-
 // 引入品牌故事路由
 
 // 引入部落格路由
-app.use(
-  '/a_title_mainlist',
-  require(__dirname + '/routes/a_title_mainlist')
-)
-
+app.use('/a_title_mainlist', require(__dirname + '/routes/a_title_mainlist'))
 
 // 引入會員路由
 app.use('/members', require(__dirname + '/routes/members'))

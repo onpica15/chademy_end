@@ -50,6 +50,13 @@ router.post('/getUserInfo', controller.getUserInfo)
 router.post('/setUserInfo', controller.setUserInfo)
 router.post('/getUserCouponInfo', controller.getUserCouponInfo)
 
+// 信用卡
+router.post('/getUserCreditcardInfo', controller.getUserCreditcardInfo)
+router.post('/setUserCreditcardInfo', controller.setUserCreditcardInfo)
+
+router.post('/getUserEmail', controller.getUserEmail)
+router.post('/setUserEmail', controller.setUserEmail)
+
 // 帳號驗證
 router.get('/userAuth', controller.userAuth)
 
