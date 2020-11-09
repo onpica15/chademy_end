@@ -45,6 +45,9 @@ router.get("/list", async (req, res) => {
   let sql = `SELECT * FROM J_cart_order WHERE member='${member}'`;
   console.log(sql)
   const [row] = await db.query(sql);
+  row.forEach(el => {
+    el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
+  });
   res.json(row);
 });
 
@@ -56,6 +59,9 @@ router.get("/listpending", async (req, res) => {
   console.log(sql)
   console.log('pending')
   const [row] = await db.query(sql);
+  row.forEach(el => {
+    el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
+  });
   res.json(row);
 });
 
@@ -66,6 +72,9 @@ router.get("/listcancel", async (req, res) => {
   let sql = `SELECT * FROM J_cart_order WHERE (member='${member}')AND(order_status =4)`;
   console.log(sql)
   const [row] = await db.query(sql);
+  row.forEach(el => {
+    el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
+  });
   res.json(row);
 });
 //get finish
@@ -76,6 +85,9 @@ router.get("/listfinish", async (req, res) => {
   console.log(sql)
   console.log('finish')
   const [row] = await db.query(sql);
+  row.forEach(el => {
+    el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
+  });
   res.json(row);
 });
 
