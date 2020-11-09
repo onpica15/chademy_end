@@ -115,6 +115,24 @@ router.get("/reactitem/:sid", async (req, res) => {
   res.json(row); // [{}]
 });
 
+// 寫入留言
+router.post("/message", async (req, res) => {
+  const data = {
+    ...req.body
+  };
+  data.created_at = moment(new Date()).format(
+    "YYYY-MM-DD");
+  
+  const sql = "INSERT INTO  a_message set ?";
+ 
+  const [{affectedRows}] = await db.query(sql, [data]);
+
+  res.json({
+      success: !!affectedRows,
+
+  });
+   })
+
 
 
 
