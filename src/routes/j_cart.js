@@ -51,6 +51,7 @@ router.get("/productlist", async (req, res) => {
   });
   res.json(row);
 });
+
 router.get("/orderdetail", async (req, res) => {
   const PO_NO = req.query.PO_NO
   console.log(PO_NO)
@@ -78,6 +79,17 @@ router.get("/list", async (req, res) => {
   const member = req.query.member
   console.log(member)
   let sql = `SELECT * FROM J_cart_order WHERE member='${member}'`;
+  console.log(sql)
+  const [row] = await db.query(sql);
+  row.forEach(el => {
+    el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
+  });
+  res.json(row);
+});
+router.get("/listproduct", async (req, res) => {
+  const PO_NO = req.query.PO_NO
+  console.log(PO_NO)
+  let sql = `SELECT * FROM J_cart_order WHERE PO_NO='${PO_NO}'`;
   console.log(sql)
   const [row] = await db.query(sql);
   row.forEach(el => {
