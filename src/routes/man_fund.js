@@ -68,7 +68,7 @@ async function getListData(req) {
     results.forEach(el => {
       el.e_start_time = moment(el.e_start_time).format("YYYY-MM-DD");
       el.e_end_time = moment(el.e_end_time).format("YYYY-MM-DD");
-      el.e_realize_time= moment(el.e_realize_time).format("YYYY-MM");
+      el.e_realize_time= moment(el.e_realize_time).format("YYYY-MM-DD");
     });
     output.rows = results;
   }
@@ -122,15 +122,28 @@ router.get("/list", async (req, res) => {
   res.render("man_fund/list", output);
 });
 
+
+// react
 router.get("/fundlistnode", async (req, res) => {
 
   let sql = `SELECT * FROM e_fund_project ORDER BY sid`;
 
  
   const [results] = await db.query(sql); 
+
   res.json(results);
 
 });
+
+//react
+// router.get("/fundlistnew", async (req, res) => {
+ 
+//   let sql = `SELECT * FROM e_fund_project ORDER BY project_cate ASC`;
+//   const [results] = await db.query(sql);
+ 
+//   res.json(results);
+// });
+
 
 
 // funditem
@@ -297,6 +310,7 @@ router.post('/add', upload.none(), async (req, res) => {
 
 
   const sql = "INSERT INTO `e_fund_project` set ?";
+  console.log(JSON.stringify(data));
   const [{
     affectedRows,
     insertId

@@ -109,7 +109,7 @@
                         <select class="form-control" name="e_cate">
 
                             <% for(let i of cates){ %>
-                            <option value="<%=i.name%>" <%=i.name == row.e_cate? 'selected' : ''%>><%= i.name %>
+                            <option value="<%= i.sid %>" <%=i.name == row.e_cate? 'selected' : ''%>><%= i.name %>
                             </option>
                             <% } %>
 
@@ -199,7 +199,7 @@
     const $e_proname = document.querySelector('#e_proname');
     const $e_prointro = document.querySelector('#e_prointro');
     const r_fields = [$e_proname, $e_prointro];
-    const infobar = document.querySelector('#infobar');
+    const infobar = $('#infobar');
     const submitBtn = document.querySelector('button[type=submit]');
 
     document.querySelector('#file_input').addEventListener('change', uploadFile);

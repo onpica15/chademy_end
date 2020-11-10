@@ -88,11 +88,11 @@
                     </label>
                 </div>
 
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <label><span class="redstars">** </span>設計師編號
                         <input type="text" class="form-control" name="e_designer_sid">
                     </label>
-                </div>
+                </div> -->
 
                 <div class="form-group">
                     <label><span class="redstars">** </span>募資名稱
@@ -104,10 +104,12 @@
                 <div class="form-group">
                     <label><span class="redstars">** </span>種類
 
-                        <select class="form-control" name="e_cate">
+                        <select class="form-control" name="e_cate"
+                        id="e_cate"
+                        >
 
                             <% for(let i of cates){ %>
-                            <option><%= i.name %></option>
+                            <option value="<%= i.sid %>"><%= i.name %> </option>
                             <% } %>
 
                         </select>
