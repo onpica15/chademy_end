@@ -135,7 +135,7 @@ router.get("/category", async (req, res) => {
 });
 
 //review_member
-router.post('/review_member',  async (req, res) => {
+router.post('/review_member', upload.none(),async (req, res) => {
   const data = {
     ...req.body
   };
@@ -241,7 +241,7 @@ const getCondition = (wheres) => {
   return ' where ' + wheres.join(' and ');
 }
 
-router.post('/product/category',  async(req, res) => {
+router.post('/product/category', upload.none(), async(req, res) => {
   const {
     condition_sid,
     category_sid,
