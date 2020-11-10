@@ -345,6 +345,16 @@ router.get("/relate", async (req, res) => {
 });
 
 
+// 客製化API
+router.get("/custom", async (req, res) => {
+
+  const cust = req.query.custom
+  
+  const sql = `SELECT * FROM w_custom WHERE name = '${cust}' `;
+  const [row] = await db.query(sql);
+  
+  res.json(row); // [{}]
+});
 
 
 
