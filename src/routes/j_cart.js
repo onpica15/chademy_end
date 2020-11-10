@@ -38,7 +38,42 @@ async function getListData (req){
 }
 
 // 畫面
-//getAll
+
+//get產品api
+router.get("/productlist", async (req, res) => {
+  const PO_NO = req.query.PO_NO
+  console.log(PO_NO)
+  let sql = `SELECT * FROM w_product_mainlist`;
+  console.log(sql)
+  const [row] = await db.query(sql);
+  row.forEach(el => {
+    el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
+  });
+  res.json(row);
+});
+router.get("/orderdetail", async (req, res) => {
+  const PO_NO = req.query.PO_NO
+  console.log(PO_NO)
+  let sql = `SELECT * FROM j_order_detail`;
+  console.log(sql)
+  const [row] = await db.query(sql);
+  row.forEach(el => {
+    el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
+  });
+  res.json(row);
+});
+//get detail of order
+router.get("/detaillist", async (req, res) => {
+  const PO_NO = req.query.PO_NO
+  console.log(PO_NO)
+  let sql = `SELECT * FROM j_order_detail WHERE PO_NO='${PO_NO}'`;
+  console.log(sql)
+  const [row] = await db.query(sql);
+  row.forEach(el => {
+    el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
+  });
+  res.json(row);
+});
 router.get("/list", async (req, res) => {
   const member = req.query.member
   console.log(member)
