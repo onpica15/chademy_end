@@ -86,6 +86,24 @@ router.get("/list", async (req, res) => {
   res.render("man_secondhand/man_secondhand_list", output);
 });
 
+/**
+ * get broduct by category id
+ */
+router.get("/list", async (req, res) => {
+  const output = {
+    rows: [],
+  };
+  let sql = `SELECT * FROM i_secondhand_product ORDER BY sid  LIMIT 10`;
+  const [results] = await db.query(sql);
+  output.rows = results;
+//   results.forEach((el) => {
+//     el.last_edit_time = moment(el.last_edit_time).format("YYYY-MM-DD");
+//     el.on_shelf_time = moment(el.on_shelf_time).format("YYYY-MM-DD");
+//     el.off_shelf_time = moment(el.off_shelf_time).format("YYYY-MM-DD");
+//   });
+  res.render("man_secondhand/man_secondhand_list", output);
+});
+
 //react
 router.get("/secondhandlist", async (req, res) => {
  
@@ -109,6 +127,35 @@ router.get("/relate/:sid", async (req, res) => {
   res.json(row); // [{}]
 });
 
+//category 
+router.get("/category", async (req, res) => {
+  const sql = "SELECT * FROM `i_secondhand_product` WHERE `categories_sid`=2";
+  const [row] = await db.query(sql, [req.params.sid]);
+  res.json(row); // [{}]
+});
+
+//review_member
+router.post('/review_member',  async (req, res) => {
+  const data = {
+    ...req.body
+  };
+  data.review_time = moment(new Date()).format(
+    "YYYY-MM-DD");
+  const sql = "INSERT INTO `i_comment_c2c` set ?";
+  console.log(JSON.stringify(data));
+  const [{
+    affectedRows,
+    insertId
+  }] = await db.query(sql, [data]);
+  // sql是語法一個問號即可，data是array
+  // [{"fieldCount":0,"affectedRows":1,"insertId":860,"info":"","serverStatus":2,"warningStatus":1},null]
+
+  res.json({
+    success: !!affectedRows,
+    affectedRows,
+    insertId,
+  });
+});
 
 router.get("/edit/:sid", async (req, res) => {
 
@@ -171,10 +218,95 @@ router.get("/add", async (req, res) => {
   res.render("man_secondhand/man_secondhand_add", output);
 });
 
-//////////////////
-
 
 // RESTful API
+
+router.get('/product/category/:sid',  async(req, res) => {
+  const baseSql = 
+    `SELECT * FROM i_secondhand_product where categories_sid = ${req.params.sid}`;
+  
+  const data = await db.query(baseSql);
+  console.log(baseSql);
+
+  res.json({
+    data: data[0]
+  });
+})
+
+const getCondition = (wheres) => {
+  if(wheres.length === 0){
+    return '';
+  }
+
+  return ' where ' + wheres.join(' and ');
+}
+
+router.post('/product/category',  async(req, res) => {
+  const {
+    condition_sid,
+    category_sid,
+    material_sid,
+    framework_sid,
+    page_no = 0, limit = 8
+  } = req.body;
+
+  let baseSql = 
+    `SELECT * FROM i_secondhand_product `;
+  
+  let wheres = [];
+    if(condition_sid){
+      wheres.push(`conditions_sid = ${condition_sid}`);
+    }
+    if(category_sid){
+      wheres.push(`categories_sid = ${category_sid}`);
+    }
+    if(material_sid){
+      wheres.push(`material_sid = ${material_sid}`);
+    }
+    if(framework_sid){
+      wheres.push(`framework_sid = ${framework_sid}`);
+    }
+
+  const where = getCondition(wheres);
+  console.log(where);
+  if(where){
+    baseSql += where;
+  }
+  baseSql += ` limit ${page_no * limit}, ${limit}`
+  
+  console.log(baseSql);
+  const data = await db.query(baseSql);
+
+  res.json({
+    data: data[0]
+  });
+})
+
+const typeMap = {
+  condition: "conditions_sid",
+  category: "categories_sid",
+  material: "material_sid",
+  framework: "framework_sid"
+}
+
+router.post('/product',  async(req, res) => {
+  const {
+    type,
+    sid,
+    page_no = 0, 
+    limit = 8
+  } = req.body;
+
+  const columnName = typeMap[type]
+  const query = (columnName && sid) ? ` where ${columnName} = ${sid}` : '';
+  const baseSql = `SELECT * FROM i_secondhand_product ${query}
+  limit ${page_no * limit}, ${limit}`;
+  const data = await db.query(baseSql);
+
+  res.json({
+    data: data[0]
+  });
+})
 
 router.post('/add', upload.none(), async (req, res) => {
   const data = {
