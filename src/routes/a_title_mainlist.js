@@ -131,7 +131,42 @@ router.post("/message", async (req, res) => {
       success: !!affectedRows,
 
   });
-   })
+});
+
+router.post("/messagetitle", async (req, res) => {
+  const data = {
+    ...req.body
+  };
+  data.created_at = moment(new Date()).format(
+    "YYYY-MM-DD");
+  
+  const sql = "INSERT INTO  a_message set ?";
+ 
+  const [{affectedRows}] = await db.query(sql, [data]);
+
+  res.json({
+      success: !!affectedRows,
+
+  });
+});
+
+
+// 留言頁面(拿到留言的資料)
+router.get("/reactlist/message", async (req, res) => {
+  let blogMessage=req.query.title
+  const [totalRows
+  ] = await db.query(`SELECT * FROM a_message WHERE title='${blogMessage}' Order By sid DESC`);
+  totalRows.forEach(el => {
+    el.created_at = moment(el.created_at).format("YYYY-MM-DD");  
+  });
+  res.json(totalRows);
+});
+
+
+
+
+
+   
 
 
 
