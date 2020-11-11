@@ -16,17 +16,7 @@ router.post('/login', controller.login)
 
 // 登出
 router.post('/logout', (req, res) => {
-  console.log('    logout   ')
-  const token = req.cookies['chademy-token']
-
-  // 歸零
-  res.cookie('chademy-token', token, {
-    maxAge: 0,
-    httpOnly: true,
-  })
-
-  // 刪除
-  delete req.cookies['chademy-token']
+  delete req.session.sid
 
   return res.json({
     success: true,
@@ -57,19 +47,14 @@ router.post('/setUserCreditcardInfo', controller.setUserCreditcardInfo)
 router.post('/getUserEmail', controller.getUserEmail)
 router.post('/setUserEmail', controller.setUserEmail)
 
-
 router.post('/getCommentt', controller.getCommentt)
-
-
 
 // 帳號驗證
 router.get('/userAuth', controller.userAuth)
 
-// 測試 用
+// ---------- 測試/example ----------
 router.post('/loginTest', controller.loginTest)
 router.get('/getTest', controller.getTest)
-
-// example
 router.post('/example', controller.example)
 
 module.exports = router
