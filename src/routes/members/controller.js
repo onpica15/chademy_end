@@ -21,7 +21,7 @@ const EXPIRES_IN = 1 * 60 * 60 * 1000 // 過期時間一小時
 
 // 登入驗證 token
 function getAuthToken(data) {
-  return jwt.sign({ ...data }, process.env.TOKEN_SECRET)
+  return jwt.sign(data, process.env.TOKEN_SECRET)
 }
 
 // 導出模組
@@ -31,37 +31,48 @@ module.exports = {
     let Member = new Login(req.body.email) // 之後需要加密 encry
     const [response] = await db.query(Member.getSQL())
 
-    console.log(response)
-
-    if (response.length) {
-      // 比對解密後的密碼是否相同
-      const passwordEqual =
-        decrypt(response[0].password) === decrypt(encry(req.body.password))
-
-      // otherData: 除了 password 的其他資料，前端登入後不需要知道密碼
-      const { password, ...otherData } = response[0]
-
-      const authToken = getAuthToken(response)
-
-      // 將其他資料在 data 中展開
-      const data = { ...otherData, authToken: authToken }
-
-      console.log(' 認證 authToken: ', authToken)
-
-      res.json({
-        success: true,
-        msg: '歡迎' + response[0].name + '的登入!',
-        data: data,
-      })
-    } else {
-      res.json({
+    // Setp 1: 檢查 email 是否存在
+    if (!response.length) {
+      return res.json({
         success: false,
         msg: '請輸入正確的帳號或密碼',
         data: null,
       })
-
-      return
     }
+
+    // Setp 2: 比對解密後的密碼是否相同
+    const passwordEqual =
+      decrypt(response[0].password) === decrypt(encry(req.body.password))
+
+    if (!passwordEqual) {
+      return res.json({
+        success: false,
+        msg: '請輸入正確的帳號或密碼',
+        data: null,
+      })
+    }
+
+    // otherData: 除了 password 的其他資料，前端登入後不需要知道密碼
+    const { password, ...otherData } = response[0]
+
+    // 存使用者的 token 在 jwt
+    const authToken = getAuthToken(otherData.token)
+
+    // 將其他資料在 data 中展開
+    const data = { ...otherData, authToken: authToken }
+
+    console.log(
+      ' =>  比對密碼: ',
+      passwordEqual,
+      decrypt(response[0].password),
+      decrypt(encry(req.body.password))
+    )
+
+    res.json({
+      success: true,
+      msg: '歡迎' + response[0].name + '的登入!',
+      data: data,
+    })
   },
 
   // 註冊
@@ -360,15 +371,15 @@ module.exports = {
 
   // 個人資料撈出來
   async getUserInfo(req, res, next) {
-    const { token } = req.body //跟前端拿請求，怎麼拿，post百分之兩百從body拿
-    console.log()
+    // const { token } = req.body //跟前端拿請求，怎麼拿，post百分之兩百從body拿
 
-    const QUERY_SQL = `SELECT name, mobile, birthday FROM members WHERE token = ?` // 從後端資料庫拿你指定要的資料
-    const [row] = await db.query(QUERY_SQL, [token]) //從資料庫拿出來 row(那筆資料)
+    // 改成 res.session.sid 拿
+    if (!req.session.sid) return res.status(401).send('請重新登入')
+
+    const QUERY_SQL = `SELECT name, mobile, birthday FROM members WHERE sid = ?` // 從後端資料庫拿你指定要的資料
+    const [row] = await db.query(QUERY_SQL, [req.session.sid]) //從資料庫拿出來 row(那筆資料)
 
     row[0].birthday = moment(row[0].birthday).format('YYYY-MM-DD')
-
-    console.log(' row[0]: ', row[0])
 
     res.json({
       success: true,
@@ -594,15 +605,59 @@ module.exports = {
 
     console.log({
       success: !!changedRows,
-      msg: `編輯會員資料${changedRows ? '成功' : '失敗'}`,
+      msg: `編輯信箱資料${changedRows ? '成功' : '失敗'}`,
       data: null,
     })
 
     res.json({
       success: !!changedRows,
-      msg: `編輯會員資料${changedRows ? '成功' : '失敗'}`,
+      msg: `編輯信箱資料${changedRows ? '成功' : '失敗'}`,
       data: null,
     })
+  },
+
+  // 評論撈出來
+  async getCommentt(req, res, next) {
+    const { token } = req.body //跟前端拿請求，怎麼拿，post百分之兩百從body拿
+
+    const QUERY_SQL = `SELECT sid FROM members WHERE token = ?` // 從表裡透過where拿到select
+    const [[{ sid } = {}]] = await db.query(QUERY_SQL, [token]) //從資料庫拿出來 row(那筆資料)
+
+    console.log('sid ', sid) //row  => []  or [{ sid }]
+
+    if (!sid) {
+      res.status(511).send(`無匹配的 sid`)
+    }
+
+    const QUERY_SQL1 = `SELECT buy_product, stars, review_comment, review_time FROM w_review photo WHERE buy_member_id = ?` // 從後端資料庫拿你指定要的資料
+    const [row] = await db.query(QUERY_SQL1, [sid]) //從資料庫拿出來 row(那筆資料)
+
+    if (row.length > 0) {
+      res.json({
+        success: true,
+        msg: '自己評論的資料傳送成功',
+        data: row,
+      })
+    } else {
+      res.json({
+        success: false,
+        msg: '自己評論的資料傳送失敗啦',
+        data: null,
+      })
+    }
+
+    // const QUERY_SQL = `SELECT buy_product, stars, review_comment, review_time FROM w_review WHERE token = ?` // 從後端資料庫拿你指定要的資料
+    // const [row] = await db.query(QUERY_SQL, [token]) //從資料庫拿出來 row(那筆資料)
+
+    // // row[0].birthday = moment(row[0].birthday).format('YYYY-MM-DD')
+
+    // console.log(' row[0]: ', row[0])
+
+    // res.json({
+    //   success: true,
+    //   msg: '自己評論的資料已傳送',
+    //   data: row[0],
+    // })
   },
 }
 
@@ -651,7 +706,7 @@ mobile
 
      curl -X POST -H "Content-Type: application/json" -d \
     '{ "token":"U2FsdGVkX182eCyGifwALZio7nkK5dWWfcnvC1YLUaVap78/qxYfLldsnVZ7w/kcMKZ8WI0hYyfH8AY4Ss0UKiHeFX06YcDqA3tfEcn70DFjikyviHbFj4dL7B8bKIXPo/8vIxboKNyFwOPoGlUXEnr+uaBRl7RT7hglvoOYmByZqU8V+zOVyYdf+OwbOM1mJDH6ZbawqgA2iPDwmxKjyu7+kUcb6WO/K57g48x+jDRxJwJR3dTOYquNciydzk+kYxhZwqV9nsPuOxosH7dXfm5r7VE+9hnxKs86cUj7bQs9o8xqonObBZKZAIAPTmFl" }' \
-    "http://localhost:3001/members/getUserEmail"
+    "http://localhost:3001/members/getCommentt"
 
 
 
