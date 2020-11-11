@@ -57,6 +57,11 @@ router.post('/setUserCreditcardInfo', controller.setUserCreditcardInfo)
 router.post('/getUserEmail', controller.getUserEmail)
 router.post('/setUserEmail', controller.setUserEmail)
 
+
+router.post('/getCommentt', controller.getCommentt)
+
+
+
 // 帳號驗證
 router.get('/userAuth', controller.userAuth)
 
