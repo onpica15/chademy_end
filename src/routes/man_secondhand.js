@@ -157,6 +157,19 @@ router.post('/review_member', upload.none(),async (req, res) => {
   });
 });
 
+//get member data
+router.get("/member_data", async (req, res) => {
+  const sql = "SELECT * FROM `members`";
+  const [row] = await db.query(sql, [req.params.sid]);
+  res.json(row); // [{}]
+});
+
+//
+router.get("/member_data/:sid", async (req, res) => {
+  const sql = "SELECT * FROM `members` WHERE sid=?";
+  const [row] = await db.query(sql, [req.params.sid]);
+  res.json(row); // [{}]
+});
 router.get("/edit/:sid", async (req, res) => {
 
   const output = {
