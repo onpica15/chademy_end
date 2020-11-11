@@ -130,7 +130,7 @@ router.get('/record/list', async (req, res)=>{
 });
 
 router.get('/member-record', async (req, res)=>{
-    const sql ='SELECT m.* ,r.* FROM `members` m JOIN `record` r ON r.`sid`=m.`record_sid` LIMIT 15'
+    const sql ='SELECT m.* ,r.* FROM `members` m JOIN `record` r ON r.`member_sid`=m.`sid` ORDER BY r.sid DESC LIMIT 6'
     const [row] = await db.query(sql)
     const fm = 'YYYY/MM/DD HH:mm:ss';
 
@@ -145,7 +145,7 @@ router.get('/member-record', async (req, res)=>{
 
 
 router.post('/record', async (req, res)=>{
-    const sql ='INSERT INTO `record` (`product_sid`,`member_sid`,`bid_sid`,`price`, `total_price`) VALUES (?,?,?,?,?);'
+    const sql ='INSERT INTO `record` (`product_sid`,`member_sid`,`bid_sid`,`price`, `total_price`,`time`) VALUES (?,?,?,?,?,NOW());'
     // req.body: product_sid, member_sid, bid_sid, price, total_price
     const [r] = await db.query(sql,[req.body.product_sid, req.body.member_sid, req.body.bid_sid, req.body.price, req.body.total_price])
 
