@@ -589,8 +589,10 @@ module.exports = {
 
   // 編輯信箱資料 - 儲存
   async setUserEmail(req, res, next) {
-    const { email, token } = req.body //跟前端拿請求，怎麼拿，post百分之兩百從body拿
-    console.log(email, token)
+    const { email } = req.body // 跟前端拿請求，怎麼拿，post百分之兩百從body拿
+
+    // 改成 res.session.sid 拿
+    if (!req.session.sid) return res.status(401).send('請重新登入')
 
     if (!email) {
       return res.json({
@@ -600,8 +602,11 @@ module.exports = {
       })
     }
 
-    const UPDATE_TOKEN_SQL = `UPDATE members SET email = ? WHERE token = ?`
-    const [{ changedRows }] = await db.query(UPDATE_TOKEN_SQL, [email, token])
+    const UPDATE_TOKEN_SQL = `UPDATE members SET email = ? WHERE sid = ?`
+    const [{ changedRows }] = await db.query(UPDATE_TOKEN_SQL, [
+      email,
+      req.session.sid,
+    ])
 
     console.log({
       success: !!changedRows,

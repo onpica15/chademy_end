@@ -85,7 +85,6 @@ app.use((req, res, next) => {
     'getUserCouponInfo',
     'getUserCreditcardInfo',
     'getUserEmail',
-    'setUserEmail',
     'getCommentt',
   ]
 
