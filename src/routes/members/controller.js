@@ -621,6 +621,47 @@ module.exports = {
     })
   },
 
+  // 編輯密碼資料 - 儲存
+  async setUserPass(req, res, next) {
+    // 改成 res.session.sid 拿
+    if (!req.session.sid) return res.status(401).send('請重新登入')
+
+    const { oldPassword, newPassword } = req.body // 跟前端拿請求，怎麼拿，post百分之兩百從body拿
+
+    const QUERY_SQL = `SELECT password FROM members WHERE sid = ?`
+    const [row] = await db.query(QUERY_SQL, [req.session.sid]) //從資料庫拿出來 row(那筆資料)
+
+    // Setp 2: 比對解密後的密碼是否相同
+    const passwordEqual =
+      decrypt(row[0].password) === decrypt(encry(oldPassword))
+
+    if (!passwordEqual) {
+      return res.json({
+        success: false,
+        msg: '會員舊密碼錯誤',
+        data: null,
+      })
+    }
+
+    const UPDATE_PWD_SQL = `UPDATE members SET password = ? WHERE sid = ?`
+    const [{ changedRows }] = await db.query(UPDATE_PWD_SQL, [
+      encry(newPassword),
+      req.session.sid,
+    ])
+
+    console.log({
+      success: !!changedRows,
+      msg: `編輯密碼資料${changedRows ? '成功' : '失敗'}`,
+      data: null,
+    })
+
+    res.json({
+      success: !!changedRows,
+      msg: `編輯密碼資料${changedRows ? '成功' : '失敗'}`,
+      data: null,
+    })
+  },
+
   // 評論撈出來
   async getCommentt(req, res, next) {
     const { token } = req.body //跟前端拿請求，怎麼拿，post百分之兩百從body拿
@@ -663,6 +704,91 @@ module.exports = {
     //   msg: '自己評論的資料已傳送',
     //   data: row[0],
     // })
+  },
+
+  // 信用卡刪除
+  async deleteCreditcard(req, res, next) {
+    // 改成 res.session.sid 拿
+    if (!req.session.sid) return res.status(401).send('請重新登入')
+
+    const QUERY_SQL = `DELETE FROM credit_card WHERE sid = ? AND user_id = ? `
+    const [{ affectedRows }] = await db.query(QUERY_SQL, [
+      req.body.card_sid,
+      req.session.sid,
+    ])
+
+    console.log(
+      ' affectedRows: ',
+      affectedRows,
+      req.body.card_sid,
+      req.session.sid
+    )
+
+    res.json({
+      success: !!affectedRows,
+      msg: !!affectedRows ? '已刪除' : '刪除失敗',
+      data: null,
+    })
+  },
+  // 撈地址
+  async getAddress(req, res, next) {
+    // 改成 res.session.sid 拿
+    if (!req.session.sid) return res.status(401).send('請重新登入')
+
+    const QUERY_SQL = `SELECT address FROM members WHERE sid = ?`
+    const [row] = await db.query(QUERY_SQL, [req.session.sid])
+
+    console.log(' row[0]: ', row[0])
+
+    res.json({
+      success: true,
+      msg: '地址已傳送',
+      data: row[0],
+    })
+  },
+  // 編輯地址
+  async setAddress(req, res, next) {
+    // 改成 res.session.sid 拿
+    if (!req.session.sid) return res.status(401).send('請重新登入')
+
+    const UPDATE_ADDRESS = 'UPDATE members SET address = ? WHERE sid = ?'
+    const [{ changedRows }] = await db.query(UPDATE_ADDRESS, [
+      req.body.address,
+      req.session.sid,
+    ])
+
+    console.log(' changedRows ', changedRows)
+
+    let data
+    if (changedRows) {
+      const QUERY_SQL = `SELECT address FROM members WHERE sid = ?`
+      const [[address]] = await db.query(QUERY_SQL, [req.session.sid])
+      data = address
+    }
+
+    res.json({
+      success: !!changedRows,
+      msg: `編輯會員地址${changedRows ? '成功' : '失敗'}`,
+      data: data,
+    })
+  },
+
+  // 地址刪除(因為地址依附在會員表之中，所以是 UPDATE)
+  async deleteAddress(req, res, next) {
+    // 改成 res.session.sid 拿
+    if (!req.session.sid) return res.status(401).send('請重新登入')
+
+    const UPDATE_ADDRESS = 'UPDATE members SET address = ? WHERE sid = ?'
+    const [{ changedRows }] = await db.query(UPDATE_ADDRESS, [
+      '',
+      req.session.sid,
+    ])
+
+    res.json({
+      success: !!changedRows,
+      msg: `會員地址刪除${!!changedRows ? '成功' : '失敗'}`,
+      data: null,
+    })
   },
 }
 

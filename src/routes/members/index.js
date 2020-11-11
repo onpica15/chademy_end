@@ -33,6 +33,7 @@ router.post('/forgetPwd', controller.forgetPwd)
 
 // 重置密碼
 router.post('/resetPWD', controller.resetPWD)
+router.post('/setUserPass', controller.setUserPass)
 
 // 會員中心
 router.post('/getUserInfo', controller.getUserInfo)
@@ -43,6 +44,12 @@ router.post('/getUserCouponInfo', controller.getUserCouponInfo)
 // 信用卡
 router.post('/getUserCreditcardInfo', controller.getUserCreditcardInfo)
 router.post('/setUserCreditcardInfo', controller.setUserCreditcardInfo)
+router.post('/deleteCreditcard', controller.deleteCreditcard)
+
+// 地址
+router.post('/getAddress', controller.getAddress)
+router.post('/setAddress', controller.setAddress)
+router.post('/deleteAddress', controller.deleteAddress)
 
 router.post('/getUserEmail', controller.getUserEmail)
 router.post('/setUserEmail', controller.setUserEmail)
