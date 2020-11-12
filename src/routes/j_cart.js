@@ -86,6 +86,19 @@ router.get("/list", async (req, res) => {
   });
   res.json(row);
 });
+
+
+router.get("/alllist", async (req, res) => {
+  const member = req.query.member
+  console.log(member)
+  let sql = `SELECT * FROM J_cart_order ORDER BY order_date DESC`;
+  console.log(sql)
+  const [row] = await db.query(sql);
+  row.forEach(el => {
+    el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
+  });
+  res.json(row);
+});
 router.get("/listproduct", async (req, res) => {
   const PO_NO = req.query.PO_NO
   console.log(PO_NO)
@@ -209,16 +222,16 @@ router.post('/addorder', upload.none(), async (req, res) => {
 });
 
 router.post('/cancelorder', upload.none(), async (req, res) => {
-  const data = {
+  const { PO_NO } = {
     ...req.body
   };
-  data.last_edit_time = moment(new Date()).format(
-    "YYYY-MM-DD");
-  const sql = `UPDATE J_cart_order SET order_status = 4 WHERE PO_NO='${PO_NO}'`;
+  // data.last_edit_time = moment(new Date()).format(
+  //   "YYYY-MM-DD");
+  const sql = `UPDATE J_cart_order SET order_status = 4 WHERE PO_NO=?`;
   const [{
     affectedRows,
     changedRows
-  }] = await db.query(sql, [data]);
+  }] = await db.query(sql, [PO_NO]);
 
   //  {"fieldCount":0,"affectedRows":1,"insertId":0,"info":"Rows matched: 1  Changed: 0  Warnings: 0","serverStatus":2,"warningStatus":0,"changedRows":0}
 
