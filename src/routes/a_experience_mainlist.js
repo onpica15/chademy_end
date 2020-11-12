@@ -114,8 +114,8 @@ router.get("/reactlist", async (req, res) => {
   const [totalRows
   ] = await db.query("SELECT * FROM `a_experience_mainlist` WHERE `category_sid`=1");
   totalRows.forEach(el => {
-    el.start_date = moment(el.start_date).format("YYYY-MM-DD");  
-    el.end_date = moment(el.end_date).format("YYYY-MM-DD");  
+    el.start_date = moment(el.start_date).format("YYYY/MM/DD");  
+    el.end_date = moment(el.end_date).format("YYYY/MM/DD");  
   });
   res.json(totalRows);
 });
@@ -125,8 +125,8 @@ router.get("/reactlistthree", async (req, res) => {
   const [totalRows
   ] = await db.query("SELECT * FROM `a_experience_mainlist` WHERE `category_sid`=3");
   totalRows.forEach(el => {
-    el.start_date = moment(el.start_date).format("YYYY-MM-DD");  
-    el.end_date = moment(el.end_date).format("YYYY-MM-DD");  
+    el.start_date = moment(el.start_date).format("YYYY/MM/DD");  
+    el.end_date = moment(el.end_date).format("YYYY/MM/DD");  
   });
   res.json(totalRows);
 });
