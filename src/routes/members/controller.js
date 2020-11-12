@@ -720,33 +720,17 @@ module.exports = {
     // 改成 res.session.sid 拿
     if (!req.session.sid) return res.status(401).send('請重新登入')
 
-    const QUERY_FOLLOW_SQL = `SELECT product_no FROM w_follow WHERE member_id = ?` // 從表裡透過where拿到select
-    const [followRow] = await db.query(QUERY_FOLLOW_SQL, [req.session.sid]) //從資料庫拿出來 row(那筆資料)
+    const columns = `product_name, product_no, price, photo`
+    // 用 UNION ALL 語法，把兩張表集合起來，欄位需一致，且 product_no 相等
+    // 然後再用 LEFT JOIN 起來，最後再把 member_id = sid 的找出來
+    const SQL = `
+      SELECT * FROM w_follow LEFT JOIN (
+        SELECT ${columns} FROM w_product_mainlist
+        UNION ALL
+        SELECT ${columns} FROM i_secondhand_product
+      )UALL ON w_follow.product_no = UALL.product_no WHERE member_id = ?`
 
-    console.log(followRow)
-    // 過濾掉空的 返回 no
-    const target = followRow
-      .filter((i) => !!i.product_no)
-      .map((i) => i.product_no)
-    console.log(target)
-
-    const QUERY_SQL = `
-      SELECT product_name, product_no, price, photo
-        FROM w_product_mainlist` // 從表裡透過where拿到select
-    const [mainROW] = await db.query(QUERY_SQL, [req.session.sid]) //從資料庫拿出來 row(那筆資料)
-    const mainList = mainROW.filter((i) => target.includes(i.product_no))
-    console.log(mainList)
-
-    const QUERY_SQL123 = `
-      SELECT product_name, product_no, price, photo
-        FROM i_secondhand_product` // 從表裡透過where拿到select
-    const [secondhandROW] = await db.query(QUERY_SQL123, [req.session.sid]) //從資料庫拿出來 row(那筆資料)
-    const secondhandList = secondhandROW.filter((i) =>
-      target.includes(i.product_no)
-    )
-    console.log(secondhandList)
-
-    const result = [...mainList, ...secondhandList]
+    const [result] = await db.query(SQL, [req.session.sid]) //從資料庫拿出來 row(那筆資料)
 
     if (result.length > 0) {
       res.json({
