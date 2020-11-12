@@ -85,7 +85,6 @@ app.use((req, res, next) => {
     'getUserCouponInfo',
     'getUserCreditcardInfo',
     'getUserEmail',
-    'getCommentt',
   ]
 
   // 如果請求的網址 "包含" 白名單，就給過。

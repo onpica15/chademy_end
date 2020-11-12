@@ -664,19 +664,15 @@ module.exports = {
 
   // 評論撈出來
   async getCommentt(req, res, next) {
-    const { token } = req.body //跟前端拿請求，怎麼拿，post百分之兩百從body拿
+    if (!req.session.sid) return res.status(401).send('請重新登入')
 
-    const QUERY_SQL = `SELECT sid FROM members WHERE token = ?` // 從表裡透過where拿到select
-    const [[{ sid } = {}]] = await db.query(QUERY_SQL, [token]) //從資料庫拿出來 row(那筆資料)
-
-    console.log('sid ', sid) //row  => []  or [{ sid }]
-
-    if (!sid) {
-      res.status(511).send(`無匹配的 sid`)
-    }
-
-    const QUERY_SQL1 = `SELECT buy_product, stars, review_comment, review_time FROM w_review photo WHERE buy_member_id = ?` // 從後端資料庫拿你指定要的資料
-    const [row] = await db.query(QUERY_SQL1, [sid]) //從資料庫拿出來 row(那筆資料)
+    const QUERY_SQL1 = `
+      SELECT avatar, buy_product, stars, review_comment, review_time, photo
+      FROM w_review R
+      LEFT JOIN members M
+      ON R.user_id = M.sid
+      WHERE user_id = ?` // 從後端資料庫拿你指定要的資料
+    const [row] = await db.query(QUERY_SQL1, [req.session.sid]) //從資料庫拿出來 row(那筆資料)
 
     if (row.length > 0) {
       res.json({
@@ -691,19 +687,80 @@ module.exports = {
         data: null,
       })
     }
+  },
 
-    // const QUERY_SQL = `SELECT buy_product, stars, review_comment, review_time FROM w_review WHERE token = ?` // 從後端資料庫拿你指定要的資料
-    // const [row] = await db.query(QUERY_SQL, [token]) //從資料庫拿出來 row(那筆資料)
+  // 我的評價 撈出來
+  async getEvaluation(req, res, next) {
+    if (!req.session.sid) return res.status(401).send('請重新登入')
 
-    // // row[0].birthday = moment(row[0].birthday).format('YYYY-MM-DD')
+    const QUERY_SQL = `
+      SELECT buy_product, stars, review_comment, review_time, photo
+      FROM w_review
+      WHERE user_id = ?` // 從後端資料庫拿你指定要的資料
 
-    // console.log(' row[0]: ', row[0])
+    const [row] = await db.query(QUERY_SQL, [req.session.sid]) //從資料庫拿出來 row(那筆資料)
 
-    // res.json({
-    //   success: true,
-    //   msg: '自己評論的資料已傳送',
-    //   data: row[0],
-    // })
+    if (row.length > 0) {
+      res.json({
+        success: true,
+        msg: '自己評論的資料傳送成功',
+        data: row,
+      })
+    } else {
+      res.json({
+        success: false,
+        msg: '自己評論的資料傳送失敗啦',
+        data: null,
+      })
+    }
+  },
+
+  //MYFAV資料撈出來
+  async getUserMyFav(req, res, next) {
+    // 改成 res.session.sid 拿
+    if (!req.session.sid) return res.status(401).send('請重新登入')
+
+    const QUERY_FOLLOW_SQL = `SELECT product_no FROM w_follow WHERE member_id = ?` // 從表裡透過where拿到select
+    const [followRow] = await db.query(QUERY_FOLLOW_SQL, [req.session.sid]) //從資料庫拿出來 row(那筆資料)
+
+    console.log(followRow)
+    // 過濾掉空的 返回 no
+    const target = followRow
+      .filter((i) => !!i.product_no)
+      .map((i) => i.product_no)
+    console.log(target)
+
+    const QUERY_SQL = `
+      SELECT product_name, product_no, price, photo
+        FROM w_product_mainlist` // 從表裡透過where拿到select
+    const [mainROW] = await db.query(QUERY_SQL, [req.session.sid]) //從資料庫拿出來 row(那筆資料)
+    const mainList = mainROW.filter((i) => target.includes(i.product_no))
+    console.log(mainList)
+
+    const QUERY_SQL123 = `
+      SELECT product_name, product_no, price, photo
+        FROM i_secondhand_product` // 從表裡透過where拿到select
+    const [secondhandROW] = await db.query(QUERY_SQL123, [req.session.sid]) //從資料庫拿出來 row(那筆資料)
+    const secondhandList = secondhandROW.filter((i) =>
+      target.includes(i.product_no)
+    )
+    console.log(secondhandList)
+
+    const result = [...mainList, ...secondhandList]
+
+    if (result.length > 0) {
+      res.json({
+        success: true,
+        msg: '追蹤清單資料已傳送',
+        data: result,
+      })
+    } else {
+      res.json({
+        success: false,
+        msg: '追蹤清單資料傳送失敗啦',
+        data: null,
+      })
+    }
   },
 
   // 信用卡刪除

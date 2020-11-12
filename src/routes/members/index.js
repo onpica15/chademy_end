@@ -41,6 +41,8 @@ router.post('/getUserInfo', controller.getUserInfo)
 router.post('/setUserInfo', controller.setUserInfo)
 router.post('/getUserCouponInfo', controller.getUserCouponInfo)
 
+router.post('/getUserMyFav', controller.getUserMyFav)
+
 // 信用卡
 router.post('/getUserCreditcardInfo', controller.getUserCreditcardInfo)
 router.post('/setUserCreditcardInfo', controller.setUserCreditcardInfo)
@@ -55,6 +57,8 @@ router.post('/getUserEmail', controller.getUserEmail)
 router.post('/setUserEmail', controller.setUserEmail)
 
 router.post('/getCommentt', controller.getCommentt)
+
+router.post('/getEvaluation', controller.getEvaluation)
 
 // 帳號驗證
 router.get('/userAuth', controller.userAuth)
