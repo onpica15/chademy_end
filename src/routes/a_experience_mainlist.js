@@ -140,7 +140,21 @@ router.get("/reactitem/:sid", async (req, res) => {
   res.json(row); // [{}]
 });
 
-
+// 篩選課程、時間API
+router.post("/classfilter", async (req, res) => {
+  if(req.body.date && req.body.class){
+  const dateFilter = req.body.date
+  const classFilter = req.body.class
+  let sql = `SELECT * FROM a_experience_mainlist WHERE start_date > ` + dateFilter + ' AND category_sid =' + classFilter
+  console.log('sql: '+sql);
+  console.log('dateFilter'+dateFilter);
+  console.log('classFilter'+classFilter);
+  
+  const [totalRows
+  ] = await db.query(sql);
+  res.json(totalRows);
+}
+})
 
 
 
