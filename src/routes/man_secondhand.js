@@ -127,12 +127,6 @@ router.get("/relate/:sid", async (req, res) => {
   res.json(row); // [{}]
 });
 
-//category 
-router.get("/category", async (req, res) => {
-  const sql = "SELECT * FROM `i_secondhand_product` WHERE `categories_sid`=2";
-  const [row] = await db.query(sql, [req.params.sid]);
-  res.json(row); // [{}]
-});
 
 //review_member
 router.post('/review_member', upload.none(),async (req, res) => {
@@ -157,6 +151,13 @@ router.post('/review_member', upload.none(),async (req, res) => {
   });
 });
 
+//get memberRevirw
+router.get("/member_star/:sid", async (req, res) => {
+  const sql = "SELECT * FROM i_comment_c2c WHERE seller_sid=?";
+  const [row] = await db.query(sql, [req.params.sid]);
+  res.json(row); // [{}]
+});
+
 //get member data
 router.get("/member_data", async (req, res) => {
   const sql = "SELECT * FROM `members`";
@@ -164,9 +165,9 @@ router.get("/member_data", async (req, res) => {
   res.json(row); // [{}]
 });
 
-//
-router.get("/member_data/:sid", async (req, res) => {
-  const sql = "SELECT * FROM `members` WHERE sid=?";
+//myproduct
+router.get("/myproduct/:sid", async (req, res) => {
+  const sql = "SELECT * FROM `i_secondhand_product` WHERE member_sid=?  ";
   const [row] = await db.query(sql, [req.params.sid]);
   res.json(row); // [{}]
 });
