@@ -167,7 +167,7 @@ router.get("/member_data", async (req, res) => {
 
 //myproduct
 router.get("/myproduct/:sid", async (req, res) => {
-  const sql = "SELECT * FROM `i_secondhand_product` WHERE member_sid=?  ";
+  const sql = "SELECT * FROM `i_secondhand_product` WHERE `member_sid` = ? ORDER BY `i_secondhand_product`.`sid` DESC  ";
   const [row] = await db.query(sql, [req.params.sid]);
   res.json(row); // [{}]
 });
