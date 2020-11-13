@@ -241,6 +241,26 @@ router.post('/cancelorder', upload.none(), async (req, res) => {
     changedRows,
   });
 });
+router.post('/finishorder', upload.none(), async (req, res) => {
+  const { PO_NO } = {
+    ...req.body
+  };
+  // data.last_edit_time = moment(new Date()).format(
+  //   "YYYY-MM-DD");
+  const sql = `UPDATE J_cart_order SET order_status = 3 WHERE PO_NO=?`;
+  const [{
+    affectedRows,
+    changedRows
+  }] = await db.query(sql, [PO_NO]);
+
+  //  {"fieldCount":0,"affectedRows":1,"insertId":0,"info":"Rows matched: 1  Changed: 0  Warnings: 0","serverStatus":2,"warningStatus":0,"changedRows":0}
+
+  res.json({
+    success: !!changedRows,
+    affectedRows,
+    changedRows,
+  });
+});
 
 // router.post('/cancelorder', upload.none(), async (req, res) => {
 //   const data = {
