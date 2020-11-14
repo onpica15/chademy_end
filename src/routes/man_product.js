@@ -336,7 +336,6 @@ router.get("/review/:sid", async (req, res) => {
 // get 相關產品 API
 router.get("/relate", async (req, res) => {
 
-<<<<<<< Updated upstream
   const cate = req.query.category
   
   const sql = `SELECT * FROM w_product_mainlist WHERE category = '${cate}' LIMIT 12 `;
@@ -344,47 +343,6 @@ router.get("/relate", async (req, res) => {
   
   res.json(row); // [{}]
 });
-=======
-// 評論單張圖片上傳 API
-// router.post("/reactupload", upload2.single('myfile'), (req, res) => {
-//   console.log('req.myfile' + req.myfile );
-
-//   if (req.myfile && req.myfile.originalname) {
-//     let ext = "";
-
-//     switch (req.file.mimetype) {
-//       case "image/png":
-//       case "image/jpeg":
-//       case "image/gif":
-//         fs.rename(
-//           req.file.path,
-//           __dirname + "../../../Chademy ( React + Node )/React-Chademy/public/images/" + req.file.originalname,
-//           (error) => {
-//             return res.json({
-//               success: true,
-//               path: "/images/" + req.file.originalname,
-//               newFileName: req.file.filename
-//             });
-//           }
-//         );
-
-//         break;
-//       default:
-//         fs.unlink(req.file.path, (error) => {
-//           return res.json({
-//             success: false,
-//             msg: "不是圖檔",
-//           });
-//         });
-//     }
-//   } else {
-//     return res.json({
-//       success: false,
-//       msg: "沒有上傳檔案",
-//     });
-//   }
-// });
->>>>>>> Stashed changes
 
 
 // 客製化API
