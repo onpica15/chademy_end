@@ -212,8 +212,6 @@ router.post('/addorder', upload.none(), async (req, res) => {
   }] = await db.query(sql, [data]);
   // sql是語法一個問號即可，data是array
   // [{"fieldCount":0,"affectedRows":1,"insertId":860,"info":"","serverStatus":2,"warningStatus":1},null]
-
-
   res.json({
     success: !!affectedRows,
     affectedRows,
