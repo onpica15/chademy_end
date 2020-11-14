@@ -352,7 +352,7 @@ router.get("/custom", async (req, res) => {
   
   const sql = `SELECT * FROM w_custom WHERE name = '${cust}' `;
   const [row] = await db.query(sql);
-  
+  console.log(row)
   res.json(row); // [{}]
 });
 
