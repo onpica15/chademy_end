@@ -694,9 +694,11 @@ module.exports = {
     if (!req.session.sid) return res.status(401).send('請重新登入')
 
     const QUERY_SQL = `
-      SELECT buy_product, stars, review_comment, review_time, photo
-      FROM w_review
-      WHERE user_id = ?` // 從後端資料庫拿你指定要的資料
+      SELECT name, buyer_sid, stars, buyer_comment, review_time, avatar
+      FROM i_comment_c2c I
+      LEFT JOIN members M
+      ON I.buyer_sid = M.sid
+      WHERE seller_sid = ?` // 從後端資料庫拿你指定要的資料
 
     const [row] = await db.query(QUERY_SQL, [req.session.sid]) //從資料庫拿出來 row(那筆資料)
 
@@ -745,6 +747,29 @@ module.exports = {
         data: null,
       })
     }
+  },
+
+  // 追蹤清單刪除
+  async deleteMyfav(req, res, next) {
+    if (!req.session.sid) return res.status(401).send('請重新登入')
+
+    const QUERY_SQL = `
+      DELETE FROM w_follow
+      WHERE sid = ?
+      AND product_no = ?
+      AND member_id = ? `
+
+    const [{ affectedRows }] = await db.query(QUERY_SQL, [
+      req.body.sid,
+      req.body.product_no,
+      req.session.sid,
+    ])
+
+    res.json({
+      success: !!affectedRows,
+      msg: !!affectedRows ? '移除成功' : '移除失敗',
+      data: null,
+    })
   },
 
   // 信用卡刪除
