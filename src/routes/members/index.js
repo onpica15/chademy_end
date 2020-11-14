@@ -42,6 +42,7 @@ router.post('/setUserInfo', controller.setUserInfo)
 router.post('/getUserCouponInfo', controller.getUserCouponInfo)
 
 router.post('/getUserMyFav', controller.getUserMyFav)
+router.delete('/deleteMyfav', controller.deleteMyfav)
 
 // 信用卡
 router.post('/getUserCreditcardInfo', controller.getUserCreditcardInfo)
