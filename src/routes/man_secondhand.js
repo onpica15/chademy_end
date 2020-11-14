@@ -158,6 +158,13 @@ router.get("/member_star/:sid", async (req, res) => {
   res.json(row); // [{}]
 });
 
+//get allMemberRevirw
+router.get("/all_member_star/", async (req, res) => {
+  const sql = "SELECT * FROM i_comment_c2c";
+  const [row] = await db.query(sql, [req.params.sid]);
+  res.json(row); // [{}]
+});
+
 //get member data
 router.get("/member_data", async (req, res) => {
   const sql = "SELECT * FROM `members`";
