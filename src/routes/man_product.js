@@ -356,6 +356,22 @@ router.get("/custom", async (req, res) => {
   res.json(row); // [{}]
 });
 
+// 推薦API
+router.post("/recomfilter", async (req, res) => {
+  if(req.body.cate && req.body.color){
+  const cateFilter = req.body.cate
+  const colorFilter = req.body.color
+  let sql = `SELECT * FROM w_product_mainlist WHERE category = '${cateFilter}' AND color = '${colorFilter}' LIMIT 3`
+  console.log('sql: '+sql);
+  console.log('cateFilter'+cateFilter);
+  console.log('colorFilter'+colorFilter);
+  
+  const [totalRows
+  ] = await db.query(sql);
+  res.json(totalRows);
+}
+})
+
 
 // -----------------畫面3個：列表頁面、編輯頁面、新增頁面--------------------
 
