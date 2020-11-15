@@ -3,61 +3,12 @@ const moment = require('moment-timezone')
 const jwt = require('jsonwebtoken')
 const db = require(__dirname + '/../db_connect2')
 const router = express.Router()
-const http = require("http");
-const socketIo = require("socket.io");
-
-const app = express();
-// app.use(index3);
-
-const server = http.createServer(app);
-
-const io = socketIo(server);
-io.on("connection", (socket) => {
-    console.log("New client connected");
-
-    router.get('/record/new', async (req, res)=>{
-        const sql ='SELECT * FROM record ORDER BY sid DESC'
-        const [row] = await db.query(sql)
-        res.json(row[0].total_price)
-    })
-    
-
-    socket.on("disconnect", () => {
-      console.log("Client disconnected");
-      
-    });
-  });
- 
-  const fm2 = 'YYYY/MM/DD HH:mm:ss';
-  const startdate = '2020/11/01';
-  const enddate = '2020/11/04'
-  function getTimeRemaining(startdate,enddate){ 
-    const s_time = new Date(startdate).getTime();
-    const e_time = new Date(enddate).getTime();
-    const total = e_time - s_time
-    // const seconds = Math.floor( (total/1000) % 60 ); 
-    // const minutes = Math.floor( (total/1000/60) % 60 ); 
-    // const hours = Math.floor( (total/(1000*60*60)) % 24 ); 
-    // const days = Math.floor( total/(1000*60*60*24) ); 
-    // return { total, days, hours, minutes, seconds }; 
-    return total
-}
+const emailService = require(__dirname + '/../utils/mail')() 
 
 function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-// router.put('/bidchange', async( req,res)=>{
-//     const sql ='UPDATE `bidding` SET `countdown`=? WHERE sid=?'
-//     const [row] = await db.query(sql,[req.body.countdown,req.body.sid])
-//     for(let i=1;i<27;i++){
-//         const mm = getTimeRemaining(row[i].startingDate,row[i].bidDate)
-//     console.log(mm)
-//             row[i].countdown = mm
-//         }
-
-//             res.json(row);
-// })
 router.get('/list/:sid?', async (req, res)=>{
     const sql ='SELECT * FROM bidding WHERE sid=?'
     const [row] = await db.query(sql,[req.params.sid])
@@ -130,7 +81,7 @@ router.get('/record/list', async (req, res)=>{
 });
 
 router.get('/member-record', async (req, res)=>{
-    const sql ='SELECT m.* ,r.* FROM `members` m JOIN `record` r ON r.`member_sid`=m.`sid` ORDER BY r.sid DESC LIMIT 6'
+    const sql ='SELECT m.* ,r.* FROM `members` m JOIN `record` r ON r.`member_sid`=m.`sid` ORDER BY r.sid DESC'
     const [row] = await db.query(sql)
     const fm = 'YYYY/MM/DD HH:mm:ss';
 
@@ -145,18 +96,48 @@ router.get('/member-record', async (req, res)=>{
 
 
 router.post('/record', async (req, res)=>{
-    const sql ='INSERT INTO `record` (`product_sid`,`member_sid`,`bid_sid`,`price`, `total_price`,`time`) VALUES (?,?,?,?,?,NOW());'
-    // req.body: product_sid, member_sid, bid_sid, price, total_price
+    const sql ='INSERT INTO `record` (`product_sid`,`member_sid`,`bid_sid`,`price`, `total_price`,`time`) VALUES (?,?,?,?,?,NOW())'
     const [r] = await db.query(sql,[req.body.product_sid, req.body.member_sid, req.body.bid_sid, req.body.price, req.body.total_price])
 
     const sql2 = 'UPDATE `bidding` SET `current_price`=? WHERE `sid`=?'
+
     const [r1] = await db.query(sql2,[req.body.total_price, req.body.sid])
 
-    res.json({
-        result: r,
-        body: req.body,
+   
+     const sql3 = 'SELECT * FROM subscribe WHERE `product_sid`=? AND `total_price`>=`sub_price` ORDER BY `sid` DESC';
+     const [r2] = await db.query(sql3,[req.body.product_sid])
+     
+     if(r2.length > 0){
+        emailService.send({ to: req.body.email, subject: 'Chademy價格訂閱', 
+        html: `<div><p>親愛的會員${req.body.name}您好：</p>
+        <p>您訂閱的產品＄${r2[0].product_name}，目前金額為＄${req.body.total_price}已超過訂閱金額＄${r2[0].sub_price}<p></div>
+        <div>Chademy</div>` })
+        //  r2.forEach(element => {
+        //      if(req.body.total_price >= element.sub_price){
+        //          emailService.send({ to: req.body.email, subject: '標題', 
+        //          html: `<div>您已開啟訂閱金額小鈴鐺，目前金額為${req.body.total_price}</div>` })
+    }
+        
+        res.json({
+            result: r2,
+            body: req.body,
+        });
     });
-});
+
+router.post('/sub', async (req, res)=>{
+    
+    const sql ='INSERT INTO `subscribe` (`product_sid`,`member_sid`,`product_name`,`name`,`total_price`,`sub_price`, `sub_email`,`time`) VALUES (?,?,?,?,?,?,?,NOW())'
+    const [r] = await db.query(sql,[req.body.product_sid, req.body.member_sid,req.body.product_name,req.body.name,req.body.total_price, req.body.sub_price, req.body.sub_email])
+    emailService.send({ to: req.body.sub_email, subject: 'Chademy價格訂閱確認信', 
+                html: `<div><p>親愛的會員＄${req.body.name}您好：</p>
+                <p>感謝您開啟訂閱小鈴鐺，我們將在商品＄${req.body.product_name}於金額超過＄${req.body.sub_price}時通知您</p></div>
+                <div>Chademy</div>` })
+    
+        res.json({
+            result: r,
+            body: req.body,
+        });
+    });
 
 router.get('/designer/:sid?', async (req, res)=>{
     // const sql ='SELECT * FROM designers WHERE sid=?'
