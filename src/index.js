@@ -87,6 +87,8 @@ app.use((req, res, next) => {
     'getUserEmail',
   ]
 
+  const exclude = ['fundlistnode']
+
   // 如果請求的網址 "包含" 白名單，就給過。
   const beforeQqeryUrl = req.url.split('?')[0]
 
@@ -95,7 +97,10 @@ app.use((req, res, next) => {
 
   console.log('  => api url path: ', utlList)
 
-  if (whiteList.includes(utlList[1]) || whiteList.includes(utlList[2])) {
+  if (
+    (whiteList.includes(utlList[1]) && !exclude.includes(utlList[2])) || 
+    whiteList.includes(utlList[2])
+  ) {
     console.log('    => whiteList Pass!!! ')
     next()
   } else {
@@ -148,6 +153,7 @@ app.use('/man_secondhand', require(__dirname + '/routes/man_secondhand'))
 
 // 引入募資路由
 
+// /man_fund  +  /children router
 app.use('/man_fund', require(__dirname + '/routes/man_fund'))
 
 // 引入競標路由

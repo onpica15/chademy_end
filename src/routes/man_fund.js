@@ -132,11 +132,52 @@ router.post("/fundlistnode", async (req, res) => {
  console.log(' row => ', row, 'member id => ', req.session.sid)
 
   res.json({
-    success: true,
+    success: !!row.length > 0,
     msg: '募資資料查詢成功',
     data: row,
   })
 });
+
+
+// router.get("/fundlistnode/membersid", async (req, res, next) => {
+
+//   let sql = `SELECT * FROM e_fund_project WHERE member_sid=?`;
+
+ 
+//   const [results] = await db.query(sql, [req.query.member]);
+
+//   res.json(results);
+
+// });
+
+
+
+router.get("/myfund/:sid", async (req, res) => {
+
+  const { sid } = req.params
+
+  console.log(sid,'123' )
+  const sql = `
+  SELECT * 
+  FROM e_fund_project 
+  WHERE member_sid = ? 
+  ORDER BY e_fund_project.sid ASC`
+  const [row] = await db.query(sql, [sid]);
+
+
+  console.log('   get   =>  ', row)
+  // res.json(row); // [{}]
+
+  res.json({
+    success: !!row.length > 0,
+    msg: '募資資料查詢成功',
+    data: row,
+  })
+});
+
+
+
+
 
 // 系列
 router.get("/series", async (req, res) => {
