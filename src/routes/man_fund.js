@@ -122,17 +122,20 @@ router.get("/list", async (req, res) => {
   res.render("man_fund/list", output);
 });
 
-
 // react
-router.get("/fundlistnode", async (req, res) => {
+router.post("/fundlistnode", async (req, res) => {
+ if (!req.session.sid) return res.status(401).send('請重新登入')
 
-  let sql = `SELECT * FROM e_fund_project ORDER BY sid`;
+ let sql = 'SELECT * FROM e_fund_project WHERE member_sid = ?'
+ const [row] = await db.query(sql, [req.session.sid]);
 
- 
-  const [results] = await db.query(sql); 
+ console.log(' row => ', row, 'member id => ', req.session.sid)
 
-  res.json(results);
-
+  res.json({
+    success: true,
+    msg: '募資資料查詢成功',
+    data: row,
+  })
 });
 
 // 系列
