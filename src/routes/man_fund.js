@@ -429,11 +429,13 @@ router.post("/try-upload", upload.single('myfile'), (req, res) => {
 // 新增表單 API
 router.post('/add', upload.none(), async (req, res) => {
   const data = {
-    ...req.body
+    ...req.body,
+    product_type: 3
   };
 
+  delete data.sid
 
-
+  console.log(999, req.body)
 
   const sql = "INSERT INTO `e_fund_project` set ?";
   console.log(JSON.stringify(data));
@@ -441,11 +443,10 @@ router.post('/add', upload.none(), async (req, res) => {
     affectedRows,
     insertId
   }] = await db.query(sql, [data]);
-  
-
 
   res.json({
     success: !!affectedRows,
+    msg: !!affectedRows ? 'success' : 'failed',
     affectedRows,
     insertId,
   });
