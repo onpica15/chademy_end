@@ -85,8 +85,6 @@ app.use((req, res, next) => {
     'getUserCouponInfo',
     'getUserCreditcardInfo',
     'getUserEmail',
-    'setUserEmail',
-    'getCommentt',
   ]
 
   // 如果請求的網址 "包含" 白名單，就給過。
@@ -186,5 +184,6 @@ app.use((req, res) => {
 // -------------------------------以下開始伺服器監聽------------------------
 
 app.listen(3001, () => {
+  console.clear()
   console.log('\n ============== 伺服器已啟動 ============== \n')
 })

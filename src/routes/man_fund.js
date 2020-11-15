@@ -122,18 +122,103 @@ router.get("/list", async (req, res) => {
   res.render("man_fund/list", output);
 });
 
-
 // react
-router.get("/fundlistnode", async (req, res) => {
+router.post("/fundlistnode", async (req, res) => {
+ if (!req.session.sid) return res.status(401).send('請重新登入')
 
-  let sql = `SELECT * FROM e_fund_project ORDER BY sid`;
+ let sql = 'SELECT * FROM e_fund_project WHERE member_sid = ?'
+ const [row] = await db.query(sql, [req.session.sid]);
 
- 
-  const [results] = await db.query(sql); 
+ console.log(' row => ', row, 'member id => ', req.session.sid)
 
-  res.json(results);
-
+  res.json({
+    success: true,
+    msg: '募資資料查詢成功',
+    data: row,
+  })
 });
+
+// 系列
+router.get("/series", async (req, res) => {
+  if(req.query.category){
+  const series = req.query.category
+  let sql = `SELECT * FROM e_fund_project WHERE e_cate = ` + series
+  console.log('sql: '+sql);
+  console.log('series'+series);
+  console.log('req.query'+req.query);
+  
+  const [totalRows
+  ] = await db.query(sql);
+  res.json(totalRows);
+}
+})
+
+// 專案新舊
+router.get("/project_time", async (req, res) => {
+  if(req.query.time){
+  const time = req.query.time
+  let sql = `SELECT * FROM e_fund_project WHERE project_cate = ` + time
+  console.log('sql: '+sql);
+  console.log('time'+time);
+  console.log('req.query'+req.query);
+  
+  const [totalRows
+  ] = await db.query(sql);
+  res.json(totalRows);
+}
+})
+
+//價錢由低到高
+// router.get("/project_price_asc", async (req, res) => {
+//   if(req.query){
+//   // const acs = req.query.asc
+//   let sql = `SELECT * FROM e_fund_project WHERE e_lowprice ASC `
+//   console.log('sql: '+sql);
+//   // console.log('asc'+asc);
+//   console.log('req.query'+req.query);
+  
+//   const [totalRows
+//   ] = await db.query(sql);
+//   res.json(totalRows);
+// }
+// })
+
+//
+router.get("/project_price_asc", async (req, res) => {
+  const sql = "SELECT * FROM e_fund_project ORDER BY e_fund_project.e_lowprice ASC";
+
+
+  const [totalRows
+       ] = await db.query(sql);
+      res.json(totalRows);  
+  // const [row] = await db.query(sql, [req.params.sid]);
+  // res.json(row); // [{}]
+});
+
+
+//價錢由高到低
+// router.get("/project_price_desc", async (req, res) => {
+//   if(req.query){
+//   // const desc = req.query.desc
+//   let sql = `SELECT * FROM e_fund_project WHERE e_lowprice DESC ` 
+//   console.log('sql: '+sql);
+//   // console.log('desc'+desc);
+//   console.log('req.query'+req.query);
+  
+//   const [totalRows
+//   ] = await db.query(sql);
+//   res.json(totalRows);
+// }
+// })
+router.get("/project_price_desc", async (req, res) => {
+  const sql = "SELECT * FROM e_fund_project ORDER BY e_fund_project.e_lowprice DESC";
+  const [totalRows
+  ] = await db.query(sql);
+ res.json(totalRows);  
+  // const [row] = await db.query(sql, [req.params.sid]);
+  // res.json(row); // [{}]
+});
+
 
 //react
 // router.get("/fundlistnew", async (req, res) => {

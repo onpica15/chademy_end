@@ -589,8 +589,10 @@ module.exports = {
 
   // 編輯信箱資料 - 儲存
   async setUserEmail(req, res, next) {
-    const { email, token } = req.body //跟前端拿請求，怎麼拿，post百分之兩百從body拿
-    console.log(email, token)
+    const { email } = req.body // 跟前端拿請求，怎麼拿，post百分之兩百從body拿
+
+    // 改成 res.session.sid 拿
+    if (!req.session.sid) return res.status(401).send('請重新登入')
 
     if (!email) {
       return res.json({
@@ -600,8 +602,11 @@ module.exports = {
       })
     }
 
-    const UPDATE_TOKEN_SQL = `UPDATE members SET email = ? WHERE token = ?`
-    const [{ changedRows }] = await db.query(UPDATE_TOKEN_SQL, [email, token])
+    const UPDATE_TOKEN_SQL = `UPDATE members SET email = ? WHERE sid = ?`
+    const [{ changedRows }] = await db.query(UPDATE_TOKEN_SQL, [
+      email,
+      req.session.sid,
+    ])
 
     console.log({
       success: !!changedRows,
@@ -616,21 +621,58 @@ module.exports = {
     })
   },
 
-  // 評論撈出來
-  async getCommentt(req, res, next) {
-    const { token } = req.body //跟前端拿請求，怎麼拿，post百分之兩百從body拿
+  // 編輯密碼資料 - 儲存
+  async setUserPass(req, res, next) {
+    // 改成 res.session.sid 拿
+    if (!req.session.sid) return res.status(401).send('請重新登入')
 
-    const QUERY_SQL = `SELECT sid FROM members WHERE token = ?` // 從表裡透過where拿到select
-    const [[{ sid } = {}]] = await db.query(QUERY_SQL, [token]) //從資料庫拿出來 row(那筆資料)
+    const { oldPassword, newPassword } = req.body // 跟前端拿請求，怎麼拿，post百分之兩百從body拿
 
-    console.log('sid ', sid) //row  => []  or [{ sid }]
+    const QUERY_SQL = `SELECT password FROM members WHERE sid = ?`
+    const [row] = await db.query(QUERY_SQL, [req.session.sid]) //從資料庫拿出來 row(那筆資料)
 
-    if (!sid) {
-      res.status(511).send(`無匹配的 sid`)
+    // Setp 2: 比對解密後的密碼是否相同
+    const passwordEqual =
+      decrypt(row[0].password) === decrypt(encry(oldPassword))
+
+    if (!passwordEqual) {
+      return res.json({
+        success: false,
+        msg: '會員舊密碼錯誤',
+        data: null,
+      })
     }
 
-    const QUERY_SQL1 = `SELECT buy_product, stars, review_comment, review_time FROM w_review photo WHERE buy_member_id = ?` // 從後端資料庫拿你指定要的資料
-    const [row] = await db.query(QUERY_SQL1, [sid]) //從資料庫拿出來 row(那筆資料)
+    const UPDATE_PWD_SQL = `UPDATE members SET password = ? WHERE sid = ?`
+    const [{ changedRows }] = await db.query(UPDATE_PWD_SQL, [
+      encry(newPassword),
+      req.session.sid,
+    ])
+
+    console.log({
+      success: !!changedRows,
+      msg: `編輯密碼資料${changedRows ? '成功' : '失敗'}`,
+      data: null,
+    })
+
+    res.json({
+      success: !!changedRows,
+      msg: `編輯密碼資料${changedRows ? '成功' : '失敗'}`,
+      data: null,
+    })
+  },
+
+  // 評論撈出來
+  async getCommentt(req, res, next) {
+    if (!req.session.sid) return res.status(401).send('請重新登入')
+
+    const QUERY_SQL1 = `
+      SELECT avatar, buy_product, stars, review_comment, review_time, photo
+      FROM w_review R
+      LEFT JOIN members M
+      ON R.user_id = M.sid
+      WHERE user_id = ?` // 從後端資料庫拿你指定要的資料
+    const [row] = await db.query(QUERY_SQL1, [req.session.sid]) //從資料庫拿出來 row(那筆資料)
 
     if (row.length > 0) {
       res.json({
@@ -645,19 +687,174 @@ module.exports = {
         data: null,
       })
     }
+  },
 
-    // const QUERY_SQL = `SELECT buy_product, stars, review_comment, review_time FROM w_review WHERE token = ?` // 從後端資料庫拿你指定要的資料
-    // const [row] = await db.query(QUERY_SQL, [token]) //從資料庫拿出來 row(那筆資料)
+  // 我的評價 撈出來
+  async getEvaluation(req, res, next) {
+    if (!req.session.sid) return res.status(401).send('請重新登入')
 
-    // // row[0].birthday = moment(row[0].birthday).format('YYYY-MM-DD')
+    const QUERY_SQL = `
+      SELECT name, buyer_sid, stars, buyer_comment, review_time, avatar
+      FROM i_comment_c2c I
+      LEFT JOIN members M
+      ON I.buyer_sid = M.sid
+      WHERE seller_sid = ?` // 從後端資料庫拿你指定要的資料
 
-    // console.log(' row[0]: ', row[0])
+    const [row] = await db.query(QUERY_SQL, [req.session.sid]) //從資料庫拿出來 row(那筆資料)
 
-    // res.json({
-    //   success: true,
-    //   msg: '自己評論的資料已傳送',
-    //   data: row[0],
-    // })
+    if (row.length > 0) {
+      res.json({
+        success: true,
+        msg: '自己評論的資料傳送成功',
+        data: row,
+      })
+    } else {
+      res.json({
+        success: false,
+        msg: '自己評論的資料傳送失敗啦',
+        data: null,
+      })
+    }
+  },
+
+  //MYFAV資料撈出來
+  async getUserMyFav(req, res, next) {
+    // 改成 res.session.sid 拿
+    if (!req.session.sid) return res.status(401).send('請重新登入')
+
+    const columns = `product_name, product_no, price, photo`
+    // 用 UNION ALL 語法，把兩張表集合起來，欄位需一致，且 product_no 相等
+    // 然後再用 LEFT JOIN 起來，最後再把 member_id = sid 的找出來
+    const SQL = `
+      SELECT * FROM w_follow LEFT JOIN (
+        SELECT ${columns} FROM w_product_mainlist
+        UNION ALL
+        SELECT ${columns} FROM i_secondhand_product
+      )UALL ON w_follow.product_no = UALL.product_no WHERE member_id = ?`
+
+    const [result] = await db.query(SQL, [req.session.sid]) //從資料庫拿出來 row(那筆資料)
+
+    if (result.length > 0) {
+      res.json({
+        success: true,
+        msg: '追蹤清單資料已傳送',
+        data: result,
+      })
+    } else {
+      res.json({
+        success: false,
+        msg: '追蹤清單資料傳送失敗啦',
+        data: null,
+      })
+    }
+  },
+
+  // 追蹤清單刪除
+  async deleteMyfav(req, res, next) {
+    if (!req.session.sid) return res.status(401).send('請重新登入')
+
+    const QUERY_SQL = `
+      DELETE FROM w_follow
+      WHERE sid = ?
+      AND product_no = ?
+      AND member_id = ? `
+
+    const [{ affectedRows }] = await db.query(QUERY_SQL, [
+      req.body.sid,
+      req.body.product_no,
+      req.session.sid,
+    ])
+
+    res.json({
+      success: !!affectedRows,
+      msg: !!affectedRows ? '移除成功' : '移除失敗',
+      data: null,
+    })
+  },
+
+  // 信用卡刪除
+  async deleteCreditcard(req, res, next) {
+    // 改成 res.session.sid 拿
+    if (!req.session.sid) return res.status(401).send('請重新登入')
+
+    const QUERY_SQL = `DELETE FROM credit_card WHERE sid = ? AND user_id = ? `
+    const [{ affectedRows }] = await db.query(QUERY_SQL, [
+      req.body.card_sid,
+      req.session.sid,
+    ])
+
+    console.log(
+      ' affectedRows: ',
+      affectedRows,
+      req.body.card_sid,
+      req.session.sid
+    )
+
+    res.json({
+      success: !!affectedRows,
+      msg: !!affectedRows ? '已刪除' : '刪除失敗',
+      data: null,
+    })
+  },
+  // 撈地址
+  async getAddress(req, res, next) {
+    // 改成 res.session.sid 拿
+    if (!req.session.sid) return res.status(401).send('請重新登入')
+
+    const QUERY_SQL = `SELECT address FROM members WHERE sid = ?`
+    const [row] = await db.query(QUERY_SQL, [req.session.sid])
+
+    console.log(' row[0]: ', row[0])
+
+    res.json({
+      success: true,
+      msg: '地址已傳送',
+      data: row[0],
+    })
+  },
+  // 編輯地址
+  async setAddress(req, res, next) {
+    // 改成 res.session.sid 拿
+    if (!req.session.sid) return res.status(401).send('請重新登入')
+
+    const UPDATE_ADDRESS = 'UPDATE members SET address = ? WHERE sid = ?'
+    const [{ changedRows }] = await db.query(UPDATE_ADDRESS, [
+      req.body.address,
+      req.session.sid,
+    ])
+
+    console.log(' changedRows ', changedRows)
+
+    let data
+    if (changedRows) {
+      const QUERY_SQL = `SELECT address FROM members WHERE sid = ?`
+      const [[address]] = await db.query(QUERY_SQL, [req.session.sid])
+      data = address
+    }
+
+    res.json({
+      success: !!changedRows,
+      msg: `編輯會員地址${changedRows ? '成功' : '失敗'}`,
+      data: data,
+    })
+  },
+
+  // 地址刪除(因為地址依附在會員表之中，所以是 UPDATE)
+  async deleteAddress(req, res, next) {
+    // 改成 res.session.sid 拿
+    if (!req.session.sid) return res.status(401).send('請重新登入')
+
+    const UPDATE_ADDRESS = 'UPDATE members SET address = ? WHERE sid = ?'
+    const [{ changedRows }] = await db.query(UPDATE_ADDRESS, [
+      '',
+      req.session.sid,
+    ])
+
+    res.json({
+      success: !!changedRows,
+      msg: `會員地址刪除${!!changedRows ? '成功' : '失敗'}`,
+      data: null,
+    })
   },
 }
 

@@ -16,17 +16,7 @@ router.post('/login', controller.login)
 
 // 登出
 router.post('/logout', (req, res) => {
-  console.log('    logout   ')
-  const token = req.cookies['chademy-token']
-
-  // 歸零
-  res.cookie('chademy-token', token, {
-    maxAge: 0,
-    httpOnly: true,
-  })
-
-  // 刪除
-  delete req.cookies['chademy-token']
+  delete req.session.sid
 
   return res.json({
     success: true,
@@ -43,6 +33,7 @@ router.post('/forgetPwd', controller.forgetPwd)
 
 // 重置密碼
 router.post('/resetPWD', controller.resetPWD)
+router.post('/setUserPass', controller.setUserPass)
 
 // 會員中心
 router.post('/getUserInfo', controller.getUserInfo)
@@ -50,26 +41,32 @@ router.post('/getUserInfo', controller.getUserInfo)
 router.post('/setUserInfo', controller.setUserInfo)
 router.post('/getUserCouponInfo', controller.getUserCouponInfo)
 
+router.post('/getUserMyFav', controller.getUserMyFav)
+router.delete('/deleteMyfav', controller.deleteMyfav)
+
 // 信用卡
 router.post('/getUserCreditcardInfo', controller.getUserCreditcardInfo)
 router.post('/setUserCreditcardInfo', controller.setUserCreditcardInfo)
+router.post('/deleteCreditcard', controller.deleteCreditcard)
+
+// 地址
+router.post('/getAddress', controller.getAddress)
+router.post('/setAddress', controller.setAddress)
+router.post('/deleteAddress', controller.deleteAddress)
 
 router.post('/getUserEmail', controller.getUserEmail)
 router.post('/setUserEmail', controller.setUserEmail)
 
-
 router.post('/getCommentt', controller.getCommentt)
 
-
+router.post('/getEvaluation', controller.getEvaluation)
 
 // 帳號驗證
 router.get('/userAuth', controller.userAuth)
 
-// 測試 用
+// ---------- 測試/example ----------
 router.post('/loginTest', controller.loginTest)
 router.get('/getTest', controller.getTest)
-
-// example
 router.post('/example', controller.example)
 
 module.exports = router
