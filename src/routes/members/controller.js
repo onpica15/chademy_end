@@ -376,7 +376,7 @@ module.exports = {
     // 改成 res.session.sid 拿
     if (!req.session.sid) return res.status(401).send('請重新登入')
 
-    const QUERY_SQL = `SELECT name, mobile, birthday FROM members WHERE sid = ?` // 從後端資料庫拿你指定要的資料
+    const QUERY_SQL = `SELECT name, mobile, birthday, avatar FROM members WHERE sid = ?` // 從後端資料庫拿你指定要的資料
     const [row] = await db.query(QUERY_SQL, [req.session.sid]) //從資料庫拿出來 row(那筆資料)
 
     row[0].birthday = moment(row[0].birthday).format('YYYY-MM-DD')
@@ -390,10 +390,12 @@ module.exports = {
 
   // 編輯會員資料 - 儲存
   async setUserInfo(req, res, next) {
-    const { name, mobile, birthday, token } = req.body //跟前端拿請求，怎麼拿，post百分之兩百從body拿
-    console.log(name, mobile, birthday, token)
+    // 改成 res.session.sid 拿
+    if (!req.session.sid) return res.status(401).send('請重新登入')
 
-    if (!name || !mobile || !birthday) {
+    const { name, mobile, birthday, avatar } = req.body
+
+    if (!name || !mobile || !birthday || !avatar) {
       return res.json({
         success: false,
         msg: '會員資料格式錯誤',
@@ -401,22 +403,18 @@ module.exports = {
       })
     }
 
-    const UPDATE_TOKEN_SQL = `
-      UPDATE members SET name = ?, mobile =?, birthday = ?
-      WHERE token = ?`
+    const UPDATE_SQL = `
+      UPDATE members
+      SET name = ?, mobile = ?, birthday = ?, avatar = ?
+      WHERE sid = ?`
 
-    const [{ changedRows }] = await db.query(UPDATE_TOKEN_SQL, [
+    const [{ changedRows }] = await db.query(UPDATE_SQL, [
       name,
       mobile,
       birthday,
-      token,
+      avatar,
+      req.session.sid,
     ])
-
-    console.log({
-      success: !!changedRows,
-      msg: `編輯會員資料${changedRows ? '成功' : '失敗'}`,
-      data: null,
-    })
 
     res.json({
       success: !!changedRows,
