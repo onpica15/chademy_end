@@ -1,4 +1,3 @@
-
 // ---------------------------以下引入模組-------------------------------
 
 
@@ -152,10 +151,6 @@ router.post("/classfilter", async (req, res) => {
   
   const [totalRows
   ] = await db.query(sql);
-  totalRows.forEach(el => {
-    el.start_date = moment(el.start_date).format("YYYY/MM/DD");  
-    el.end_date = moment(el.end_date).format("YYYY/MM/DD");  
-  });
   res.json(totalRows);
 }
 })
