@@ -51,6 +51,54 @@ router.get("/productlist", async (req, res) => {
   });
   res.json(row);
 });
+//二手
+router.get("/secondhandlist", async (req, res) => {
+  const PO_NO = req.query.PO_NO
+  console.log(PO_NO)
+  let sql = `SELECT * FROM i_secondhand_product`;
+  console.log(sql)
+  const [row] = await db.query(sql);
+  row.forEach(el => {
+    el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
+  });
+  res.json(row);
+});
+//競標
+router.get("/bidlist", async (req, res) => {
+  const PO_NO = req.query.PO_NO
+  console.log(PO_NO)
+  let sql = `SELECT * FROM products`;
+  console.log(sql)
+  const [row] = await db.query(sql);
+  row.forEach(el => {
+    el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
+  });
+  res.json(row);
+});
+//募資
+router.get("/fundlist", async (req, res) => {
+  const PO_NO = req.query.PO_NO
+  console.log(PO_NO)
+  let sql = `SELECT * FROM e_fund_project`;
+  console.log(sql)
+  const [row] = await db.query(sql);
+  row.forEach(el => {
+    el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
+  });
+  res.json(row);
+});
+//體驗
+router.get("/experiencelist", async (req, res) => {
+  const PO_NO = req.query.PO_NO
+  console.log(PO_NO)
+  let sql = `SELECT * FROM a_experience_mainlist`;
+  console.log(sql)
+  const [row] = await db.query(sql);
+  row.forEach(el => {
+    el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
+  });
+  res.json(row);
+});
 
 router.get("/orderdetail", async (req, res) => {
   const PO_NO = req.query.PO_NO
