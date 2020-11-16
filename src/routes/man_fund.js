@@ -132,11 +132,52 @@ router.post("/fundlistnode", async (req, res) => {
  console.log(' row => ', row, 'member id => ', req.session.sid)
 
   res.json({
-    success: true,
+    success: !!row.length > 0,
     msg: '募資資料查詢成功',
     data: row,
   })
 });
+
+
+// router.get("/fundlistnode/membersid", async (req, res, next) => {
+
+//   let sql = `SELECT * FROM e_fund_project WHERE member_sid=?`;
+
+ 
+//   const [results] = await db.query(sql, [req.query.member]);
+
+//   res.json(results);
+
+// });
+
+
+
+router.get("/myfund/:sid", async (req, res) => {
+
+  const { sid } = req.params
+
+  console.log(sid,'123' )
+  const sql = `
+  SELECT * 
+  FROM e_fund_project 
+  WHERE member_sid = ? 
+  ORDER BY e_fund_project.sid ASC`
+  const [row] = await db.query(sql, [sid]);
+
+
+  console.log('   get   =>  ', row)
+  // res.json(row); // [{}]
+
+  res.json({
+    success: !!row.length > 0,
+    msg: '募資資料查詢成功',
+    data: row,
+  })
+});
+
+
+
+
 
 // 系列
 router.get("/series", async (req, res) => {
@@ -388,11 +429,13 @@ router.post("/try-upload", upload.single('myfile'), (req, res) => {
 // 新增表單 API
 router.post('/add', upload.none(), async (req, res) => {
   const data = {
-    ...req.body
+    ...req.body,
+    product_type: 3
   };
 
+  delete data.sid
 
-
+  console.log(999, req.body)
 
   const sql = "INSERT INTO `e_fund_project` set ?";
   console.log(JSON.stringify(data));
@@ -400,11 +443,10 @@ router.post('/add', upload.none(), async (req, res) => {
     affectedRows,
     insertId
   }] = await db.query(sql, [data]);
-  
-
 
   res.json({
     success: !!affectedRows,
+    msg: !!affectedRows ? 'success' : 'failed',
     affectedRows,
     insertId,
   });
