@@ -660,23 +660,63 @@ module.exports = {
     })
   },
 
-  // 評論撈出來
+  // 評論撈出來，GET/POST 共用
   async getCommentt(req, res, next) {
     if (!req.session.sid) return res.status(401).send('請重新登入')
 
+    const { sid } = req.params // 評論的 sid
+    console.log('  req.query  => ', req.query, req.params)
+
+    // 1. GET: 若有  req.params.sid 代表 GET 請求
+    if (sid) {
+      const ONE_COMMENT = `
+        SELECT R.sid, name,avatar, buy_product, stars, review_comment, review_time, photo
+        FROM w_review R
+        LEFT JOIN members M
+        ON R.user_id = M.sid
+        WHERE R.sid = ?`
+      const [row] = await db.query(ONE_COMMENT, [sid]) //從資料庫拿出來 row(那筆資料)
+
+      const hasData = row.length > 0
+
+      // 將 sid 解構賦值然後改名為 review_sid， const review_sid = row[0].sid
+      const { sid: review_sid, ...otherColumn } = row[0]
+
+      const data = {
+        ...otherColumn,
+        review_sid,
+      }
+
+      // 返回
+      return res.json({
+        success: hasData,
+        msg: hasData ? '自己評論的資料傳送成功' : '自己評論的資料傳送失敗啦',
+        data: data,
+      })
+    }
+
+    // 2. POST 請求
     const QUERY_SQL1 = `
-      SELECT avatar, buy_product, stars, review_comment, review_time, photo
+      SELECT R.sid, avatar, buy_product, stars, review_comment, review_time, photo
       FROM w_review R
       LEFT JOIN members M
       ON R.user_id = M.sid
       WHERE user_id = ?` // 從後端資料庫拿你指定要的資料
     const [row] = await db.query(QUERY_SQL1, [req.session.sid]) //從資料庫拿出來 row(那筆資料)
 
-    if (row.length > 0) {
+    const result = row.map((column) => {
+      const { sid, ...otherColumn } = column
+      return {
+        ...otherColumn,
+        review_sid: sid,
+      }
+    })
+
+    if (result.length > 0) {
       res.json({
         success: true,
         msg: '自己評論的資料傳送成功',
-        data: row,
+        data: result,
       })
     } else {
       res.json({
@@ -685,6 +725,25 @@ module.exports = {
         data: null,
       })
     }
+  },
+
+  // 編輯評論
+  async updateCommentt(req, res, next) {
+    if (!req.session.sid) return res.status(401).send('請重新登入')
+
+    const { stars, review_comment, review_sid } = req.body
+    const updateData = [stars, review_comment, review_sid]
+
+    const UPDATE_SQL = `
+      UPDATE w_review SET stars = ?, review_comment = ? WHERE sid = ?`
+
+    const [{ changedRows }] = await db.query(UPDATE_SQL, updateData) //從資料庫拿出來 row(那筆資料)
+
+    res.json({
+      success: !!changedRows,
+      msg: `編輯評論${changedRows ? '成功' : '失敗'}`,
+      data: null,
+    })
   },
 
   // 我的評價 撈出來
