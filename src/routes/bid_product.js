@@ -104,19 +104,23 @@ router.post('/record', async (req, res)=>{
     const [r1] = await db.query(sql2,[req.body.total_price, req.body.sid])
 
    
-     const sql3 = 'SELECT * FROM subscribe WHERE `product_sid`=? AND `total_price`>=`sub_price` ORDER BY `sid` DESC';
+     const sql3 = 'SELECT * FROM subscribe WHERE `product_sid`=?';
+    //  const sql3 = 'SELECT * FROM subscribe WHERE `product_sid`=? AND `total_price`>=`sub_price` ORDER BY `sid` DESC';
      const [r2] = await db.query(sql3,[req.body.product_sid])
      
      if(r2.length > 0){
+        r2.forEach(element => {
+            if(req.body.total_price >= element.sub_price){
         emailService.send({ to: req.body.email, subject: 'Chademy價格訂閱', 
         html: `<div><p>親愛的會員${req.body.name}您好：</p>
-        <p>您訂閱的產品＄${r2[0].product_name}，目前金額為＄${req.body.total_price}已超過訂閱金額＄${r2[0].sub_price}<p></div>
+        <p>您訂閱的產品${r2[0].product_name}，目前金額為＄${req.body.total_price}已超過訂閱金額＄${r2[0].sub_price}<p></div>
         <div>Chademy</div>` })
+             }
+        })}
         //  r2.forEach(element => {
         //      if(req.body.total_price >= element.sub_price){
         //          emailService.send({ to: req.body.email, subject: '標題', 
         //          html: `<div>您已開啟訂閱金額小鈴鐺，目前金額為${req.body.total_price}</div>` })
-    }
         
         res.json({
             result: r2,
@@ -129,7 +133,7 @@ router.post('/sub', async (req, res)=>{
     const sql ='INSERT INTO `subscribe` (`product_sid`,`member_sid`,`product_name`,`name`,`total_price`,`sub_price`, `sub_email`,`time`) VALUES (?,?,?,?,?,?,?,NOW())'
     const [r] = await db.query(sql,[req.body.product_sid, req.body.member_sid,req.body.product_name,req.body.name,req.body.total_price, req.body.sub_price, req.body.sub_email])
     emailService.send({ to: req.body.sub_email, subject: 'Chademy價格訂閱確認信', 
-                html: `<div><p>親愛的會員＄${req.body.name}您好：</p>
+                html: `<div><p>親愛的會員${req.body.name}您好：</p>
                 <p>感謝您開啟訂閱小鈴鐺，我們將在商品＄${req.body.product_name}於金額超過＄${req.body.sub_price}時通知您</p></div>
                 <div>Chademy</div>` })
     
