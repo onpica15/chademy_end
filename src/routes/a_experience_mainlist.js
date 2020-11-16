@@ -151,15 +151,9 @@ router.post("/classfilter", async (req, res) => {
   
   const [totalRows
   ] = await db.query(sql);
-<<<<<<< Updated upstream
   totalRows.forEach(el => {
     el.start_date = moment(el.start_date).format("YYYY/MM/DD");  
     el.end_date = moment(el.end_date).format("YYYY/MM/DD");  
-=======
-
-  totalRows.forEach(el => {
-    el.start_date = moment(el.start_date).format("YYYY-MM-DD");  
->>>>>>> Stashed changes
   });
   res.json(totalRows);
 }
