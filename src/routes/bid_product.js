@@ -53,13 +53,12 @@ router.get('/bid/:sid?', async (req, res)=>{
 // });
 router.get('/record/list', async (req, res)=>{
     // const sql ='SELECT p.*, r.* FROM `products` p JOIN `record` r ON p.`product_sid`=r.`sid` WHERE r.sid=?'
-    const sql ='SELECT p.*, r.*,b.* FROM `products` p INNER JOIN `record` r ON p.`sid`=r.`sid` INNER JOIN `bidding` b ON r.`sid`=b.`sid`'
+    const sql ='SELECT p.*,b.* FROM `products` p JOIN `bidding` b ON p.`sid`=b.`sid`'
+    // const sql ='SELECT p.*, r.*,b.* FROM `products` p INNER JOIN `record` r ON p.`sid`=r.`sid` INNER JOIN `bidding` b ON r.`sid`=b.`sid`'
     const [row] = await db.query(sql)
     const fm = 'YYYY/MM/DD HH:mm:ss';
     const fmmm = 'YYYY/MM/DD';
 
-    const newdate = null
-    // console.log(row.length)
     // if(row && row.length){
         for(let i=0;i<row.length;i++){
             row[i].startingDate = moment(row[i].startingDate).format(fm)
@@ -87,8 +86,8 @@ router.get('/member-record', async (req, res)=>{
 
     for(let i=0;i<row.length;i++){
         row[i].time = moment(row[i].time).format(fm)
-        row[i].price = numberWithCommas(row[i].price)
-        row[i].total_price = numberWithCommas(row[i].total_price)
+        // row[i].price = numberWithCommas(row[i].price)
+        // row[i].total_price = numberWithCommas(row[i].total_price)
 
     }
         res.json(row)
