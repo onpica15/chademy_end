@@ -60,6 +60,7 @@ router.post('/setUserEmail', controller.setUserEmail)
 router.post('/getCommentt', controller.getCommentt)
 router.get('/getCommentt/:sid', controller.getCommentt)
 
+router.post('/deleteCommentt', controller.deleteCommentt)
 router.post('/updateCommentt', controller.updateCommentt)
 
 router.post('/getEvaluation', controller.getEvaluation)

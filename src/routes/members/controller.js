@@ -670,7 +670,7 @@ module.exports = {
     // 1. GET: 若有  req.params.sid 代表 GET 請求
     if (sid) {
       const ONE_COMMENT = `
-        SELECT R.sid, name,avatar, buy_product, stars, review_comment, review_time, photo
+        SELECT R.sid, name, order_no, review_title, avatar, buy_product, stars, review_comment, review_time, photo
         FROM w_review R
         LEFT JOIN members M
         ON R.user_id = M.sid
@@ -731,17 +731,34 @@ module.exports = {
   async updateCommentt(req, res, next) {
     if (!req.session.sid) return res.status(401).send('請重新登入')
 
-    const { stars, review_comment, review_sid } = req.body
-    const updateData = [stars, review_comment, review_sid]
+    const { stars, review_comment, photo, review_title, review_sid } = req.body
+    const updateData = [stars, review_comment, photo, review_title, review_sid]
 
     const UPDATE_SQL = `
-      UPDATE w_review SET stars = ?, review_comment = ? WHERE sid = ?`
+      UPDATE w_review SET stars = ?, review_comment = ?, photo = ?, review_title = ? WHERE sid = ?`
 
     const [{ changedRows }] = await db.query(UPDATE_SQL, updateData) //從資料庫拿出來 row(那筆資料)
 
     res.json({
       success: !!changedRows,
       msg: `編輯評論${changedRows ? '成功' : '失敗'}`,
+      data: null,
+    })
+  },
+
+  // 刪除評論
+  async deleteCommentt(req, res, next) {
+    if (!req.session.sid) return res.status(401).send('請重新登入')
+
+    console.log(req.body.review_sid, req.session.sid)
+
+    const DELETE_SQL = `DELETE FROM w_review WHERE sid = ? AND user_id = ?`
+    const parasm = [req.body.review_sid, req.session.sid] // 評論 sid, 使用者 sid
+    const [{ affectedRows }] = await db.query(DELETE_SQL, parasm)
+
+    res.json({
+      success: !!affectedRows,
+      msg: !!affectedRows ? '刪除評論成功' : '刪除評論失敗',
       data: null,
     })
   },
@@ -853,6 +870,7 @@ module.exports = {
       data: null,
     })
   },
+
   // 撈地址
   async getAddress(req, res, next) {
     // 改成 res.session.sid 拿
