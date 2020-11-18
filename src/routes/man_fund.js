@@ -311,12 +311,8 @@ router.get("/reactitem/:sid", async (req, res) => {
 
 // get 追蹤狀態
 router.get("/heart/:sid", async (req, res) => {
-<<<<<<< Updated upstream
   
   const sql = "SELECT * FROM `e_follow` WHERE 	e_follow_product =?";
-=======
-  const sql = "SELECT * FROM `e_follow` WHERE follow_project=?";
->>>>>>> Stashed changes
   const [row] = await db.query(sql, [req.params.sid]);
   res.json(row); // [{}]
 });
