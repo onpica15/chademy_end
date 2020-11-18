@@ -125,7 +125,7 @@ async function getEditList(req) {
 // 列表頁面
 router.get("/reactlist", async (req, res) => {
   const [totalRows
-  ] = await db.query("SELECT * FROM w_product_mainlist");
+  ] = await db.query("SELECT * FROM `w_product_mainlist` ORDER BY `w_product_mainlist`.`sid` DESC");
   res.json(totalRows);
 });
 
