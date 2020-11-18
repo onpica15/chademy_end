@@ -419,7 +419,7 @@ module.exports = {
     res.json({
       success: !!changedRows,
       msg: `編輯會員資料${changedRows ? '成功' : '失敗'}`,
-      data: null,
+      data: { name, mobile, birthday, avatar },
     })
   },
 
