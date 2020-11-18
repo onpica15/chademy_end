@@ -228,7 +228,7 @@ router.post("/edit/:sid", upload.none(), async (req, res) => {
 
 // 單張圖片上傳 API
 router.post("/try-upload", upload.single("myfile"), (req, res) => {
-  console.log("req.file" + req.file);
+  //console.log("req.file" + req.file);
 
   if (req.file && req.file.originalname) {
     let ext = "";
