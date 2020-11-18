@@ -110,7 +110,7 @@ router.post('/record', async (req, res)=>{
      if(r2.length > 0){
         r2.forEach(element => {
             if(req.body.total_price >= element.sub_price){
-        emailService.send({ to: req.body.email, subject: 'Chademy價格訂閱', 
+        emailService.send({ to: req.body.email, subject: `Chademy - ${r2[0].product_name}商品價格通知`, 
         html: `<div><p>親愛的會員${req.body.name}您好：</p>
         <p>您訂閱的產品${r2[0].product_name}，目前金額為＄${req.body.total_price}已超過訂閱金額＄${r2[0].sub_price}<p></div>
         <div>Chademy</div>` })
@@ -131,9 +131,9 @@ router.post('/sub', async (req, res)=>{
     
     const sql ='INSERT INTO `subscribe` (`product_sid`,`member_sid`,`product_name`,`name`,`total_price`,`sub_price`, `sub_email`,`time`) VALUES (?,?,?,?,?,?,?,NOW())'
     const [r] = await db.query(sql,[req.body.product_sid, req.body.member_sid,req.body.product_name,req.body.name,req.body.total_price, req.body.sub_price, req.body.sub_email])
-    emailService.send({ to: req.body.sub_email, subject: 'Chademy價格訂閱確認信', 
+    emailService.send({ to: req.body.sub_email, subject: `Chademy - ${req.body.product_name}商品價格訂閱確認信`, 
                 html: `<div><p>親愛的會員${req.body.name}您好：</p>
-                <p>感謝您開啟訂閱小鈴鐺，我們將在商品＄${req.body.product_name}於金額超過＄${req.body.sub_price}時通知您</p></div>
+                <p>感謝您開啟訂閱小鈴鐺，我們將在商品${req.body.product_name}於金額超過＄${req.body.sub_price}時通知您！</p></div>
                 <div>Chademy</div>` })
     
         res.json({
