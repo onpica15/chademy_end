@@ -286,7 +286,7 @@ router.get("/reactitem/:sid", async (req, res) => {
 // get 追蹤狀態
 router.get("/heart/:sid", async (req, res) => {
   
-  const sql = "SELECT * FROM `e_follow` WHERE follow_project=?";
+  const sql = "SELECT * FROM `e_follow` WHERE 	e_follow_product =?";
   const [row] = await db.query(sql, [req.params.sid]);
 
   res.json(row); // [{}]
@@ -297,7 +297,7 @@ router.post('/addheart', upload.none(), async (req, res) => {
   const data = {
     ...req.body
   };
-  data.follow_time = moment(new Date()).format(
+  data.e_follow_time = moment(new Date()).format(
     "YYYY-MM-DD");
 
   const sql = "INSERT INTO `e_follow` set ?";
