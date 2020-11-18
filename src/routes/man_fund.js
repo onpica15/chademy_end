@@ -322,7 +322,7 @@ router.delete("/del/:sid", async (req, res) => {
   const [results] = await db.query(sql, [req.params.sid]);
   res.json(results);
 });
-
+//fff
 
 
 
