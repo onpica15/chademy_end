@@ -103,7 +103,7 @@ router.post('/record', async (req, res)=>{
     const [r1] = await db.query(sql2,[req.body.total_price, req.body.sid])
 
    
-     const sql3 = 'SELECT * FROM subscribe WHERE `product_sid`=?';
+     const sql3 = 'SELECT * FROM subscribe WHERE `product_sid`=? ORDER BY `sid` DESC';
     //  const sql3 = 'SELECT * FROM subscribe WHERE `product_sid`=? AND `total_price`>=`sub_price` ORDER BY `sid` DESC';
      const [r2] = await db.query(sql3,[req.body.product_sid])
      
