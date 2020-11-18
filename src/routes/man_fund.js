@@ -119,17 +119,29 @@ async function getEditList(req) {
 // 列表頁面
 router.get("/list", async (req, res) => {
   const output = await getListData(req);
+
+  const [row] = await db.query(sql,[req.params.sid]);
+  row.forEach(el => {
+    el.e_start_time = moment(el.e_start_time).format("YYYY-MM-DD");  
+    el.e_end_time = moment(el.e_end_time).format("YYYY-MM-DD");  
+  });
+
   res.render("man_fund/list", output);
 });
 
 // react
 router.post("/fundlistnode", async (req, res) => {
- if (!req.session.sid) return res.status(401).send('請重新登入')
+  console.log('req.body.userId',req.body.userId)
+ if (!req.body.userId) return res.status(401).send('請重新登入')
 
  let sql = 'SELECT * FROM e_fund_project WHERE member_sid = ?'
- const [row] = await db.query(sql, [req.session.sid]);
-
- console.log(' row => ', row, 'member id => ', req.session.sid)
+ const [row] = await db.query(sql, [req.body.userId]);
+ 
+//  row.forEach(el => {
+//    el.e_start_time = moment(el.e_start_time).format("YYYY-MM-DD");  
+//    el.e_end_time = moment(el.e_end_time).format("YYYY-MM-DD");  
+//  });
+ console.log(' row => ', row, 'member id => ', req.body.userId)
 
   res.json({
     success: !!row.length > 0,
@@ -139,22 +151,25 @@ router.post("/fundlistnode", async (req, res) => {
 });
 
 
-// router.get("/fundlistnode/membersid", async (req, res, next) => {
+router.get("/fundlistnode/membersid", async (req, res, next) => {
 
-//   let sql = `SELECT * FROM e_fund_project WHERE member_sid=?`;
+  let sql = `SELECT * FROM e_fund_project WHERE member_sid=?`;
 
  
-//   const [results] = await db.query(sql, [req.query.member]);
+  const [results] = await db.query(sql, [req.query.member]);
 
-//   res.json(results);
+  res.json(results);
 
-// });
+});
 
 
 
 router.get("/myfund/:sid", async (req, res) => {
 
   const { sid } = req.params
+
+
+  
 
   console.log(sid,'123' )
   const sql = `
@@ -163,6 +178,11 @@ router.get("/myfund/:sid", async (req, res) => {
   WHERE member_sid = ? 
   ORDER BY e_fund_project.sid ASC`
   const [row] = await db.query(sql, [sid]);
+
+  row.forEach(el => {
+    el.e_start_time = moment(el.e_start_time).format("YYYY-MM-DD");  
+    el.e_end_time = moment(el.e_end_time).format("YYYY-MM-DD");  
+  });
 
 
   console.log('   get   =>  ', row)
@@ -277,6 +297,12 @@ router.get("/reactitem/:sid", async (req, res) => {
   
   const sql = "SELECT * FROM e_fund_project WHERE sid=?";
   const [row] = await db.query(sql, [req.params.sid]);
+
+  
+  row.forEach(el => {
+    el.e_start_time = moment(el.e_start_time).format("YYYY-MM-DD");  
+    el.e_end_time = moment(el.e_end_time).format("YYYY-MM-DD");  
+  });
   res.json(row); // [{}]
 });
 
@@ -285,10 +311,13 @@ router.get("/reactitem/:sid", async (req, res) => {
 
 // get 追蹤狀態
 router.get("/heart/:sid", async (req, res) => {
+<<<<<<< Updated upstream
   
   const sql = "SELECT * FROM `e_follow` WHERE 	e_follow_product =?";
+=======
+  const sql = "SELECT * FROM `e_follow` WHERE follow_project=?";
+>>>>>>> Stashed changes
   const [row] = await db.query(sql, [req.params.sid]);
-
   res.json(row); // [{}]
 });
 
@@ -339,6 +368,15 @@ router.get("/edit/:sid", async (req, res) => {
 
 // 新增頁面
 router.get("/add", async (req, res) => {
+
+  const data = {
+    ...req.body
+  };
+  data.e_start_time = moment(new Date()).format(
+    "YYYY-MM-DD");
+
+  data.e_end_time = moment(new Date()).format(
+    "YYYY-MM-DD");
 
 
   const output = {

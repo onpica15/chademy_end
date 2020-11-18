@@ -85,6 +85,7 @@ app.use((req, res, next) => {
     'getUserCouponInfo',
     'getUserCreditcardInfo',
     'getUserEmail',
+    'fundlistnode',
   ]
 
   const exclude = ['fundlistnode']

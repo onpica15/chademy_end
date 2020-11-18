@@ -32,7 +32,7 @@ var fs = require("fs"); // ----------------------以下為重構之function-----
 
 
 function getListData(req) {
-  var output, _ref, _ref2, _ref2$, totalRows, page, sql, _ref3, _ref4, results;
+  var output, _ref, _ref2, _ref2$, totalRows, page, _sql, _ref3, _ref4, results;
 
   return regeneratorRuntime.async(function getListData$(_context) {
     while (1) {
@@ -93,9 +93,9 @@ function getListData(req) {
             output.endPage = endPage;
           })(page, output.totalPages, 3);
 
-          sql = "SELECT * FROM e_fund_project LIMIT ".concat((output.page - 1) * output.perPage, ", ").concat(output.perPage);
+          _sql = "SELECT * FROM e_fund_project LIMIT ".concat((output.page - 1) * output.perPage, ", ").concat(output.perPage);
           _context.next = 16;
-          return regeneratorRuntime.awrap(db.query(sql));
+          return regeneratorRuntime.awrap(db.query(_sql));
 
         case 16:
           _ref3 = _context.sent;
@@ -174,7 +174,8 @@ function getEditList(req) {
 
 
 router.get("/list", function _callee(req, res) {
-  var output;
+  var output, _ref9, _ref10, row;
+
   return regeneratorRuntime.async(function _callee$(_context3) {
     while (1) {
       switch (_context3.prev = _context3.next) {
@@ -184,9 +185,20 @@ router.get("/list", function _callee(req, res) {
 
         case 2:
           output = _context3.sent;
+          _context3.next = 5;
+          return regeneratorRuntime.awrap(db.query(sql, [req.params.sid]));
+
+        case 5:
+          _ref9 = _context3.sent;
+          _ref10 = _slicedToArray(_ref9, 1);
+          row = _ref10[0];
+          row.forEach(function (el) {
+            el.e_start_time = moment(el.e_start_time).format("YYYY-MM-DD");
+            el.e_end_time = moment(el.e_end_time).format("YYYY-MM-DD");
+          });
           res.render("man_fund/list", output);
 
-        case 4:
+        case 10:
         case "end":
           return _context3.stop();
       }
@@ -195,64 +207,93 @@ router.get("/list", function _callee(req, res) {
 }); // react
 
 router.post("/fundlistnode", function _callee2(req, res) {
-  var sql, _ref9, _ref10, row;
+  var sql, _ref11, _ref12, row;
 
   return regeneratorRuntime.async(function _callee2$(_context4) {
     while (1) {
       switch (_context4.prev = _context4.next) {
         case 0:
-          if (req.session.sid) {
-            _context4.next = 2;
+          console.log('req.body.userId', req.body.userId);
+
+          if (req.body.userId) {
+            _context4.next = 3;
             break;
           }
 
           return _context4.abrupt("return", res.status(401).send('請重新登入'));
 
-        case 2:
+        case 3:
           sql = 'SELECT * FROM e_fund_project WHERE member_sid = ?';
-          _context4.next = 5;
-          return regeneratorRuntime.awrap(db.query(sql, [req.session.sid]));
+          _context4.next = 6;
+          return regeneratorRuntime.awrap(db.query(sql, [req.body.userId]));
 
-        case 5:
-          _ref9 = _context4.sent;
-          _ref10 = _slicedToArray(_ref9, 1);
-          row = _ref10[0];
-          console.log(' row => ', row, 'member id => ', req.session.sid);
+        case 6:
+          _ref11 = _context4.sent;
+          _ref12 = _slicedToArray(_ref11, 1);
+          row = _ref12[0];
+          //  row.forEach(el => {
+          //    el.e_start_time = moment(el.e_start_time).format("YYYY-MM-DD");  
+          //    el.e_end_time = moment(el.e_end_time).format("YYYY-MM-DD");  
+          //  });
+          console.log(' row => ', row, 'member id => ', req.body.userId);
           res.json({
             success: !!row.length > 0,
             msg: '募資資料查詢成功',
             data: row
           });
 
-        case 10:
+        case 11:
         case "end":
           return _context4.stop();
       }
     }
   });
-}); // router.get("/fundlistnode/membersid", async (req, res, next) => {
-//   let sql = `SELECT * FROM e_fund_project WHERE member_sid=?`;
-//   const [results] = await db.query(sql, [req.query.member]);
-//   res.json(results);
-// });
-
-router.get("/myfund/:sid", function _callee3(req, res) {
-  var sid, sql, _ref11, _ref12, row;
+});
+router.get("/fundlistnode/membersid", function _callee3(req, res, next) {
+  var sql, _ref13, _ref14, results;
 
   return regeneratorRuntime.async(function _callee3$(_context5) {
     while (1) {
       switch (_context5.prev = _context5.next) {
         case 0:
+          sql = "SELECT * FROM e_fund_project WHERE member_sid=?";
+          _context5.next = 3;
+          return regeneratorRuntime.awrap(db.query(sql, [req.query.member]));
+
+        case 3:
+          _ref13 = _context5.sent;
+          _ref14 = _slicedToArray(_ref13, 1);
+          results = _ref14[0];
+          res.json(results);
+
+        case 7:
+        case "end":
+          return _context5.stop();
+      }
+    }
+  });
+});
+router.get("/myfund/:sid", function _callee4(req, res) {
+  var sid, sql, _ref15, _ref16, row;
+
+  return regeneratorRuntime.async(function _callee4$(_context6) {
+    while (1) {
+      switch (_context6.prev = _context6.next) {
+        case 0:
           sid = req.params.sid;
           console.log(sid, '123');
           sql = "\n  SELECT * \n  FROM e_fund_project \n  WHERE member_sid = ? \n  ORDER BY e_fund_project.sid ASC";
-          _context5.next = 5;
+          _context6.next = 5;
           return regeneratorRuntime.awrap(db.query(sql, [sid]));
 
         case 5:
-          _ref11 = _context5.sent;
-          _ref12 = _slicedToArray(_ref11, 1);
-          row = _ref12[0];
+          _ref15 = _context6.sent;
+          _ref16 = _slicedToArray(_ref15, 1);
+          row = _ref16[0];
+          row.forEach(function (el) {
+            el.e_start_time = moment(el.e_start_time).format("YYYY-MM-DD");
+            el.e_end_time = moment(el.e_end_time).format("YYYY-MM-DD");
+          });
           console.log('   get   =>  ', row); // res.json(row); // [{}]
 
           res.json({
@@ -261,77 +302,77 @@ router.get("/myfund/:sid", function _callee3(req, res) {
             data: row
           });
 
-        case 10:
-        case "end":
-          return _context5.stop();
-      }
-    }
-  });
-}); // 系列
-
-router.get("/series", function _callee4(req, res) {
-  var series, sql, _ref13, _ref14, totalRows;
-
-  return regeneratorRuntime.async(function _callee4$(_context6) {
-    while (1) {
-      switch (_context6.prev = _context6.next) {
-        case 0:
-          if (!req.query.category) {
-            _context6.next = 12;
-            break;
-          }
-
-          series = req.query.category;
-          sql = "SELECT * FROM e_fund_project WHERE e_cate = " + series;
-          console.log('sql: ' + sql);
-          console.log('series' + series);
-          console.log('req.query' + req.query);
-          _context6.next = 8;
-          return regeneratorRuntime.awrap(db.query(sql));
-
-        case 8:
-          _ref13 = _context6.sent;
-          _ref14 = _slicedToArray(_ref13, 1);
-          totalRows = _ref14[0];
-          res.json(totalRows);
-
-        case 12:
+        case 11:
         case "end":
           return _context6.stop();
       }
     }
   });
-}); // 專案新舊
+}); // 系列
 
-router.get("/project_time", function _callee5(req, res) {
-  var time, sql, _ref15, _ref16, totalRows;
+router.get("/series", function _callee5(req, res) {
+  var series, _sql2, _ref17, _ref18, totalRows;
 
   return regeneratorRuntime.async(function _callee5$(_context7) {
     while (1) {
       switch (_context7.prev = _context7.next) {
         case 0:
-          if (!req.query.time) {
+          if (!req.query.category) {
             _context7.next = 12;
             break;
           }
 
-          time = req.query.time;
-          sql = "SELECT * FROM e_fund_project WHERE project_cate = " + time;
-          console.log('sql: ' + sql);
-          console.log('time' + time);
+          series = req.query.category;
+          _sql2 = "SELECT * FROM e_fund_project WHERE e_cate = " + series;
+          console.log('sql: ' + _sql2);
+          console.log('series' + series);
           console.log('req.query' + req.query);
           _context7.next = 8;
-          return regeneratorRuntime.awrap(db.query(sql));
+          return regeneratorRuntime.awrap(db.query(_sql2));
 
         case 8:
-          _ref15 = _context7.sent;
-          _ref16 = _slicedToArray(_ref15, 1);
-          totalRows = _ref16[0];
+          _ref17 = _context7.sent;
+          _ref18 = _slicedToArray(_ref17, 1);
+          totalRows = _ref18[0];
           res.json(totalRows);
 
         case 12:
         case "end":
           return _context7.stop();
+      }
+    }
+  });
+}); // 專案新舊
+
+router.get("/project_time", function _callee6(req, res) {
+  var time, _sql3, _ref19, _ref20, totalRows;
+
+  return regeneratorRuntime.async(function _callee6$(_context8) {
+    while (1) {
+      switch (_context8.prev = _context8.next) {
+        case 0:
+          if (!req.query.time) {
+            _context8.next = 12;
+            break;
+          }
+
+          time = req.query.time;
+          _sql3 = "SELECT * FROM e_fund_project WHERE project_cate = " + time;
+          console.log('sql: ' + _sql3);
+          console.log('time' + time);
+          console.log('req.query' + req.query);
+          _context8.next = 8;
+          return regeneratorRuntime.awrap(db.query(_sql3));
+
+        case 8:
+          _ref19 = _context8.sent;
+          _ref20 = _slicedToArray(_ref19, 1);
+          totalRows = _ref20[0];
+          res.json(totalRows);
+
+        case 12:
+        case "end":
+          return _context8.stop();
       }
     }
   });
@@ -350,27 +391,27 @@ router.get("/project_time", function _callee5(req, res) {
 // })
 //
 
-router.get("/project_price_asc", function _callee6(req, res) {
-  var sql, _ref17, _ref18, totalRows;
+router.get("/project_price_asc", function _callee7(req, res) {
+  var sql, _ref21, _ref22, totalRows;
 
-  return regeneratorRuntime.async(function _callee6$(_context8) {
+  return regeneratorRuntime.async(function _callee7$(_context9) {
     while (1) {
-      switch (_context8.prev = _context8.next) {
+      switch (_context9.prev = _context9.next) {
         case 0:
           sql = "SELECT * FROM e_fund_project ORDER BY e_fund_project.e_lowprice ASC";
-          _context8.next = 3;
+          _context9.next = 3;
           return regeneratorRuntime.awrap(db.query(sql));
 
         case 3:
-          _ref17 = _context8.sent;
-          _ref18 = _slicedToArray(_ref17, 1);
-          totalRows = _ref18[0];
+          _ref21 = _context9.sent;
+          _ref22 = _slicedToArray(_ref21, 1);
+          totalRows = _ref22[0];
           res.json(totalRows); // const [row] = await db.query(sql, [req.params.sid]);
           // res.json(row); // [{}]
 
         case 7:
         case "end":
-          return _context8.stop();
+          return _context9.stop();
       }
     }
   });
@@ -388,27 +429,27 @@ router.get("/project_price_asc", function _callee6(req, res) {
 // }
 // })
 
-router.get("/project_price_desc", function _callee7(req, res) {
-  var sql, _ref19, _ref20, totalRows;
+router.get("/project_price_desc", function _callee8(req, res) {
+  var sql, _ref23, _ref24, totalRows;
 
-  return regeneratorRuntime.async(function _callee7$(_context9) {
+  return regeneratorRuntime.async(function _callee8$(_context10) {
     while (1) {
-      switch (_context9.prev = _context9.next) {
+      switch (_context10.prev = _context10.next) {
         case 0:
           sql = "SELECT * FROM e_fund_project ORDER BY e_fund_project.e_lowprice DESC";
-          _context9.next = 3;
+          _context10.next = 3;
           return regeneratorRuntime.awrap(db.query(sql));
 
         case 3:
-          _ref19 = _context9.sent;
-          _ref20 = _slicedToArray(_ref19, 1);
-          totalRows = _ref20[0];
+          _ref23 = _context10.sent;
+          _ref24 = _slicedToArray(_ref23, 1);
+          totalRows = _ref24[0];
           res.json(totalRows); // const [row] = await db.query(sql, [req.params.sid]);
           // res.json(row); // [{}]
 
         case 7:
         case "end":
-          return _context9.stop();
+          return _context10.stop();
       }
     }
   });
@@ -420,75 +461,79 @@ router.get("/project_price_desc", function _callee7(req, res) {
 // });
 // funditem
 
-router.get("/reactitem/:sid", function _callee8(req, res) {
-  var sql, _ref21, _ref22, row;
-
-  return regeneratorRuntime.async(function _callee8$(_context10) {
-    while (1) {
-      switch (_context10.prev = _context10.next) {
-        case 0:
-          sql = "SELECT * FROM e_fund_project WHERE sid=?";
-          _context10.next = 3;
-          return regeneratorRuntime.awrap(db.query(sql, [req.params.sid]));
-
-        case 3:
-          _ref21 = _context10.sent;
-          _ref22 = _slicedToArray(_ref21, 1);
-          row = _ref22[0];
-          res.json(row); // [{}]
-
-        case 7:
-        case "end":
-          return _context10.stop();
-      }
-    }
-  });
-}); // get 追蹤狀態
-
-router.get("/heart/:sid", function _callee9(req, res) {
-  var sql, _ref23, _ref24, row;
+router.get("/reactitem/:sid", function _callee9(req, res) {
+  var sql, _ref25, _ref26, row;
 
   return regeneratorRuntime.async(function _callee9$(_context11) {
     while (1) {
       switch (_context11.prev = _context11.next) {
         case 0:
-          sql = "SELECT * FROM `e_follow` WHERE follow_project=?";
+          sql = "SELECT * FROM e_fund_project WHERE sid=?";
           _context11.next = 3;
           return regeneratorRuntime.awrap(db.query(sql, [req.params.sid]));
 
         case 3:
-          _ref23 = _context11.sent;
-          _ref24 = _slicedToArray(_ref23, 1);
-          row = _ref24[0];
+          _ref25 = _context11.sent;
+          _ref26 = _slicedToArray(_ref25, 1);
+          row = _ref26[0];
+          row.forEach(function (el) {
+            el.e_start_time = moment(el.e_start_time).format("YYYY-MM-DD");
+            el.e_end_time = moment(el.e_end_time).format("YYYY-MM-DD");
+          });
           res.json(row); // [{}]
 
-        case 7:
+        case 8:
         case "end":
           return _context11.stop();
       }
     }
   });
-}); // 加入追蹤 API
+}); // get 追蹤狀態
 
-router.post('/addheart', upload.none(), function _callee10(req, res) {
-  var data, sql, _ref25, _ref26, _ref26$, affectedRows, insertId;
+router.get("/heart/:sid", function _callee10(req, res) {
+  var sql, _ref27, _ref28, row;
 
   return regeneratorRuntime.async(function _callee10$(_context12) {
     while (1) {
       switch (_context12.prev = _context12.next) {
         case 0:
+          sql = "SELECT * FROM `e_follow` WHERE follow_project=?";
+          _context12.next = 3;
+          return regeneratorRuntime.awrap(db.query(sql, [req.params.sid]));
+
+        case 3:
+          _ref27 = _context12.sent;
+          _ref28 = _slicedToArray(_ref27, 1);
+          row = _ref28[0];
+          res.json(row); // [{}]
+
+        case 7:
+        case "end":
+          return _context12.stop();
+      }
+    }
+  });
+}); // 加入追蹤 API
+
+router.post('/addheart', upload.none(), function _callee11(req, res) {
+  var data, sql, _ref29, _ref30, _ref30$, affectedRows, insertId;
+
+  return regeneratorRuntime.async(function _callee11$(_context13) {
+    while (1) {
+      switch (_context13.prev = _context13.next) {
+        case 0:
           data = _objectSpread({}, req.body);
           data.follow_time = moment(new Date()).format("YYYY-MM-DD");
           sql = "INSERT INTO `e_follow` set ?";
-          _context12.next = 5;
+          _context13.next = 5;
           return regeneratorRuntime.awrap(db.query(sql, [data]));
 
         case 5:
-          _ref25 = _context12.sent;
-          _ref26 = _slicedToArray(_ref25, 1);
-          _ref26$ = _ref26[0];
-          affectedRows = _ref26$.affectedRows;
-          insertId = _ref26$.insertId;
+          _ref29 = _context13.sent;
+          _ref30 = _slicedToArray(_ref29, 1);
+          _ref30$ = _ref30[0];
+          affectedRows = _ref30$.affectedRows;
+          insertId = _ref30$.insertId;
           // sql是語法一個問號即可，data是array
           // [{"fieldCount":0,"affectedRows":1,"insertId":860,"info":"","serverStatus":2,"warningStatus":1},null]
           res.json({
@@ -499,106 +544,109 @@ router.post('/addheart', upload.none(), function _callee10(req, res) {
 
         case 11:
         case "end":
-          return _context12.stop();
+          return _context13.stop();
       }
     }
   });
 }); // 刪除追蹤 API
 
-router["delete"]("/del/:sid", function _callee11(req, res) {
-  var sql, _ref27, _ref28, results;
+router["delete"]("/del/:sid", function _callee12(req, res) {
+  var sql, _ref31, _ref32, results;
 
-  return regeneratorRuntime.async(function _callee11$(_context13) {
-    while (1) {
-      switch (_context13.prev = _context13.next) {
-        case 0:
-          sql = "DELETE FROM `e_follow` WHERE follow_project=?";
-          _context13.next = 3;
-          return regeneratorRuntime.awrap(db.query(sql, [req.params.sid]));
-
-        case 3:
-          _ref27 = _context13.sent;
-          _ref28 = _slicedToArray(_ref27, 1);
-          results = _ref28[0];
-          res.json(results);
-
-        case 7:
-        case "end":
-          return _context13.stop();
-      }
-    }
-  });
-}); // 編輯頁面
-
-router.get("/edit/:sid", function _callee12(req, res) {
-  var output;
   return regeneratorRuntime.async(function _callee12$(_context14) {
     while (1) {
       switch (_context14.prev = _context14.next) {
         case 0:
-          _context14.next = 2;
-          return regeneratorRuntime.awrap(getEditList(req));
+          sql = "DELETE FROM `e_follow` WHERE follow_project=?";
+          _context14.next = 3;
+          return regeneratorRuntime.awrap(db.query(sql, [req.params.sid]));
 
-        case 2:
-          output = _context14.sent;
-          res.render("man_fund/edit", output);
+        case 3:
+          _ref31 = _context14.sent;
+          _ref32 = _slicedToArray(_ref31, 1);
+          results = _ref32[0];
+          res.json(results);
 
-        case 4:
+        case 7:
         case "end":
           return _context14.stop();
       }
     }
   });
-}); // 新增頁面
+}); // 編輯頁面
 
-router.get("/add", function _callee13(req, res) {
-  var output, sql_cates, _ref29, _ref30;
-
+router.get("/edit/:sid", function _callee13(req, res) {
+  var output;
   return regeneratorRuntime.async(function _callee13$(_context15) {
     while (1) {
       switch (_context15.prev = _context15.next) {
         case 0:
-          output = {
-            cates: []
-          };
-          sql_cates = "SELECT * FROM e_fund_categories";
-          _context15.next = 4;
-          return regeneratorRuntime.awrap(db.query(sql_cates));
+          _context15.next = 2;
+          return regeneratorRuntime.awrap(getEditList(req));
+
+        case 2:
+          output = _context15.sent;
+          res.render("man_fund/edit", output);
 
         case 4:
-          _ref29 = _context15.sent;
-          _ref30 = _slicedToArray(_ref29, 1);
-          output.cates = _ref30[0];
-          res.render("man_fund/add", output);
-
-        case 8:
         case "end":
           return _context15.stop();
       }
     }
   });
-}); // ------------------------- 以下為 RESTful API------------------------------
-// 編輯表單 API
+}); // 新增頁面
 
-router.post('/edit/:sid', upload.none(), function _callee14(req, res) {
-  var data, sql, _ref31, _ref32, _ref32$, affectedRows, changedRows;
+router.get("/add", function _callee14(req, res) {
+  var data, output, sql_cates, _ref33, _ref34;
 
   return regeneratorRuntime.async(function _callee14$(_context16) {
     while (1) {
       switch (_context16.prev = _context16.next) {
         case 0:
           data = _objectSpread({}, req.body);
+          data.e_start_time = moment(new Date()).format("YYYY-MM-DD");
+          data.e_end_time = moment(new Date()).format("YYYY-MM-DD");
+          output = {
+            cates: []
+          };
+          sql_cates = "SELECT * FROM e_fund_categories";
+          _context16.next = 7;
+          return regeneratorRuntime.awrap(db.query(sql_cates));
+
+        case 7:
+          _ref33 = _context16.sent;
+          _ref34 = _slicedToArray(_ref33, 1);
+          output.cates = _ref34[0];
+          res.render("man_fund/add", output);
+
+        case 11:
+        case "end":
+          return _context16.stop();
+      }
+    }
+  });
+}); // ------------------------- 以下為 RESTful API------------------------------
+// 編輯表單 API
+
+router.post('/edit/:sid', upload.none(), function _callee15(req, res) {
+  var data, sql, _ref35, _ref36, _ref36$, affectedRows, changedRows;
+
+  return regeneratorRuntime.async(function _callee15$(_context17) {
+    while (1) {
+      switch (_context17.prev = _context17.next) {
+        case 0:
+          data = _objectSpread({}, req.body);
           data.last_edit_time = moment(new Date()).format("YYYY-MM-DD");
           sql = "UPDATE `e_fund_project` SET ? WHERE `sid`=?";
-          _context16.next = 5;
+          _context17.next = 5;
           return regeneratorRuntime.awrap(db.query(sql, [data, req.params.sid]));
 
         case 5:
-          _ref31 = _context16.sent;
-          _ref32 = _slicedToArray(_ref31, 1);
-          _ref32$ = _ref32[0];
-          affectedRows = _ref32$.affectedRows;
-          changedRows = _ref32$.changedRows;
+          _ref35 = _context17.sent;
+          _ref36 = _slicedToArray(_ref35, 1);
+          _ref36$ = _ref36[0];
+          affectedRows = _ref36$.affectedRows;
+          changedRows = _ref36$.changedRows;
           //  {"fieldCount":0,"affectedRows":1,"insertId":0,"info":"Rows matched: 1  Changed: 0  Warnings: 0","serverStatus":2,"warningStatus":0,"changedRows":0}
           res.json({
             success: !!changedRows,
@@ -608,7 +656,7 @@ router.post('/edit/:sid', upload.none(), function _callee14(req, res) {
 
         case 11:
         case "end":
-          return _context16.stop();
+          return _context17.stop();
       }
     }
   });
@@ -649,59 +697,64 @@ router.post("/try-upload", upload.single('myfile'), function (req, res) {
   }
 }); // 新增表單 API
 
-router.post('/add', upload.none(), function _callee15(req, res) {
-  var data, sql, _ref33, _ref34, _ref34$, affectedRows, insertId;
-
-  return regeneratorRuntime.async(function _callee15$(_context17) {
-    while (1) {
-      switch (_context17.prev = _context17.next) {
-        case 0:
-          data = _objectSpread({}, req.body);
-          sql = "INSERT INTO `e_fund_project` set ?";
-          console.log(JSON.stringify(data));
-          _context17.next = 5;
-          return regeneratorRuntime.awrap(db.query(sql, [data]));
-
-        case 5:
-          _ref33 = _context17.sent;
-          _ref34 = _slicedToArray(_ref33, 1);
-          _ref34$ = _ref34[0];
-          affectedRows = _ref34$.affectedRows;
-          insertId = _ref34$.insertId;
-          res.json({
-            success: !!affectedRows,
-            affectedRows: affectedRows,
-            insertId: insertId
-          });
-
-        case 11:
-        case "end":
-          return _context17.stop();
-      }
-    }
-  });
-}); // 資料刪除 API
-
-router["delete"]("/del/:sid", function _callee16(req, res) {
-  var sql, _ref35, _ref36, results;
+router.post('/add', upload.none(), function _callee16(req, res) {
+  var data, sql, _ref37, _ref38, _ref38$, affectedRows, insertId;
 
   return regeneratorRuntime.async(function _callee16$(_context18) {
     while (1) {
       switch (_context18.prev = _context18.next) {
         case 0:
+          data = _objectSpread({}, req.body, {
+            product_type: 3
+          });
+          delete data.sid;
+          console.log(999, req.body);
+          sql = "INSERT INTO `e_fund_project` set ?";
+          console.log(JSON.stringify(data));
+          _context18.next = 7;
+          return regeneratorRuntime.awrap(db.query(sql, [data]));
+
+        case 7:
+          _ref37 = _context18.sent;
+          _ref38 = _slicedToArray(_ref37, 1);
+          _ref38$ = _ref38[0];
+          affectedRows = _ref38$.affectedRows;
+          insertId = _ref38$.insertId;
+          res.json({
+            success: !!affectedRows,
+            msg: !!affectedRows ? 'success' : 'failed',
+            affectedRows: affectedRows,
+            insertId: insertId
+          });
+
+        case 13:
+        case "end":
+          return _context18.stop();
+      }
+    }
+  });
+}); // 資料刪除 API
+
+router["delete"]("/del/:sid", function _callee17(req, res) {
+  var sql, _ref39, _ref40, results;
+
+  return regeneratorRuntime.async(function _callee17$(_context19) {
+    while (1) {
+      switch (_context19.prev = _context19.next) {
+        case 0:
           sql = "DELETE FROM `e_fund_project` WHERE sid=?";
-          _context18.next = 3;
+          _context19.next = 3;
           return regeneratorRuntime.awrap(db.query(sql, [req.params.sid]));
 
         case 3:
-          _ref35 = _context18.sent;
-          _ref36 = _slicedToArray(_ref35, 1);
-          results = _ref36[0];
+          _ref39 = _context19.sent;
+          _ref40 = _slicedToArray(_ref39, 1);
+          results = _ref40[0];
           res.json(results);
 
         case 7:
         case "end":
-          return _context18.stop();
+          return _context19.stop();
       }
     }
   });
