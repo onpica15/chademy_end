@@ -168,10 +168,7 @@ router.get("/myfund/:sid", async (req, res) => {
 
   const { sid } = req.params
 
-
-  
-
-  console.log(sid,'123' )
+  ////console.log(sid,'123' )
   const sql = `
   SELECT * 
   FROM e_fund_project 
@@ -185,7 +182,7 @@ router.get("/myfund/:sid", async (req, res) => {
   });
 
 
-  console.log('   get   =>  ', row)
+  ////console.log('   get   =>  ', row)
   // res.json(row); // [{}]
 
   res.json({
@@ -204,9 +201,9 @@ router.get("/series", async (req, res) => {
   if(req.query.category){
   const series = req.query.category
   let sql = `SELECT * FROM e_fund_project WHERE e_cate = ` + series
-  console.log('sql: '+sql);
-  console.log('series'+series);
-  console.log('req.query'+req.query);
+  ////console.log('sql: '+sql);
+  ////console.log('series'+series);
+  ////console.log('req.query'+req.query);
   
   const [totalRows
   ] = await db.query(sql);
@@ -219,9 +216,9 @@ router.get("/project_time", async (req, res) => {
   if(req.query.time){
   const time = req.query.time
   let sql = `SELECT * FROM e_fund_project WHERE project_cate = ` + time
-  console.log('sql: '+sql);
-  console.log('time'+time);
-  console.log('req.query'+req.query);
+  ////console.log('sql: '+sql);
+  ////console.log('time'+time);
+  ////console.log('req.query'+req.query);
   
   const [totalRows
   ] = await db.query(sql);
@@ -234,9 +231,9 @@ router.get("/project_time", async (req, res) => {
 //   if(req.query){
 //   // const acs = req.query.asc
 //   let sql = `SELECT * FROM e_fund_project WHERE e_lowprice ASC `
-//   console.log('sql: '+sql);
-//   // console.log('asc'+asc);
-//   console.log('req.query'+req.query);
+//   ////console.log('sql: '+sql);
+//   // ////console.log('asc'+asc);
+//   ////console.log('req.query'+req.query);
   
 //   const [totalRows
 //   ] = await db.query(sql);
@@ -262,9 +259,9 @@ router.get("/project_price_asc", async (req, res) => {
 //   if(req.query){
 //   // const desc = req.query.desc
 //   let sql = `SELECT * FROM e_fund_project WHERE e_lowprice DESC ` 
-//   console.log('sql: '+sql);
-//   // console.log('desc'+desc);
-//   console.log('req.query'+req.query);
+//   ////console.log('sql: '+sql);
+//   // ////console.log('desc'+desc);
+//   ////console.log('req.query'+req.query);
   
 //   const [totalRows
 //   ] = await db.query(sql);
@@ -421,7 +418,7 @@ router.post('/edit/:sid', upload.none(), async (req, res) => {
 
 // 單張圖片上傳 API
 router.post("/try-upload", upload.single('myfile'), (req, res) => {
-  console.log('req.file' + req.file);
+  ////console.log('req.file' + req.file);
 
   if (req.file && req.file.originalname) {
     let ext = "";
@@ -469,10 +466,10 @@ router.post('/add', upload.none(), async (req, res) => {
 
   delete data.sid
 
-  console.log(999, req.body)
+  ////console.log(999, req.body)
 
   const sql = "INSERT INTO `e_fund_project` set ?";
-  console.log(JSON.stringify(data));
+  ////console.log(JSON.stringify(data));
   const [{
     affectedRows,
     insertId

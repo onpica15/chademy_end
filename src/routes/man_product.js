@@ -134,9 +134,9 @@ router.get("/series", async (req, res) => {
   if(req.query.category){
   const series = req.query.category
   let sql = `SELECT * FROM w_product_mainlist WHERE category = ` + series
-  console.log('sql: '+sql);
-  console.log('series'+series);
-  console.log('req.query'+req.query);
+  ////console.log('sql: '+sql);
+  ////console.log('series'+series);
+  ////console.log('req.query'+req.query);
   
   const [totalRows
   ] = await db.query(sql);
@@ -153,39 +153,39 @@ router.get("/reactfilter", async (req, res) => {
   let colorWhere = ''
   let searchWhere = ''
   let sortWhere=''
-  // console.log(where);
-  console.log(req.query.category);
-  console.log(req.query.chairSeat);
-  console.log(cateWhere);
-  console.log(seatWhere);
+  // ////console.log(where);
+  ////console.log(req.query.category);
+  ////console.log(req.query.chairSeat);
+  ////console.log(cateWhere);
+  ////console.log(seatWhere);
 
   if (req.query.category){
     const cate = req.query.category.split(',')
     if(cate && cate.length){
       cateWhere = cate.map(el=>db.escape(el)).join(' OR category=');
     }
-    console.log('cateWhere:', cateWhere);
+    ////console.log('cateWhere:', cateWhere);
     cateWhere = ' ( category=' + cateWhere + ' ) ';
-    console.log('cateWhere:', cateWhere);
+    ////console.log('cateWhere:', cateWhere);
     // cate.forEach(element => cateWhere.push(`category = '${element}'`))
    
   }
   if (req.query.chairSeat) {
     const cate = decodeURI(req.query.chairSeat).split(',')
-    console.log(cate);
+    ////console.log(cate);
     if(cate && cate.length){
       seatWhere = cate.map(el=>db.escape(el)).join(' OR chair_seat=');
     }
-    console.log('seatWhere:', seatWhere);
+    ////console.log('seatWhere:', seatWhere);
     // cate.forEach(element => seatWhere.push(`chair_seat = '${element}'`))
     seatWhere = ' ( chair_seat=' + seatWhere + ' ) ';
-    console.log('seatWhere:', seatWhere);
+    ////console.log('seatWhere:', seatWhere);
   }  
   // return res.json([]);
   if (req.query.chairColor) {
-    console.log('req.query.chairColor'+req.query.chairColor);
+    ////console.log('req.query.chairColor'+req.query.chairColor);
     const cate = decodeURI(req.query.chairColor).split(',')
-    console.log(cate);
+    ////console.log(cate);
     if(cate && cate.length){
       colorWhere = cate.map(el=>db.escape(el)).join(' OR color=');
     }
@@ -194,18 +194,18 @@ router.get("/reactfilter", async (req, res) => {
   }  
 
   if (req.query.chairSearch) {
-    console.log('req.query.chairSearch'+req.query.chairSearch);
+    ////console.log('req.query.chairSearch'+req.query.chairSearch);
     const cate = decodeURI(req.query.chairSearch)
-    console.log(cate);
+    ////console.log(cate);
    
     searchWhere = ` ( product_name LIKE '%${cate}%' ) `;
     // cate.forEach(element => colorWhere.push(`color = '${element}'`))
   }  
 
   if (req.query.sortSearch) {
-    console.log('req.query.sortSearch'+req.query.sortSearch);
+    ////console.log('req.query.sortSearch'+req.query.sortSearch);
     const cate = decodeURI(req.query.sortSearch)
-    console.log(cate);
+    ////console.log(cate);
 
     if(cate==1){
       sortWhere = 'ORDER BY `w_product_mainlist`.`last_edit_time` DESC  ';
@@ -230,19 +230,19 @@ router.get("/reactfilter", async (req, res) => {
   if (seatWhere.length>0)where.push(seatWhere)
   if (colorWhere.length>0)where.push(colorWhere)
   if (searchWhere.length>0)where.push(searchWhere)
-  console.log('cateWhere.join'+cateWhere);
-  console.log('seatWhere.join'+seatWhere);
-  console.log('colorWhere.join'+colorWhere);
-  console.log('searchWhere.join'+searchWhere);
-  console.log('sortWhere'+sortWhere);
-  console.log('where'+where);
-  console.log('where.join: '+where.join(' AND '));
+  ////console.log('cateWhere.join'+cateWhere);
+  ////console.log('seatWhere.join'+seatWhere);
+  ////console.log('colorWhere.join'+colorWhere);
+  ////console.log('searchWhere.join'+searchWhere);
+  ////console.log('sortWhere'+sortWhere);
+  ////console.log('where'+where);
+  ////console.log('where.join: '+where.join(' AND '));
 
 // SELECT * FROM `w_product_mainlist` WHERE category = 'chair' AND chair_seat = '木頭' OR category = 'chair' AND chair_seat = '布料'
 
   let sql = `SELECT * FROM w_product_mainlist WHERE ` + where.join(' AND ') + sortWhere
-  console.log('sql: '+sql);
-  console.log('where'+where);
+  ////console.log('sql: '+sql);
+  ////console.log('where'+where);
   const [totalRows
   ] = await db.query(sql);
   res.json(totalRows);
@@ -273,8 +273,8 @@ router.post('/addheart', upload.none(), async (req, res) => {
   data.follow_time = moment(new Date()).format(
     "YYYY-MM-DD");
 
-  console.log(req.body)
-  console.log(data)
+  ////console.log(req.body)
+  ////console.log(data)
   const sql = "INSERT INTO `w_follow` set ?";
   const [{
     affectedRows,
@@ -352,7 +352,7 @@ router.get("/custom", async (req, res) => {
   
   const sql = `SELECT * FROM w_custom WHERE name = '${cust}' `;
   const [row] = await db.query(sql);
-  console.log(row)
+  ////console.log(row)
   res.json(row); // [{}]
 });
 
@@ -362,9 +362,9 @@ router.post("/recomfilter", async (req, res) => {
   const cateFilter = req.body.cate
   const colorFilter = req.body.color
   let sql = `SELECT * FROM w_product_mainlist WHERE category = '${cateFilter}' AND color = '${colorFilter}' LIMIT 3`
-  console.log('sql: '+sql);
-  console.log('cateFilter'+cateFilter);
-  console.log('colorFilter'+colorFilter);
+  ////console.log('sql: '+sql);
+  ////console.log('cateFilter'+cateFilter);
+  ////console.log('colorFilter'+colorFilter);
   
   const [totalRows
   ] = await db.query(sql);
@@ -451,7 +451,7 @@ router.post('/edit/:sid', upload.none(), async (req, res) => {
 
 // 單張圖片上傳 API
 router.post("/try-upload", upload.single('myfile'), (req, res) => {
-  console.log(req);
+  ////console.log(req);
 
   if (req.file && req.file.originalname) {
     let ext = "";

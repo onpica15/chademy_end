@@ -42,9 +42,9 @@ async function getListData (req){
 //get產品api
 router.get("/productlist", async (req, res) => {
   const PO_NO = req.query.PO_NO
-  console.log(PO_NO)
+  //console.log(PO_NO)
   let sql = `SELECT * FROM w_product_mainlist`;
-  console.log(sql)
+  //console.log(sql)
   const [row] = await db.query(sql);
   row.forEach(el => {
     el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
@@ -54,9 +54,9 @@ router.get("/productlist", async (req, res) => {
 //二手
 router.get("/secondhandlist", async (req, res) => {
   const PO_NO = req.query.PO_NO
-  console.log(PO_NO)
+  //console.log(PO_NO)
   let sql = `SELECT * FROM i_secondhand_product`;
-  console.log(sql)
+  //console.log(sql)
   const [row] = await db.query(sql);
   row.forEach(el => {
     el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
@@ -66,9 +66,9 @@ router.get("/secondhandlist", async (req, res) => {
 //競標
 router.get("/bidlist", async (req, res) => {
   const PO_NO = req.query.PO_NO
-  console.log(PO_NO)
+  //console.log(PO_NO)
   let sql = `SELECT * FROM products`;
-  console.log(sql)
+  //console.log(sql)
   const [row] = await db.query(sql);
   row.forEach(el => {
     el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
@@ -78,9 +78,9 @@ router.get("/bidlist", async (req, res) => {
 //募資
 router.get("/fundlist", async (req, res) => {
   const PO_NO = req.query.PO_NO
-  console.log(PO_NO)
+  //console.log(PO_NO)
   let sql = `SELECT * FROM e_fund_project`;
-  console.log(sql)
+  //console.log(sql)
   const [row] = await db.query(sql);
   row.forEach(el => {
     el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
@@ -90,9 +90,9 @@ router.get("/fundlist", async (req, res) => {
 //體驗
 router.get("/experiencelist", async (req, res) => {
   const PO_NO = req.query.PO_NO
-  console.log(PO_NO)
+  //console.log(PO_NO)
   let sql = `SELECT * FROM a_experience_mainlist`;
-  console.log(sql)
+  //console.log(sql)
   const [row] = await db.query(sql);
   row.forEach(el => {
     el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
@@ -102,9 +102,9 @@ router.get("/experiencelist", async (req, res) => {
 
 router.get("/orderdetail", async (req, res) => {
   const PO_NO = req.query.PO_NO
-  console.log(PO_NO)
+  //console.log(PO_NO)
   let sql = `SELECT * FROM j_order_detail`;
-  console.log(sql)
+  //console.log(sql)
   const [row] = await db.query(sql);
   row.forEach(el => {
     el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
@@ -114,9 +114,9 @@ router.get("/orderdetail", async (req, res) => {
 //get detail of order
 router.get("/detaillist", async (req, res) => {
   const PO_NO = req.query.PO_NO
-  console.log(PO_NO)
+  //console.log(PO_NO)
   let sql = `SELECT * FROM j_order_detail WHERE PO_NO='${PO_NO}'`;
-  console.log(sql)
+  //console.log(sql)
   const [row] = await db.query(sql);
   row.forEach(el => {
     el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
@@ -125,9 +125,9 @@ router.get("/detaillist", async (req, res) => {
 });
 router.get("/list", async (req, res) => {
   const member = req.query.member
-  console.log(member)
+  //console.log(member)
   let sql = `SELECT * FROM J_cart_order WHERE member='${member}'`;
-  console.log(sql)
+  //console.log(sql)
   const [row] = await db.query(sql);
   row.forEach(el => {
     el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
@@ -138,9 +138,9 @@ router.get("/list", async (req, res) => {
 
 router.get("/alllist", async (req, res) => {
   const member = req.query.member
-  console.log(member)
+  //console.log(member)
   let sql = `SELECT * FROM J_cart_order ORDER BY order_date DESC`;
-  console.log(sql)
+  //console.log(sql)
   const [row] = await db.query(sql);
   row.forEach(el => {
     el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
@@ -149,9 +149,9 @@ router.get("/alllist", async (req, res) => {
 });
 router.get("/listproduct", async (req, res) => {
   const PO_NO = req.query.PO_NO
-  console.log(PO_NO)
+  //console.log(PO_NO)
   let sql = `SELECT * FROM J_cart_order WHERE PO_NO='${PO_NO}'`;
-  console.log(sql)
+  //console.log(sql)
   const [row] = await db.query(sql);
   row.forEach(el => {
     el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
@@ -162,10 +162,10 @@ router.get("/listproduct", async (req, res) => {
 //get pending
 router.get("/listpending", async (req, res) => {
   const member = req.query.member
-  console.log(member)
+  //console.log(member)
   let sql = `SELECT * FROM J_cart_order WHERE (member='${member}')AND(order_status =1)`;
-  console.log(sql)
-  console.log('pending')
+  //console.log(sql)
+  //console.log('pending')
   const [row] = await db.query(sql);
   row.forEach(el => {
     el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
@@ -176,9 +176,9 @@ router.get("/listpending", async (req, res) => {
 //get cancel
 router.get("/listcancel", async (req, res) => {
   const member = req.query.member
-  console.log(member)
+  //console.log(member)
   let sql = `SELECT * FROM J_cart_order WHERE (member='${member}')AND(order_status =4)`;
-  console.log(sql)
+  //console.log(sql)
   const [row] = await db.query(sql);
   row.forEach(el => {
     el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
@@ -188,10 +188,10 @@ router.get("/listcancel", async (req, res) => {
 //get finish
 router.get("/listfinish", async (req, res) => {
   const member = req.query.member
-  console.log(member)
+  //console.log(member)
   let sql = `SELECT * FROM J_cart_order WHERE (member='${member}')AND(order_status =3)`;
-  console.log(sql)
-  console.log('finish')
+  //console.log(sql)
+  //console.log('finish')
   const [row] = await db.query(sql);
   row.forEach(el => {
     el.order_date = moment(el.order_date).format("YYYY-MM-DD");  
@@ -229,7 +229,7 @@ router.post('/add', upload.none(), async (req, res) => {
     ...req.body
   };
 
-  console.log(req.body);
+  //console.log(req.body);
 
   const sql = "INSERT INTO `j_order_detail` set ?";
   const [{
@@ -252,7 +252,7 @@ router.post('/addorder', upload.none(), async (req, res) => {
     ...req.body
   };
 
-  console.log(req.body);
+  //console.log(req.body);
   const sql = "INSERT INTO `J_cart_order` set ?";
   const [{
     affectedRows,
@@ -313,7 +313,7 @@ router.post('/finishorder', upload.none(), async (req, res) => {
 //     ...req.body
 //   };
 //   const PO_NO = req.query.PO_NO
-//   console.log(req.body);
+//   //console.log(req.body);
 //   const sql = `UPDATE J_cart_order SET order_status = 4 WHERE PO_NO='${PO_NO}'`;
 
 //   const [{

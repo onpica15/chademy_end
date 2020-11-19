@@ -145,9 +145,9 @@ router.post("/classfilter", async (req, res) => {
   const dateFilter = req.body.date
   const classFilter = req.body.class
   let sql = `SELECT * FROM a_experience_mainlist WHERE start_date > ` + dateFilter + ' AND category_sid =' + classFilter
-  console.log('sql: '+sql);
-  console.log('dateFilter'+dateFilter);
-  console.log('classFilter'+classFilter);
+  //console.log('sql: '+sql);
+  //console.log('dateFilter'+dateFilter);
+  //console.log('classFilter'+classFilter);
   
   const [totalRows
   ] = await db.query(sql);
@@ -226,7 +226,7 @@ router.post('/edit/:sid', upload.none(), async (req, res) => {
 
 // 單張圖片上傳 API
 router.post("/try-upload", upload.single('myfile'), (req, res) => {
-  console.log('req.file' + req.file);
+  //console.log('req.file' + req.file);
 
   if (req.file && req.file.originalname) {
     let ext = "";

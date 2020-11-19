@@ -136,7 +136,7 @@ router.post('/review_member', upload.none(),async (req, res) => {
   data.review_time = moment(new Date()).format(
     "YYYY-MM-DD");
   const sql = "INSERT INTO `i_comment_c2c` set ?";
-  console.log(JSON.stringify(data));
+  ////console.log(JSON.stringify(data));
   const [{
     affectedRows,
     insertId
@@ -247,7 +247,7 @@ router.get('/product/category/:sid',  async(req, res) => {
     `SELECT * FROM i_secondhand_product where categories_sid = ${req.params.sid}`;
   
   const data = await db.query(baseSql);
-  console.log(baseSql);
+  ////console.log(baseSql);
 
   res.json({
     data: data[0]
@@ -289,13 +289,13 @@ router.post('/product/category', upload.none(), async(req, res) => {
     }
 
   const where = getCondition(wheres);
-  console.log(where);
+  ////console.log(where);
   if(where){
     baseSql += where;
   }
   baseSql += ` limit ${page_no * limit}, ${limit}`
   
-  console.log(baseSql);
+  ////console.log(baseSql);
   const data = await db.query(baseSql);
 
   res.json({
@@ -334,7 +334,7 @@ router.post('/add', upload.none(), async (req, res) => {
     ...req.body
   };
   const sql = "INSERT INTO `i_secondhand_product` set ?";
-  console.log(JSON.stringify(data));
+  ////console.log(JSON.stringify(data));
   const [{
     affectedRows,
     insertId

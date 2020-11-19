@@ -146,9 +146,9 @@ router.get('/designer/:sid?', async (req, res)=>{
     // const sql ='SELECT * FROM designers WHERE sid=?'
     const sql =`SELECT d.\`intro\`,d.\`designer_pic\`,d.\`name\`, p.* FROM \`designers\` d JOIN \`products\` p ON p.\`designer_sid\`=d.\`designer_sid\` WHERE p.sid=?`
 
-    // console.log(sql);
+    // //console.log(sql);
     const [row] = await db.query(sql,[req.params.sid])
-    // console.log(row);
+    // //console.log(row);
     res.json(row[0]);
 });
 
